@@ -1,42 +1,47 @@
-# Astro Starter Kit: Minimal
+# Project2
 
-```sh
-yarn create astro@latest -- --template minimal
-```
-
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+An Astro project with React, Tailwind CSS, and shadcn/ui components.
 
 ## 🚀 Project Structure
-
-Inside of your Astro project, you'll see the following folders and files:
 
 ```text
 /
 ├── public/
+│   └── favicon.svg
 ├── src/
-│   └── pages/
-│       └── index.astro
+│   ├── components/
+│   │   └── ui/
+│   │       └── button.tsx
+│   ├── lib/
+│   │   └── utils.ts
+│   ├── pages/
+│   │   └── index.astro
+│   └── styles/
+│       └── global.css
+├── astro.config.mjs
+├── components.json
+├── tailwind.config.mjs
 └── package.json
 ```
 
-Astro looks for `.astro` or `.md` files in the `src/pages/` directory. Each page is exposed as a route based on its file name.
+## 🛠️ Tech Stack
 
-There's nothing special about `src/components/`, but that's where we like to put any Astro/React/Vue/Svelte/Preact components.
-
-Any static assets, like images, can be placed in the `public/` directory.
+- **Astro** - Static site generator
+- **React** - UI components
+- **Tailwind CSS** - Styling
+- **shadcn/ui** - Component library
+- **TypeScript** - Type safety
 
 ## 🧞 Commands
 
-All commands are run from the root of the project, from a terminal:
-
 | Command                   | Action                                           |
 | :------------------------ | :----------------------------------------------- |
-| `yarn install`             | Installs dependencies                            |
-| `yarn dev`             | Starts local dev server at `localhost:4321`      |
-| `yarn build`           | Build your production site to `./dist/`          |
-| `yarn preview`         | Preview your build locally, before deploying     |
-| `yarn astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `yarn astro -- --help` | Get help using the Astro CLI                     |
+| `yarn install`            | Installs dependencies                            |
+| `yarn dev`               | Starts local dev server at `localhost:4321`     |
+| `yarn build`             | Build your production site to `./dist/`         |
+| `yarn preview`           | Preview your build locally, before deploying    |
+| `yarn shadcn`            | Add shadcn/ui components                         |
+| `yarn astro`             | Run Astro CLI commands                           |
 
 ## 👀 Want to learn more?
 

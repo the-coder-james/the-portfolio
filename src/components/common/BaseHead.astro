@@ -1,0 +1,12 @@
+---
+const data = Astro.props;
+
+const sitetitle = 'James the Dev';
+---
+
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible", content="IE=11">
+<meta name="viewport", content="width=device-width, initial-scale=1, shrink-to-fit=yes">
+
+<title>{data.title ? data.title + ' | ' : ''}{sitetitle}</title>
+
