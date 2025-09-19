@@ -18,25 +18,11 @@ const { title } = Astro.props;
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <BaseHead title={title}/>
   </head>
-  <body class="bg-black text-white">
+  <body class="bg-black text-white max-h-full font-mono">
     <ThemeWrapper client:load>
       <div class="fixed inset-0 -z-10">
         <BackgroundPattern client:only="react" />
       </div>
-      <!-- <div class="relative min-h-screen flex items-center">
-        <div class="
-          absolute
-          right-0
-          bottom-0
-          w-full
-          max-w-[100%]
-          h-screen
-          overflow-hidden
-          bg-transparent
-        ">
-          <SlideShowCard client:only="react" />
-        </div>
-      </div> -->
 
       <header>
         <Header />
@@ -46,7 +32,9 @@ const { title } = Astro.props;
         <slot /><!-- your content is injected here -->
       </main>
       
-      <footer><Footer /></footer>
+      <footer>
+        <Footer />
+      </footer>
     </ThemeWrapper>
   </body>
 </html>

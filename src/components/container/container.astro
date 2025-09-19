@@ -1,0 +1,7 @@
+---
+const data = Astro.props;
+---
+
+<section class={ "mx-auto w-full py-8 px-[2.5%] max-w-[calc(1400px+5%)] " + data.className} >
+  <slot />
+</section>

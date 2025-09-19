@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=SUSE+Mono:ital,wght@0,100..800;1,100..800&display=swap');
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -56,4 +57,8 @@
   body {
     @apply bg-background text-foreground;
   }
+}
+
+@theme {
+  --font-mono: "SUSE Mono", sans-serif;; 
 }
