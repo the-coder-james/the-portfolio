@@ -6,11 +6,26 @@ import Linkedin from "../../public/linkedin.svg"
 
 import Layout from "@/layout/layout.astro"
 import Section from "@/components/container/container.astro"
+import SlideShowCards from '@/components/common/SlideShowCards';
 ---
+
 <Layout>
-  <Section className="flex items-center h-screen">
+  <Section className="relative flex items-center h-screen z-[-1]">
+    <div class="
+      absolute
+      right-0
+      bottom-0
+      w-full
+      max-w-3xl
+      h-screen
+      overflow-hidden
+      bg-transparent
+      z-[-1]
+      ">
+      <SlideShowCards client:load />
+    </div>
     <div class="w-full flex items-center gap-10 max-md:flex-wrap max-md:justify-center">
-      <div class="w-60 h-auto rounded-[50%]">
+      <div class="w-60 h-auto rounded-[50%] max-md:w-40">
         <img class="aspect-square rounded-[50%] w-[100%] h-auto object-cover" src="/testphoto.png" alt="profile">
       </div>
       <div class="w-fit">

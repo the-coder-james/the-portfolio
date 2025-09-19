@@ -62,3 +62,16 @@
 @theme {
   --font-mono: "SUSE Mono", sans-serif;; 
 }
+
+@keyframes vertical-loop {
+  0% {
+    transform: translateY(0);
+  }
+  100% {
+    transform: translateY(-50%);
+  }
+}
+
+.animate-vertical-loop {
+  animation: vertical-loop 200s linear infinite;
+}
