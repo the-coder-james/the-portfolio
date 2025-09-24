@@ -1,0 +1,38 @@
+---
+import HeadingComponent from "@/components/common/astro/HeadingComponent.astro"
+import TechstackComponent from "@/components/about/TechstackComponent"
+
+const data = Astro.locals.webdata
+---
+
+<div class="flex gap-20 mt-24 h-full max-lg:flex-col max-lg:mt-0">
+  <div class="w-full text-justify">
+    <HeadingComponent>About</HeadingComponent>
+
+    <p class="text-lg leading-relaxed mt-4 max-lg:text-sm">
+      I’ve been coding since <span class="font-semibold">2015</span>, and began working professionally in 
+      <span class="font-semibold">2019</span>, building everything from small business sites to full-scale 
+      <span class="font-semibold">e-commerce platforms</span> and 
+      <span class="font-semibold">high-performing landing pages</span>.
+    </p>
+
+    <p class="text-lg leading-relaxed mt-4 max-lg:text-sm">
+      I enjoy bridging the gap between design and functionality—bringing ideas to life through code that’s 
+      scalable, maintainable, and user-focused. I’m always excited about collaborating with teams, solving 
+      complex problems, and continuously refining my skills.
+    </p>
+    <p class="text-lg leading-relaxed mt-4 max-lg:text-sm">
+      Beyond coding, I’m always exploring new technologies, refining my design eye, and finding ways to grow as a developer.
+      I also believe in maintaining a healthy work-life balance—stepping away from the screen when needed to stay creative,
+      focused, and inspired for the next project.
+    </p>
+  </div>
+  <div class="w-full min-w-[600px] max-lg:min-w-full">
+    <HeadingComponent>Current Stack</HeadingComponent>
+    <div class="flex flex-wrap justify-center gap-5 max-lg:gap-10">
+      { data.user.techstack.map((item:any) => (
+        <TechstackComponent data={item} />
+      )) }
+    </div>
+  </div>
+</div>

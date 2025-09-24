@@ -1,0 +1,46 @@
+---
+
+import { Mail } from "lucide-react"
+import Github from "/public/github.svg"
+import Linkedin from "/public/linkedin.svg"
+import mvImage from "/public/testphoto.png"
+
+import Image from "astro/components/Image.astro"
+import SlideShowCards from '@/components/mainvisual/SlideShowCards'
+---
+
+<div class="
+  absolute
+  right-0
+  bottom-0
+  w-full
+  max-w-3xl
+  h-screen
+  overflow-hidden
+  bg-transparent
+  z-[-1]
+  ">
+  <SlideShowCards client:load />
+</div>
+
+<div class="w-full flex items-center gap-10 max-md:flex-wrap max-md:justify-center">
+  <div class="w-60 h-auto rounded-[50%] max-md:w-[70%]">
+    <Image class="aspect-square rounded-[50%] w-[100%] object-cover" loading={'eager'} width={1600} src={mvImage} alt={'mvimage'}/>
+  </div>
+
+  <div class="w-fit">
+    <div class="flex items-center gap-5">
+      <a class="w-50 hover:text-gray-600 transition-colors" href="https://github.com" aria-label="github" target="_blank"><Github /></a>
+      <a class="w-50 hover:text-blue-600 transition-colors" href="https://linkedin.com" aria-label="linkedin" target="_blank"><Linkedin /></a>
+      <a class="w-50 hover:text-red-500 transition-colors" href="mailto:test@email.com" aria-label="mail" target="_blank"><Mail /></a>
+    </div>
+
+    <h1 class="mt-5 mb-3 scroll-m-10 border-b pb-2 text-5xl font-semibold tracking-tight max-md:text-3xl max-md:text-center">alejandre james</h1>
+    
+    <p class="leading-relaxed">Hi! I’m <span class="font-bold">James,</span><br/>
+      a Frontend-Focused <span class="font-bold">Full Stack Developer</span><br/>
+      with a passion for crafting clean,<br/>
+      efficient digital experiences.
+    </p>
+  </div>
+</div>
