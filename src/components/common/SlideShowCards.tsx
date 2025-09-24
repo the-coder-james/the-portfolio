@@ -34,6 +34,15 @@ function shuffleArray<T>(array: T[]): T[] {
   return shuffled;
 }
 
+function getRandomColor(): string {
+  const colors = [
+    'text-red-500', 'text-blue-500', 'text-green-500', 'text-yellow-500',
+    'text-purple-500', 'text-pink-500', 'text-indigo-500', 'text-orange-500',
+    'text-teal-500', 'text-cyan-500', 'text-lime-500', 'text-emerald-500'
+  ];
+  return colors[Math.floor(Math.random() * colors.length)];
+}
+
 export default function SlideShowCards() {
   const [windowDimensions, setWindowDimensions] = useState({
     width: 0,
@@ -100,7 +109,7 @@ export default function SlideShowCards() {
                       className="overflow-hidden rounded-2xl shadow-lg p-5 flex items-center justify-center"
                     >
                       <CardContent className="p-0">
-                        <IconComponent className="text-black dark:text-gray-300" />
+                        <IconComponent className={getRandomColor()} />
                       </CardContent>
                     </Card>
                   ))}

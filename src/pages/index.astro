@@ -10,7 +10,7 @@ import SlideShowCards from '@/components/common/SlideShowCards';
 ---
 
 <Layout>
-  <Section className="relative flex items-center h-screen z-[-1]">
+  <Section className="relative flex items-center h-screen">
     <div class="
       absolute
       right-0
@@ -30,17 +30,11 @@ import SlideShowCards from '@/components/common/SlideShowCards';
       </div>
       <div class="w-fit">
         <div class="flex items-center gap-5">
-          <a href="#">
-            <Github />
-          </a>
-          <a href="#">
-            <Linkedin />
-          </a>
-          <a class="w-50" href="#">
-            <Mail />
-          </a>
+          <a class="w-50 hover:text-gray-600 transition-colors" href="https://github.com" target="_blank"><Github /></a>
+          <a class="w-50 hover:text-blue-600 transition-colors" href="https://linkedin.com" target="_blank"><Linkedin /></a>
+          <a class="w-50 hover:text-red-500 transition-colors" href="mailto:test@email.com" target="_blank"><Mail /></a>
         </div>
-        <h1 class="my-5 scroll-m-20 border-b pb-2 text-5xl font-semibold tracking-tight max-md:text-3xl max-md:text-center">alejandre james</h1>
+        <h1 class="mt-5 mb-3 scroll-m-10 border-b pb-2 text-5xl font-semibold tracking-tight max-md:text-3xl max-md:text-center">alejandre james</h1>
         <p class="leading-10">Full Stack Developer</p>
       </div>
     </div>

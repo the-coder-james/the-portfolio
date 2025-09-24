@@ -1,0 +1,8 @@
+{
+  "nav" : [
+    { "text" : "Home", "url" : "#home"},
+    { "text" : "About", "url" : "#about"},
+    { "text" : "Works", "url" : "#works"},
+    { "text" : "Contact", "url" : "#contain"}
+  ]
+}

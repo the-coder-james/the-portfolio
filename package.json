@@ -3,10 +3,11 @@
   "type": "module",
   "version": "0.0.1",
   "scripts": {
-    "dev": "astro dev",
-    "build": "astro build",
-    "preview": "astro preview",
-    "shadcn": "npx shadcn@latest",
+    "dev": "yarn nvmuse && astro dev",
+    "build": "yarn nvmuse && astro build",
+    "nvmuse": "source ~/.nvm/nvm.sh && nvm use",
+    "preview": "yarn nvmuse astro preview",
+    "shadcn": "yarn nvmuse npx shadcn@latest",
     "astro": "astro"
   },
   "dependencies": {
