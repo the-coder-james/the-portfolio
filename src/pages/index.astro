@@ -1,6 +1,9 @@
 ---
 import "@/styles/global.css"
 
+import data from '../../public/data.json'
+const datalist = data
+
 import Image from "astro/components/Image.astro"
 
 import { Mail } from "lucide-react"
@@ -9,8 +12,10 @@ import Linkedin from "../../public/linkedin.svg"
 import mvImage from "../../public/testphoto.png"
 
 import Layout from "@/layout/layout.astro"
+import HeadingComponent from "@/components/common/HeadingComponent.astro"
+import TechstackComponent from "@/components/common/TechstackComponent"
 import Section from "@/components/container/container.astro"
-import SlideShowCards from '@/components/common/SlideShowCards';
+import SlideShowCards from '@/components/common/SlideShowCards'
 ---
 
 <Layout>
@@ -29,7 +34,7 @@ import SlideShowCards from '@/components/common/SlideShowCards';
       <SlideShowCards client:load />
     </div>
     <div class="w-full flex items-center gap-10 max-md:flex-wrap max-md:justify-center">
-      <div class="w-60 h-auto rounded-[50%] max-md:w-40">
+      <div class="w-60 h-auto rounded-[50%] max-md:w-[70%]">
         <Image class="aspect-square rounded-[50%] w-[100%] object-cover" loading={'eager'} width={1600} src={mvImage} alt={'mvimage'}/>
       </div>
       <div class="w-fit">
@@ -39,12 +44,46 @@ import SlideShowCards from '@/components/common/SlideShowCards';
           <a class="w-50 hover:text-red-500 transition-colors" href="mailto:test@email.com" aria-label="mail" target="_blank"><Mail /></a>
         </div>
         <h1 class="mt-5 mb-3 scroll-m-10 border-b pb-2 text-5xl font-semibold tracking-tight max-md:text-3xl max-md:text-center">alejandre james</h1>
-        <p class="leading-10">Full Stack Developer</p>
+        <p class="leading-relaxed">Hi! I’m <span class="font-bold">James,</span><br/>
+          a Frontend-Focused <span class="font-bold">Full Stack Developer</span><br/>
+          with a passion for crafting clean,<br/>
+          efficient digital experiences.
+        </p>
       </div>
     </div>
   </Section>
 
-  <Section id="about">
+  <Section id="about" className="flex items-center" title="About">
+    <div class="flex gap-20 mt-24 h-full max-lg:flex-col max-lg:mt-0">
+      <div class="w-full text-justify">
+        <HeadingComponent>About</HeadingComponent>
 
+        <p class="text-lg leading-relaxed mt-4 max-lg:text-sm">
+          I’ve been coding since <span class="font-semibold">2015</span>, and began working professionally in 
+          <span class="font-semibold">2019</span>, building everything from small business sites to full-scale 
+          <span class="font-semibold">e-commerce platforms</span> and 
+          <span class="font-semibold">high-performing landing pages</span>.
+        </p>
+
+        <p class="text-lg leading-relaxed mt-4 max-lg:text-sm">
+          I enjoy bridging the gap between design and functionality—bringing ideas to life through code that’s 
+          scalable, maintainable, and user-focused. I’m always excited about collaborating with teams, solving 
+          complex problems, and continuously refining my skills.
+        </p>
+        <p class="text-lg leading-relaxed mt-4 max-lg:text-sm">
+          Beyond coding, I’m always exploring new technologies, refining my design eye, and finding ways to grow as a developer.
+          I also believe in maintaining a healthy work-life balance—stepping away from the screen when needed to stay creative,
+          focused, and inspired for the next project.
+        </p>
+      </div>
+      <div class="w-full min-w-[600px] max-lg:min-w-full">
+        <HeadingComponent>Current Stack</HeadingComponent>
+        <div class="flex flex-wrap justify-center gap-5 max-lg:gap-10">
+          { data.user.techstack.map(item => (
+            <TechstackComponent data={item} />
+          )) }
+        </div>
+      </div>
+    </div>
   </Section>
 </Layout>

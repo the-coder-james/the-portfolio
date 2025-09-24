@@ -1,5 +1,5 @@
 ---
-import data from '../assets/data.json'
+import data from '../../../public/data.json'
 import { Button } from "@/components/ui/button";
 
 const pages = data.nav;
@@ -7,7 +7,7 @@ const pages = data.nav;
 
 <nav class="
   fixed
-  md:top-20
+  md:top-10
   left-[50%]
   flex
   align-middle
@@ -21,9 +21,8 @@ const pages = data.nav;
   bg-slate-800 
   bg-opacity-75
   translate-x-[-50%]
-  max-md:bottom-0
-  max-md:flex-wrap
-  max-md:w-full
+  max-md:top-2
+  max-md:w-fit
   max-md:gap-2
   max-md:justify-center
   z-[9999]

@@ -2,6 +2,9 @@
 const data = Astro.props;
 ---
 
-<section class={ "snap-center mx-auto w-full min-h-screen scroll-p-8 px-[2.5%] max-w-[calc(1400px+5%)] " + data.className} >
+<section 
+  id={data.id ? data.id : ''} 
+  class={ "snap-center mx-auto w-full min-h-screen scroll-p-8 py-10 px-[5%] max-w-[calc(1400px+10%)] max-lg:pt-20 " + data.className}
+>
   <slot />
 </section>
