@@ -28,8 +28,20 @@ const pages = data.nav;
   z-[9999]
 ">
   { pages.map((elementPage:any) => (
-    <Button className="rounded-[32px] bg-gray-600 text-slate-50 max-md:text-xs hover:text-black">
-      <a href={ elementPage.url }>{ elementPage.text }</a>
+    <Button data-target={elementPage.url} className="rounded-[32px] bg-gray-600 text-slate-50 max-md:text-xs hover:text-black nav-button">
+      { elementPage.text }
     </Button>
   )) }
 </nav>
+
+<script>
+  document.querySelectorAll('.nav-button').forEach(button => {
+    button.addEventListener('click', () => {
+      const target = button.getAttribute('data-target');
+      if (target) {
+        const section = document.querySelector(target);
+        section?.scrollIntoView({ behavior: 'smooth' });
+      }
+    });
+  });
+</script>
