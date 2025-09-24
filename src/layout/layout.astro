@@ -1,12 +1,12 @@
 ---
 // TSX
 import { ThemeWrapper } from '@/components/ThemeWrapper';
-import { BackgroundPattern } from '@/components/common/BackgroundPattern';
+import { BackgroundPattern } from '@/components/common/tsx/BackgroundPattern';
 
 // Astro
-import BaseHead from '@/components/common/BaseHead.astro';
-import Header from '@/components/header/Header.astro';
-import Footer from '@/components/footer/Footer.astro'
+import BaseHead from '@/components/common/astro/BaseHead.astro';
+import HeaderComponent from '@/components/common/astro/HeaderComponent.astro';
+import FooterComponent from '@/components/common/astro/FooterComponent.astro'
 
 
 // Vars
@@ -24,17 +24,13 @@ const { title } = Astro.props;
         <BackgroundPattern client:only="react" />
       </div>
 
-      <header>
-        <Header />
-      </header>
+      <header><HeaderComponent /></header>
       
       <main class="snap-y snap-mandatory overflow-y-scroll h-screen">
         <slot /><!-- your content is injected here -->
       </main>
       
-      <footer>
-        <Footer />
-      </footer>
+      <footer><FooterComponent /></footer>
     </ThemeWrapper>
   </body>
 </html>

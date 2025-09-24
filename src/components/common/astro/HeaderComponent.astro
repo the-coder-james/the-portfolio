@@ -1,7 +1,7 @@
 ---
-import data from '../../../public/data.json'
 import { Button } from "@/components/ui/button";
 
+const data = Astro.locals.webdata;
 const pages = data.nav;
 ---
 
@@ -27,7 +27,7 @@ const pages = data.nav;
   max-md:justify-center
   z-[9999]
 ">
-  { pages.map(elementPage => (
+  { pages.map((elementPage:any) => (
     <Button className="rounded-[32px] bg-gray-600 text-slate-50 max-md:text-xs hover:text-black">
       <a href={ elementPage.url }>{ elementPage.text }</a>
     </Button>

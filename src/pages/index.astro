@@ -1,8 +1,7 @@
 ---
 import "@/styles/global.css"
 
-import data from '../../public/data.json'
-const datalist = data
+const data = Astro.locals.webdata;
 
 import Image from "astro/components/Image.astro"
 
@@ -12,14 +11,14 @@ import Linkedin from "../../public/linkedin.svg"
 import mvImage from "../../public/testphoto.png"
 
 import Layout from "@/layout/layout.astro"
-import HeadingComponent from "@/components/common/HeadingComponent.astro"
-import TechstackComponent from "@/components/common/TechstackComponent"
-import Section from "@/components/container/container.astro"
-import SlideShowCards from '@/components/common/SlideShowCards'
+import HeadingComponent from "@/components/common/astro/HeadingComponent.astro"
+import TechstackComponent from "@/components/common/tsx/TechstackComponent"
+import SectionComponent from "@/components/common/astro/SectionComponent.astro"
+import SlideShowCards from '@/components/common/tsx/SlideShowCards'
 ---
 
 <Layout>
-  <Section id="home" className="relative flex items-center h-screen">
+  <SectionComponent id="home" className="relative flex items-center h-screen">
     <div class="
       absolute
       right-0
@@ -51,9 +50,9 @@ import SlideShowCards from '@/components/common/SlideShowCards'
         </p>
       </div>
     </div>
-  </Section>
+  </SectionComponent>
 
-  <Section id="about" className="flex items-center" title="About">
+  <SectionComponent id="abouts" className="flex items-center" title="About">
     <div class="flex gap-20 mt-24 h-full max-lg:flex-col max-lg:mt-0">
       <div class="w-full text-justify">
         <HeadingComponent>About</HeadingComponent>
@@ -79,11 +78,11 @@ import SlideShowCards from '@/components/common/SlideShowCards'
       <div class="w-full min-w-[600px] max-lg:min-w-full">
         <HeadingComponent>Current Stack</HeadingComponent>
         <div class="flex flex-wrap justify-center gap-5 max-lg:gap-10">
-          { data.user.techstack.map(item => (
+          { data.user.techstack.map((item:any) => (
             <TechstackComponent data={item} />
           )) }
         </div>
       </div>
     </div>
-  </Section>
+  </SectionComponent>
 </Layout>
