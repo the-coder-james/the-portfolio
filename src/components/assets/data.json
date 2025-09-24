@@ -4,5 +4,14 @@
     { "text" : "About", "url" : "#about"},
     { "text" : "Works", "url" : "#works"},
     { "text" : "Contact", "url" : "#contain"}
-  ]
+  ],
+
+  "user" : {
+    "image": {
+      "path" : "/public/testphoto.png",
+      "alt" : "main-photo"
+    },
+    "nameDisplay" : "alejandre james",
+    "roleDisplay" : "Full Stack Developer" 
+  }
 }
