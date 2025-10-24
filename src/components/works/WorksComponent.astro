@@ -1,0 +1,14 @@
+---
+import projectlist from "../../assets/projectlist.json"
+
+import HeadingComponent from "../common/astro/HeadingComponent.astro";
+import WorksMainComponent from "@/components/works/WorksMainComponent"
+---
+
+<div class="grid gap-5 mt-24 h-full max-lg:flex-col max-lg:mt-0">
+  <HeadingComponent>Works</HeadingComponent>
+
+  <div class="flex gap-5 max-md:flex-col">
+    <WorksMainComponent client:only="react" data={projectlist} />
+  </div>
+</div>

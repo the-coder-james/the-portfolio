@@ -9,6 +9,7 @@ import SectionComponent from "@/components/common/astro/SectionComponent.astro"
 // Sections
 import MainvisualComponent from "@/components/mainvisual/MainvisualComponent.astro";
 import AboutComponent from "@/components/about/AboutComponent.astro";
+import WorksComponent from "@/components/works/WorksComponent.astro";
 ---
 
 <Layout>
@@ -18,5 +19,9 @@ import AboutComponent from "@/components/about/AboutComponent.astro";
 
   <SectionComponent id="about" className="flex items-center">
     <AboutComponent />
+  </SectionComponent>
+
+  <SectionComponent id="works">
+    <WorksComponent />
   </SectionComponent>
 </Layout>
