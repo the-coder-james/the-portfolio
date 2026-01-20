@@ -1,5 +1,6 @@
 import techs from "../../assets/techs.json"
 import roles from "../../assets/roles.json";
+import projectprovider from "../../assets/projectprovider.json";
 import '@/components/works/WorksTypings';
 
 import { Img } from 'react-image';
@@ -23,7 +24,7 @@ const WorksDialogComponent = ( {data} : {data:ProjectData} ) => {
       <DialogTrigger asChild>
         <Button className="w-[45%] max-md:w-full max-md:text-xs">Details</Button>
       </DialogTrigger>
-      <DialogContent className="p-8 min-w-[45vw] w-full max-md:w-[90%]">
+      <DialogContent className="grid grid-cols-2 p-8 min-w-[80%] max-md:grid-cols-1 max-md:w-[90%]">
         <DialogHeader>
           <div className="flex items-center">
             <AspectRatio ratio={16 / 9} className="bg-muted rounded-lg">
@@ -37,25 +38,24 @@ const WorksDialogComponent = ( {data} : {data:ProjectData} ) => {
             </AspectRatio>
           </div>
 
-          <DialogTitle className="mt-4 mb-2">{ data.title }</DialogTitle>
-          <div className="flex gap-2">
-            <TaglistComponent datatags={data.tags}/>
-          </div>
+          <DialogTitle className="my-2">{ data.title }</DialogTitle>
+          <dl className="grid grid-cols-2 gap-y-2 justify-between mb-3 text-sm text-left text-white">
+            <dt className="font-bold">Project Provider: </dt>
+            <dd>{ (projectprovider as projectprovider)[data.provider].name }</dd>
+
+            <dt className="font-bold">Role: </dt>
+            <dd>{ (roles as roles)[data.role].name }</dd>
+
+            <dt className="font-bold">Tech Stack Used: </dt>
+            <dd>{ (techs as techs)[data.tech].name }</dd>
+          </dl>
         </DialogHeader>
           
-        <DialogDescription className="max-md:max-h-[200px] max-md:overflow-y-scroll">
-          <dl className="grid grid-cols-[auto_auto] mb-3 text-sm text-white max-md:grid-cols-1">
-            <dt className="font-bold">Project Provider : </dt>
-            <dd className="w-fit max-md:mb-2">UPWARD NEXT</dd>
-
-            <dt className="font-bold">Role : </dt>
-            <dd className="w-fit max-md:mb-2">{ (roles as roles)[data.role].name }</dd>
-
-            <dt className="font-bold">Tech Stack Used : </dt>
-            <dd className="w-fit max-md:mb-2">{ (techs as techs)[data.tech].name }</dd>
-          </dl>
-          
-          <p className="text-base  max-md:text-sm">{ data.description }</p>
+        <DialogDescription className="max-h-96 overflow-y-auto max-md:max-h-48">
+          <div className="flex mb-4 gap-2">
+            <TaglistComponent datatags={data.tags}/>
+          </div>
+          <p className="text-base max-md:text-sm">{ data.description }</p>
         </DialogDescription>
       </DialogContent>
     </Dialog>

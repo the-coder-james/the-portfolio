@@ -13,9 +13,6 @@ const WorksCardComponent = ({ data }: { data: ProjectData }) => {
   return (
     <Card className="w-full justify-between">
       <CardContent className="grid gap-3">
-        <span className="text-sm max-md:text-xs">{data.date}</span>
-        <h3 className="scroll-m-20 text-xl font-semibold tracking-tight max-md:text-base">{data.title}</h3>
-        
         <AspectRatio ratio={16 / 9} className="bg-muted rounded-lg">
            <Img
               src={data.image.url}
@@ -27,8 +24,14 @@ const WorksCardComponent = ({ data }: { data: ProjectData }) => {
         </AspectRatio>
 
         <div className="grid gap-2">
-          <span className="text-sm max-md:text-xs">{ (roles as roles)[data.role].name }</span>
-          <TaglistComponent datatags={data.tags}/>
+          <h3 className="scroll-m-20 text-xl font-semibold tracking-tight max-md:text-base">{data.title}</h3>
+          <div className="flex items-center justify-between">
+            <span className="text-sm max-md:text-xs">{data.date}</span>
+            <span className="text-sm max-md:text-xs">{ (roles as roles)[data.role].name }</span>
+          </div>
+          <div className="grid gap-2">
+            <TaglistComponent datatags={data.tags}/>
+          </div>
         </div>
       </CardContent>
 

@@ -5,6 +5,7 @@
     "tags" : ["1"],
     "role" : 1,
     "tech": 1,
+    "provider": 1,
     "image" : {
       "url" : "https://images.unsplash.com/photo-1588345921523-c2dcdb7f1dcd?w=800&dpr=2&q=80",
       "alt" : "Project Sample preview"
@@ -18,6 +19,7 @@
     "tags" : ["2"],
     "role" : 1,
     "tech": 1,
+    "provider": 1,
     "image" : {
       "url" : "https://images.unsplash.com/photo-1588345921523-c2dcdb7f1dcd?w=800&dpr=2&q=80",
       "alt" : "Project Sample preview"
@@ -31,6 +33,7 @@
     "tags" : ["1"],
     "role" : 2,
     "tech": 1,
+    "provider": 2,
     "image" : {
       "url" : "https://images.unsplash.com/photo-1588345921523-c2dcdb7f1dcd?w=800&dpr=2&q=80",
       "alt" : "Project Sample preview"

@@ -4,6 +4,7 @@ type ProjectData = {
   tags:string[],
   role:number,
   tech:number,
+  provider: number,
   image:{
     url:string,
     alt:string
@@ -19,6 +20,12 @@ type roles = {
 }
 
 type techs = {
+  [key:number] : {
+    name:string
+  }
+}
+
+type projectprovider = {
   [key:number] : {
     name:string
   }
