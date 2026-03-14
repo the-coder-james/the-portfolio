@@ -3,29 +3,24 @@
     "url": "https://github.com/alejandrejames",
     "name": "Github",
     "icon": "Github",
-    "hoverClass": "stroke-gray-600",
-    "textHoverClass": "text-gray-600"
+    "hoverColor": "#4b5563"
   },
   {
     "url": "https://ph.linkedin.com/in/REDACTED",
     "name": "LinkedIn",
     "icon": "Linkedin",
-    "hoverClass": "stroke-blue-600",
-    "textHoverClass": "text-blue-600"
+    "hoverColor": "#2563eb"
   },
   {
     "url": "mailto:ko75fw2c9@mozmail.com",
     "name": "Mail",
     "icon": "Mail",
-    "hoverClass": "stroke-red-600",
-    "textHoverClass": "text-blue-600"
-    
+    "hoverColor": "#dc2626"
   },
   {
     "url": "https://ph.linkedin.com/in/REDACTED",
     "name": "Website",
     "icon": "Globe",
-    "hoverClass": "stroke-green-600",
-    "textHoverClass": "text-blue-600"
+    "hoverColor": "#16a34a"
   }
 ]
