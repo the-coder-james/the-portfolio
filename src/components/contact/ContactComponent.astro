@@ -14,14 +14,10 @@ const total = contacts.length;
   </div>
 
   <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 max-w-5xl mx-auto">
-    {contacts.map((contact, index) => {
-      const isLastCentered = total === 4 && index === 3;
-
-      return (
-        <div class={isLastCentered ? "lg:col-start-2" : ""}>
-          <ContactCard {...contact} client:visible />
-        </div>
-      );
-    })}
+    {contacts.map((contact, index) => (
+    <div class={total === 4 && index === 3 ? "lg:col-start-2" : ""}>
+      <ContactCard {...contact} client:visible />
+    </div>
+  ))}
   </div>
 </section>
