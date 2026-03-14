@@ -1,8 +1,8 @@
-# Project2
+# 🔥 my portfolio — no cap, it's bussin
 
-An Astro project with React, Tailwind CSS, and shadcn/ui components.
+yo this is my personal portfolio and it's giving EVERYTHING. built different, hits different, straight up slay. 💅
 
-## 🚀 Project Structure
+## 📁 the vibe check (project structure)
 
 ```text
 /
@@ -24,25 +24,25 @@ An Astro project with React, Tailwind CSS, and shadcn/ui components.
 └── package.json
 ```
 
-## 🛠️ Tech Stack
+## 🛠️ tech stack (the drip)
 
-- **Astro** - Static site generator
-- **React** - UI components
-- **Tailwind CSS** - Styling
-- **shadcn/ui** - Component library
-- **TypeScript** - Type safety
+- **Astro** — fast af, no cap
+- **React** — components go brrrr
+- **Tailwind CSS** — styling on god
+- **shadcn/ui** — UI so clean it's lowkey illegal
+- **TypeScript** — type-safe or we don't vibe
 
-## 🧞 Commands
+## 🧞 commands (how to cook)
 
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `yarn install`            | Installs dependencies                            |
-| `yarn dev`               | Starts local dev server at `localhost:4321`     |
-| `yarn build`             | Build your production site to `./dist/`         |
-| `yarn preview`           | Preview your build locally, before deploying    |
-| `yarn shadcn`            | Add shadcn/ui components                         |
-| `yarn astro`             | Run Astro CLI commands                           |
+| Command          | What it does                                     |
+| :--------------- | :----------------------------------------------- |
+| `yarn install`   | grab the fits (install deps)                     |
+| `yarn dev`       | start the rizz at `localhost:4321`               |
+| `yarn build`     | ship it to `./dist/` (we're so cooked 🍳)        |
+| `yarn preview`   | sneak peek before the drop                       |
+| `yarn shadcn`    | add more drip (shadcn components)                |
+| `yarn astro`     | astro CLI goes hard                              |
 
-## 👀 Want to learn more?
+## 👀 fr tho, wanna know more?
 
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+hit up the [Astro docs](https://docs.astro.build) or slide into the [Discord](https://astro.build/chat) — it's giving community fr fr 🫶
