@@ -3,7 +3,7 @@
     { "text" : "Home", "url" : "#home"},
     { "text" : "About", "url" : "#about"},
     { "text" : "Works", "url" : "#works"},
-    { "text" : "Contact", "url" : "#contain"}
+    { "text" : "Contact", "url" : "#contact"}
   ],
 
   "user" : {
