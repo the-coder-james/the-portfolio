@@ -1,0 +1,27 @@
+---
+import contacts from "../../assets/contact.json"
+import ContactCard from "./ContactCard";
+
+const total = contacts.length;
+---
+
+<section id="contact" class="py-20 container mx-auto">
+  <div class="max-w-3xl mx-auto text-center mb-10">
+    <h2 class="text-3xl font-bold">Contact Me</h2>
+    <p class="text-muted-foreground mt-2">
+      If you want to collaborate, discuss a project, or just connect.
+    </p>
+  </div>
+
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 max-w-5xl mx-auto">
+    {contacts.map((contact, index) => {
+      const isLastCentered = total === 4 && index === 3;
+
+      return (
+        <div class={isLastCentered ? "lg:col-start-2" : ""}>
+          <ContactCard {...contact} client:visible />
+        </div>
+      );
+    })}
+  </div>
+</section>
