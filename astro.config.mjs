@@ -5,5 +5,13 @@ import tailwind from '@astrojs/tailwind';
 
 // https://astro.build/config
 export default defineConfig({
-  integrations: [react(), tailwind({ applyBaseStyles: false })]
+  site: 'https://alejandrejames.github.io/the-portfolio/', // full GitHub Pages URL
+  base: '/the-portfolio/', // subpath for GitHub Pages
+  integrations: [
+    react(),
+    tailwind({ applyBaseStyles: false })
+  ],
+  build: {
+    outDir: 'dist' // default, but explicit for clarity
+  }
 });
