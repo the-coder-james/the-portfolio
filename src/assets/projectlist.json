@@ -7,7 +7,7 @@
     "tech": 1,
     "provider": 1,
     "image" : {
-      "url" : "/projects/aizenstudio.jpg",
+      "url" : "projects/aizenstudio.jpg",
       "alt" : "aizenstudio"
     },
     "description" : "Corporate site of AizenStudio, a Japanese metalworking and design atelier. It presents their philosophy, bespoke ironwork fabrication and design services, project portfolio, ordering process, and company team information in a clean, minimal layout that emphasizes craftsmanship and client‑driven custom solutions.",
@@ -21,7 +21,7 @@
     "tech": 1,
     "provider": 1,
     "image" : {
-      "url" : "/projects/pss.jpg",
+      "url" : "projects/pss.jpg",
       "alt" : "pss"
     },
     "description" : "Japanese–language landing page for 人事制度の学校 (“School of Personnel Systems”), an online platform providing structured education and training in human resource systems for small and medium enterprises. It outlines course offerings (introductory, design, and operational modules), consulting support, and online/on‑demand learning to help businesses build and apply practical personnel and evaluation systems.",
@@ -35,7 +35,7 @@
     "tech": 1,
     "provider": 1,
     "image" : {
-      "url" : "/projects/restandard.jpg",
+      "url" : "projects/restandard.jpg",
       "alt" : "restandard"
     },
     "description" : "Corporate homepage of a Japanese retail‑real‑estate specialist focused on 店舗不動産 (retail and restaurant property) brokerage, management and consulting. It presents services for property owners, real estate firms, and businesses seeking to open, expand, sell, or transfer storefronts, plus company information, news and recruitment.",
@@ -49,7 +49,7 @@
     "tech": 1,
     "provider": 1,
     "image" : {
-      "url" : "/projects/tomono.jpg",
+      "url" : "projects/tomono.jpg",
       "alt" : "tomono"
     },
     "description" : "Corporate site of 友野会計事務所 (Tomono Accounting Office), a professional tax advisory and accounting firm based in Saitama City, Japan. It outlines services such as corporate and individual tax advisory, financial consulting, loan support and succession planning, and provides firm information, news, and contact details.",
@@ -63,7 +63,7 @@
     "tech": 1,
     "provider": 1,
     "image" : {
-      "url" : "/projects/asuone.jpg",
+      "url" : "projects/asuone.jpg",
       "alt" : "asuone"
     },
     "description" : "Corporate homepage of 株式会社アスワン琉球 (Asuone Ryukyu Co., Ltd.), a Japanese demolition and construction services provider. It details interior demolition, asbestos removal, and restoration services, client testimonials, service process, coverage areas (primarily Okinawa), online quotes, and contact information.",
@@ -77,7 +77,7 @@
     "tech": 1,
     "provider": 1,
     "image" : {
-      "url" : "/projects/daisho.jpg",
+      "url" : "projects/daisho.jpg",
       "alt" : "daisho"
     },
     "description" : "Corporate homepage for 株式会社大昌運輸 (Daisho Unyu Group), a Japanese logistics and freight transport company. It presents the company’s freight haulage, delivery and logistics services across Japan, safety and quality commitments, service categories, fleet information, news, and recruitment details",
@@ -91,7 +91,7 @@
     "tech": 1,
     "provider": 1,
     "image" : {
-      "url" : "/projects/saiai.jpg",
+      "url" : "projects/saiai.jpg",
       "alt" : "saiai"
     },
     "description" : "Official online presence of 彩愛メモリアル (Saiai Memorial), a funeral service provider based in Saitama, Japan. It details family funerals, one‑day funerals, cremation services, pricing plans, pre‑consultation options, support resources and contact information for arranging and managing funerals, including 24/7 assistance.",
@@ -105,7 +105,7 @@
     "tech": 1,
     "provider": 1,
     "image" : {
-      "url" : "/projects/tottori.jpg",
+      "url" : "projects/tottori.jpg",
       "alt" : "tottori"
     },
     "description" : "The オンライン shop and brand site for 悠二農園 (Yuji Farm), a producer of Tottori‑grown ginger. It features product listings (fresh ginger, ginger powder, ginger syrup), brand history (400‑year tradition in Tottori), cultivation and storage methods, shopping guide, company/staff info, and customer support. The layout emphasizes local ginger products and e‑commerce functionality.",
@@ -119,7 +119,7 @@
     "tech": 1,
     "provider": 1,
     "image" : {
-      "url" : "/projects/ledtechno.jpg",
+      "url" : "projects/ledtechno.jpg",
       "alt" : "ledtechno"
     },
     "description" : "Corporate homepage for LEDテクノ株式会社, a Japanese manufacturing and processing company specializing in LED components and promotional lighting products. It presents company profile, LED baseboards, LED covers, AC adapters, control boards, accessories, production facilities and quality inspection systems, plus online shop access, recruitment and contact details.",
@@ -133,7 +133,7 @@
     "tech": 1,
     "provider": 1,
     "image" : {
-      "url" : "/projects/gcompass.jpg",
+      "url" : "projects/gcompass.jpg",
       "alt" : "gcompass"
     },
     "description" : "A member login portal for “グローリーコンパスオンライン” (Glory Compass Online), operated by GLORY NASCA Ltd.. It presents fields for email and password login, links for new account registration and password recovery, and links to terms, privacy policy and information security pages, indicating a members‑only service platform rather than a public corporate overview.",
@@ -147,7 +147,7 @@
     "tech": 1,
     "provider": 1,
     "image" : {
-      "url" : "/projects/takako.jpg",
+      "url" : "projects/takako.jpg",
       "alt" : "takako"
     },
     "description" : "The official TAKAKO OHASHI Beauty Cosme Shop online presence, representing ヘアメイクアーティスト大橋タカコ and her cosmetics brand operated by 株式会社パルフェ. It functions as a beauty product and lesson portal with links to online shopping, makeup lessons, artist profile, media appearances and a physical shop in Aoyama, Tokyo. The site highlights brand philosophy, service offerings and contact information.",
@@ -161,7 +161,7 @@
     "tech": 1,
     "provider": 1,
     "image" : {
-      "url" : "/projects/toolbox.jpg",
+      "url" : "projects/toolbox.jpg",
       "alt" : "toolbox"
     },
     "description" : "The corporate homepage of 株式会社ツールボックス (Toolbox Co., Ltd.), a Japanese manufacturing specialist that designs and produces custom display fixtures and presentation cases—particularly for jewellery, watches and retail products. The site presents company profile, service overview (concept/design/production), product categories, online shop access, ordering and contact information.",
@@ -175,7 +175,7 @@
     "tech": 1,
     "provider": 1,
     "image" : {
-      "url" : "/projects/chugo.jpg",
+      "url" : "projects/chugo.jpg",
       "alt" : "chugo"
     },
     "description" : "The corporate homepage of 中国通信資材株式会社 (Chugoku Tsushin Shizai Co., Ltd.), a Japanese logistics and materials services firm. It positions the company as a one‑stop logistics partner providing inventory storage, warehousing operations, cargo handling, assembly/kitting, and delivery support for communication materials, precision equipment and construction/industrial products, with detailed service descriptions, case examples, company info, news and contact details.",
@@ -189,7 +189,7 @@
     "tech": 1,
     "provider": 1,
     "image" : {
-      "url" : "/projects/sakusys.jpg",
+      "url" : "projects/sakusys.jpg",
       "alt" : "sakusys"
     },
     "description" : "The corporate homepage of 株式会社サクシス (SAKUSys Inc.), a Japanese total coordinate production and business support firm. It outlines the company’s “Communicate, Connect, Create” philosophy and services including sales agency and support, network/matching consulting, event and media production, content creation, and promotional operations, plus corporate profile and contact information.",
@@ -203,7 +203,7 @@
     "tech": 1,
     "provider": 1,
     "image" : {
-      "url" : "/projects/sato.jpg",
+      "url" : "projects/sato.jpg",
       "alt" : "sato"
     },
     "description" : "the corporate homepage of 株式会社サトー印刷 (Sato Insatsu / Sato Printing Co., Ltd.), a Tokyo‑based commercial printing company founded in 1930. It presents the company’s history, services (business cards, brochures, catalogs, flyers, DM, packaging, signage and corporate printed materials), optional services (address printing, mailing), industry use cases, online ordering, CSR/SDGs initiatives, recruitment and company contact information. The layout organizes products by use case, industry and media type and includes a member login, online shop/cart and comprehensive service navigation.",
@@ -217,7 +217,7 @@
     "tech": 1,
     "provider": 1,
     "image" : {
-      "url" : "/projects/bri.jpg",
+      "url" : "projects/bri.jpg",
       "alt" : "bri"
     },
     "description" : "The online shop and corporate site for Flypeak (フライピーク), a Japanese e‑commerce brand specializing in badminton shuttlecock (“シャトルコック”) products. It provides product listings, company profile, shopping links, legal information, and contact details for purchasing badminton gear.",
@@ -231,7 +231,7 @@
     "tech": 1,
     "provider": 1,
     "image" : {
-      "url" : "/projects/kitamura.jpg",
+      "url" : "projects/kitamura.jpg",
       "alt" : "kitamura"
     },
     "description" : "The corporate homepage for Kitamura Economic Security Inc., a Tokyo‑based strategic advisory firm focused on economic security, cybersecurity, compliance, research & analysis, military & defense, and corporate advisory services. It presents firm philosophy, expert leadership, practice areas, news, and career information. The company emphasizes geopolitical risk analysis and tailored consulting for complex global challenges, leveraging international partnerships.",
@@ -245,7 +245,7 @@
     "tech": 1,
     "provider": 1,
     "image" : {
-      "url" : "/projects/azuma.jpg",
+      "url" : "projects/azuma.jpg",
       "alt" : "azuma"
     },
     "description" : "An online kimono rental store branded as きものエブリデイ, offering traditional Japanese garment rental (振袖, 卒業袴, 留袖, 訪問着, 男袴) for occasions like 成人式, 卒業式, 結婚式 and celebrations. It features product categories, rental plans, usage guides, shopping cart, login and customer support functions, enabling users to select and pay for kimono rentals online.",
@@ -259,7 +259,7 @@
     "tech": 1,
     "provider": 1,
     "image" : {
-      "url" : "/projects/azuma.jpg",
+      "url" : "projects/azuma.jpg",
       "alt" : "azuma"
     },
     "description" : "The corporate homepage of 信越定期自動車株式会社 (Shinetsu Teiki Jidousha Co., Ltd.), a Japanese logistics and freight transport provider headquartered in Nagano, Japan. It communicates the company’s history and core service areas — scheduled and general freight transport, cargo handling, and warehousing — along with operational locations, service details, corporate information, and contact channels supporting B2B logistics and transportation solutions.",
@@ -273,7 +273,7 @@
     "tech": 1,
     "provider": 1,
     "image" : {
-      "url" : "/projects/kamatori.jpg",
+      "url" : "projects/kamatori.jpg",
       "alt" : "kamatori"
     },
     "description" : "The project landing page for “グランファミーロ もねの里”, a residential subdivision development by かまとり住宅 (Kamatori Jyutaku Co., Ltd.) in Chiba Prefecture, Japan. It details community concept, housing plans, location, model home features, open house events, amenities and inquiry/reservation options for prospective homebuyers.",
@@ -287,7 +287,7 @@
     "tech": 1,
     "provider": 1,
     "image" : {
-      "url" : "/projects/saitama.jpg",
+      "url" : "projects/saitama.jpg",
       "alt" : "saitama"
     },
     "description" : "The official digital presence of 日創研埼玉経営研究会 (Nissoken Saitama Keiei Kenkyūkai), a member‑based business management research and networking association in Saitama, Japan. It outlines the organization’s purpose, philosophy and activities for regional business leaders, including event schedules (例会, 総会), member support projects, reports and membership recruitment, with resources and contact information for prospective and current members.",
@@ -301,7 +301,7 @@
     "tech": 1,
     "provider": 1,
     "image" : {
-      "url" : "/projects/nishifuna.jpg",
+      "url" : "projects/nishifuna.jpg",
       "alt" : "nishifuna"
     },
     "description" : "The online presence of 西船南口整体院・西船橋カイロプラクティック (Nishifuna Minamiguchi Seitai‑in & Nishifuna Chiropractic), a health clinic in Funabashi, Chiba Prefecture, Japan focused on chiropractic and manual therapy services targeting chronic shoulder pain, back pain, posture correction (e.g., pelvic or O‑leg adjustment), and related musculoskeletal issues. The site highlights clinic philosophy, treatment offerings, access and contact information for potential patients.",
@@ -315,7 +315,7 @@
     "tech": 1,
     "provider": 1,
     "image" : {
-      "url" : "/projects/dsk.jpg",
+      "url" : "projects/dsk.jpg",
       "alt" : "dsk"
     },
     "description" : "The corporate homepage of DSK Corporation, a Japanese business specializing in flooring materials and interior building products. It positions the company as a hybrid trading‑and‑manufacturing partner that supplies PVC/olefin flooring, decorative sheets and related solutions, integrating group affiliate capabilities to provide planning, design, production, and global distribution services for residential and commercial interior applications. The site includes corporate profile, product categories, philosophy, sustainability, and contact information.",
@@ -329,7 +329,7 @@
     "tech": 1,
     "provider": 1,
     "image" : {
-      "url" : "/projects/chizaki.jpg",
+      "url" : "projects/chizaki.jpg",
       "alt" : "chizaki"
     },
     "description" : "The official recruitment site for 地崎道路株式会社. It functions as a hiring portal showcasing the company’s corporate philosophy, business fields (road/airport infrastructure and related projects), team culture, employee stories, benefits, training environment and career paths, as well as new graduate and experienced recruitment information with entry links for applicants.",
@@ -343,7 +343,7 @@
     "tech": 1,
     "provider": 1,
     "image" : {
-      "url" : "/projects/eel.jpg",
+      "url" : "projects/eel.jpg",
       "alt" : "eel"
     },
     "description" : "The corporate homepage of 永峰大吾建築設計事務所 (Nagamine Daigo Architectural Design Office), a Japanese licensed architecture firm. It outlines the practice’s architectural design services including residential and commercial building planning, design approach, office profile (Tokyo and Fukushima offices), team credentials and contact information for client engagement.",
@@ -357,7 +357,7 @@
     "tech": 1,
     "provider": 1,
     "image" : {
-      "url" : "/projects/epa.jpg",
+      "url" : "projects/epa.jpg",
       "alt" : "epa"
     },
     "description" : "A corporate landing page for a business support service branded as “ EPA（Exective Partner Assistant）” focused on executive‑level assistant development and placement. It promotes training and deployment of strategic assistant personnel who go beyond traditional secretarial tasks to support executive decision‑making, information organization, internal/external communication and administrative alignment so that leaders can focus on core business priorities. It includes a summary of EPA roles, outcomes, service offerings, and a contact form.",
@@ -371,7 +371,7 @@
     "tech": 1,
     "provider": 1,
     "image" : {
-      "url" : "/projects/epa.jpg",
+      "url" : "projects/epa.jpg",
       "alt" : "epa"
     },
     "description" : "A corporate landing page for a business support service branded as “ EPA（Exective Partner Assistant）” focused on executive‑level assistant development and placement. It promotes training and deployment of strategic assistant personnel who go beyond traditional secretarial tasks to support executive decision‑making, information organization, internal/external communication and administrative alignment so that leaders can focus on core business priorities. It includes a summary of EPA roles, outcomes, service offerings, and a contact form.",
@@ -385,7 +385,7 @@
     "tech": 1,
     "provider": 1,
     "image" : {
-      "url" : "/projects/munagi.jpg",
+      "url" : "projects/munagi.jpg",
       "alt" : "munagi"
     },
     "description" : "The online retail store for a Nagoya eel (うなぎ) specialty provider linked to a Nagoya restaurant brand known for grilled eel and hitsumabushi. It functions as an e‑commerce platform selling eel products (蒲焼き, hitusumabushi sets, and related items) with shopping cart, order/checkout info, delivery options, payment methods, and customer support, enabling users to purchase eel cuisine products for home consumption.",
@@ -399,7 +399,7 @@
     "tech": 1,
     "provider": 1,
     "image" : {
-      "url" : "/projects/munagi.jpg",
+      "url" : "projects/munagi.jpg",
       "alt" : "munagi"
     },
     "description" : "The company as a professional provider of electrical and air-conditioning equipment solutions. It details comprehensive services including installation, maintenance, cleaning, and facility management. Beyond air-conditioning, the company offers integrated solutions for all types of building systems, serving large-scale commercial and industrial facilities.",
@@ -413,7 +413,7 @@
     "tech": 1,
     "provider": 1,
     "image" : {
-      "url" : "/projects/taniya.jpg",
+      "url" : "projects/taniya.jpg",
       "alt" : "taniya"
     },
     "description" : "The official online shop for 横浜たにや ぎょらん工房 (Yokohama Taniya Gyoran Kobo), a Japanese e‑commerce store selling premium seafood products and regional delicacies. The platform offers items such as seasoned komochi kombu (herring roe on kelp), assorted fish roe, salmon and salmon‑roe shio koji pickles, and other gourmet seafood specialties with detailed product listings, prices, and online ordering capabilities. It also provides shopping guides, payment and shipping information, and customer support for delivery and returns.",
@@ -427,7 +427,7 @@
     "tech": 1,
     "provider": 1,
     "image" : {
-      "url" : "/projects/nomad.jpg",
+      "url" : "projects/nomad.jpg",
       "alt" : "nomad"
     },
     "description" : "The online platform for Nomad（ノマド）, a Japanese furniture and home appliances rental service. It offers short‑term to long‑term rental of items such as refrigerators, washing machines, beds, TVs, tables and chairs with flexible plans tailored for new residents, students, and workers. The service includes delivery, installation, maintenance support and free replacement for malfunctions, covering many regions in Japan.",
@@ -441,7 +441,7 @@
     "tech": 1,
     "provider": 1,
     "image" : {
-      "url" : "/projects/fs.jpg",
+      "url" : "projects/fs.jpg",
       "alt" : "fs"
     },
     "description" : "A Japanese franchise opportunity portal specializing in store‑type franchise recruitment and independent business startup support. It lists franchise concepts across retail, food, and services, lets users search by industry, investment amount, and region, and offers franchise ranking, materials request, owner stories, and consulting support for entrepreneurs seeking franchise business opportunities.",
@@ -455,7 +455,7 @@
     "tech": 1,
     "provider": 1,
     "image" : {
-      "url" : "/projects/cycoo.jpg",
+      "url" : "projects/cycoo.jpg",
       "alt" : "cycoo"
     },
     "description" : "the official e‑commerce shop for CYCOO Japan, an online retail platform operated by 株式会社CYCOO JAPAN that specializes in electric‑assist bicycles and related cycling products. The site features product listings for electric and conventional bicycles, accessories, batteries and chargers, shopping cart/checkout, order support and store pickup information. It also links to partner pickup retailers across Japan and provides news updates and customer service details.",
@@ -469,7 +469,7 @@
     "tech": 1,
     "provider": 1,
     "image" : {
-      "url" : "/projects/cycoo.jpg",
+      "url" : "projects/cycoo.jpg",
       "alt" : "cycoo"
     },
     "description" : "The corporate homepage of 株式会社N‑tech, a construction and demolition services company based in Tokyo (Edogawa Ward), Japan. It positions the firm as a **general contractor specializing in building 解体工事 (demolition work), アスベスト撤去工事 (asbestos removal), リフォーム・改修工事 (renovation and repair), テナント工事 (tenant interior work) and 仮設工事 (temporary facility work). The site highlights safety‑focused施工 (work execution), compliance, service details, company profile, representative message and contact information.",
@@ -483,7 +483,7 @@
     "tech": 1,
     "provider": 1,
     "image" : {
-      "url" : "/projects/sanko.jpg",
+      "url" : "projects/sanko.jpg",
       "alt" : "sanko"
     },
     "description" : "the corporate homepage of Sanko Manufacturing Co., Ltd., a Japanese medical device developer and manufacturer. It highlights the company’s mission to supply reliable medical equipment such as portable suction units, nebulizers, anesthesia apparatus and related clinical devices, with an emphasis on timely delivery and support for medical professionals and patients. The site includes product information, company profile, news and contact details.",
@@ -497,7 +497,7 @@
     "tech": 1,
     "provider": 1,
     "image" : {
-      "url" : "/projects/nextlevel.jpg",
+      "url" : "projects/nextlevel.jpg",
       "alt" : "nextlevel"
     },
     "description" : "Part of the ネクストレベルホールディングス (NextLevel Holdings) online ecosystem and functions as a job search interface for “ネクストレベル” gig work and スキマバイト listings in Japan. It lets users search and filter short‑term and flexible part‑time jobs (軽作業, 倉庫/物流, イベント, 事務など) by region, date and category, with registration and job application options for gig workers seeking work that fits their schedules. This service is associated with NextLevel’s broader HR‑matching platform that connects companies with flexible workforce opportunities.",
@@ -511,7 +511,7 @@
     "tech": 1,
     "provider": 1,
     "image" : {
-      "url" : "/projects/nextlevel.jpg",
+      "url" : "projects/nextlevel.jpg",
       "alt" : "nextlevel"
     },
     "description" : "A Japanese cemetery offering pet-friendly burial plots. Established in 2011, it has sold approximately 2,000 plots and is now opening a new area called “Garden Area / Hills Area”. The site emphasizes sunny, green, elevated plots, encourages site visits, and provides information on plot availability and cemetery features.",
