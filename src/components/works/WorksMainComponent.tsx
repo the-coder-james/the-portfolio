@@ -83,7 +83,7 @@ const WorksMainComponent = ({data}: {data: ProjectData[]}) => {
         </div>
         
         <div className="flex w-full items-center gap-3">
-          <Input onChange={(e) => setQuery(e.target.value)} className="text-2xl h-12 !bg-black w-full max-md:text-base" type="text" id="filter" placeholder="e.g #CSS #JS examplename" />
+          <Input onChange={(e) => setQuery(e.target.value)} className="text-2xl h-12 !bg-black w-full max-md:text-base" type="text" id="filter" placeholder="Search by title" />
         </div>
       </div>
 

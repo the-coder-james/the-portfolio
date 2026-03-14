@@ -19,7 +19,7 @@ const WorksCardComponent = ({ data }: { data: ProjectData }) => {
               loader={<span>Loading...</span>}
               unloader={<span>Failed to load</span>}
               alt={data.image.alt}
-              className="rounded-lg object-cover dark:brightness-[0.2] dark:grayscale h-full"
+              className="rounded-lg object-cover h-full"
             />
         </AspectRatio>
 
