@@ -1,0 +1,23 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python3 -c ' *)",
+      "mcp__figma__get_design_context",
+      "mcp__figma__get_metadata",
+      "Bash(python3 -c ':*)",
+      "Bash(yarn lint *)",
+      "mcp__figma__get_variable_defs",
+      "Bash(jq -r '.[0].text' /Users/user/.claude/projects/-Users-user-Develop-features-investigations-mcp-test/5efd04f2-729f-4c1f-9eed-2549dd7aceac/tool-results/mcp-figma-get_metadata-1776824021487.txt)",
+      "Read(//tmp/**)",
+      "Read(//private/tmp/**)",
+      "Bash",
+      "mcp__figma-desktop__get_metadata",
+      "mcp__figma-desktop__get_variable_defs",
+      "mcp__figma-desktop__get_design_context"
+    ]
+  },
+  "enableAllProjectMcpServers": true,
+  "enabledMcpjsonServers": [
+    "figma"
+  ]
+}
