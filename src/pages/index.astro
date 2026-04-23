@@ -2,31 +2,52 @@
 import "@/styles/global.css"
 import Layout from "@/layout/layout.astro"
 
-const data = Astro.locals.webdata;
+import dataJson from "@/assets/data.json"
+import contactJson from "@/assets/contact.json"
+import projectlistJson from "@/assets/projectlist.json"
+import taglistJson from "@/assets/taglist.json"
 
-import SectionComponent from "@/components/common/astro/SectionComponent.astro"
+import { NavbarComponent } from "@/components/navbar/NavbarComponent"
+import { HeroComponent } from "@/components/hero/HeroComponent"
+import { AboutSectionComponent } from "@/components/about/AboutSectionComponent"
+import { SkillsComponent } from "@/components/skills/SkillsComponent"
+import { ProjectsComponent } from "@/components/projects/ProjectsComponent"
+import { ExperienceComponent } from "@/components/experience/ExperienceComponent"
+import { ContactSectionComponent } from "@/components/contact/ContactSectionComponent"
+import { FooterComponent } from "@/components/footer/FooterComponent"
 
-// Sections
-import MainvisualComponent from "@/components/mainvisual/MainvisualComponent.astro";
-import AboutComponent from "@/components/about/AboutComponent.astro";
-import WorksComponent from "@/components/works/WorksComponent.astro";
-import ContactComponent from "@/components/contact/ContactComponent.astro";
+const baseUrl = import.meta.env.BASE_URL
+const imageUrl = `${baseUrl}testphoto.png`
 ---
 
 <Layout>
-  <SectionComponent id="home" className="relative flex items-center">
-    <MainvisualComponent />
-  </SectionComponent>
-
-  <SectionComponent id="about" className="flex items-center">
-    <AboutComponent />
-  </SectionComponent>
-
-  <SectionComponent id="works">
-    <WorksComponent />
-  </SectionComponent>
-
-  <SectionComponent id="contact">
-    <ContactComponent/>
-  </SectionComponent>
+  <NavbarComponent client:load />
+  <HeroComponent
+    client:load
+    name={dataJson.user.nameDisplay}
+    role={dataJson.user.roleDisplay}
+    contacts={contactJson}
+    baseUrl={baseUrl}
+  />
+  <AboutSectionComponent
+    client:load
+    name={dataJson.user.nameDisplay}
+    imageUrl={imageUrl}
+  />
+  <SkillsComponent
+    client:load
+    techstack={dataJson.user.techstack}
+  />
+  <ProjectsComponent
+    client:load
+    projects={projectlistJson}
+    taglist={taglistJson}
+    baseUrl={baseUrl}
+  />
+  <ExperienceComponent client:load />
+  <ContactSectionComponent
+    client:load
+    contacts={contactJson}
+  />
+  <FooterComponent client:load />
 </Layout>
