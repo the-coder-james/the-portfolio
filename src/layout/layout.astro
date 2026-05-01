@@ -1,36 +1,14 @@
 ---
-// TSX
-import { ThemeWrapper } from '@/components/ThemeWrapper';
-import { BackgroundPattern } from '@/components/common/tsx/BackgroundPattern';
-
-// Astro
 import BaseHead from '@/components/common/astro/BaseHead.astro';
-import HeaderComponent from '@/components/common/astro/HeaderComponent.astro';
-import FooterComponent from '@/components/common/astro/FooterComponent.astro'
-
-
-// Vars
 const { title } = Astro.props;
 ---
-<html lang="en" class="dark">
+<html lang="en">
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <BaseHead title={title}/>
   </head>
-  <body class="bg-black text-white max-h-full font-mono">
-    <ThemeWrapper client:load>
-      <div class="fixed inset-0 -z-10">
-        <BackgroundPattern client:only="react" />
-      </div>
-
-      <header><HeaderComponent /></header>
-      
-      <main class="snap-y snap-mandatory overflow-y-scroll h-screen">
-        <slot /><!-- your content is injected here -->
-      </main>
-      
-      <footer><FooterComponent /></footer>
-    </ThemeWrapper>
+  <body style="background-color: #030712; min-height: 100vh; overflow-x: hidden;">
+    <slot />
   </body>
 </html>

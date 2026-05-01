@@ -6,21 +6,9 @@
     "hoverColor": "#4b5563"
   },
   {
-    "url": "https://ph.linkedin.com/in/REDACTED",
-    "name": "LinkedIn",
-    "icon": "Linkedin",
-    "hoverColor": "#2563eb"
-  },
-  {
     "url": "mailto:ko75fw2c9@mozmail.com",
     "name": "Mail",
     "icon": "Mail",
     "hoverColor": "#dc2626"
-  },
-  {
-    "url": "https://ph.linkedin.com/in/REDACTED",
-    "name": "Website",
-    "icon": "Globe",
-    "hoverColor": "#16a34a"
   }
 ]

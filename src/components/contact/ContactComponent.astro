@@ -1,23 +1,87 @@
 ---
-import contacts from "../../assets/contact.json"
-import ContactCard from "./ContactCard";
-
-const total = contacts.length;
+import { ContactCard } from "@/components/contact/ContactCard"
+import { ContactForm } from "@/components/contact/ContactForm"
+import contactJson from "@/assets/contact.json"
 ---
 
-<section id="contact" class="py-20 container mx-auto">
-  <div class="max-w-3xl mx-auto text-center mb-10">
-    <h2 class="text-3xl font-bold">Contact Me</h2>
-    <p class="text-muted-foreground mt-2">
-      If you want to collaborate, discuss a project, or just connect.
-    </p>
-  </div>
+<section id="contact" class="relative py-28" style="background: #030712">
+  <div class="absolute top-0 left-0 right-0 h-px" style="background: linear-gradient(90deg, transparent, rgba(59,130,246,0.3), transparent)"></div>
+  <div class="absolute inset-0 pointer-events-none" style="background: radial-gradient(ellipse 50% 50% at 50% 100%, rgba(59,130,246,0.06) 0%, transparent 70%)"></div>
 
-  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 max-w-5xl mx-auto">
-    {contacts.map((contact, index) => (
-    <div class={total === 4 && index === 3 ? "lg:col-start-2" : ""}>
-      <ContactCard {...contact} client:visible />
+  <div class="max-w-7xl mx-auto px-6">
+    <!-- Static: section heading -->
+    <div class="mb-16 text-center">
+      <p class="font-mono mb-2" style="font-size: 0.75rem; color: #3b82f6">05. contact.send()</p>
+      <h2 style="font-size: clamp(1.8rem, 4vw, 2.8rem); font-weight: 700; color: #f1f5f9; font-family: 'Space Grotesk', sans-serif; line-height: 1.2">
+        Let's Build Something <span class="gradient-text">Together</span>
+      </h2>
+      <p style="font-size: 1rem; color: #475569; margin-top: 12px; font-family: 'Space Grotesk', sans-serif">
+        Whether you have a project in mind, want to collaborate, or just want to say hi
+      </p>
     </div>
-  ))}
+
+    <div class="grid lg:grid-cols-5 gap-12 items-start">
+      <!-- Left column -->
+      <div class="lg:col-span-2 flex flex-col gap-6">
+        <!-- Static: terminal info card -->
+        <div class="rounded-2xl overflow-hidden" style="background: #0d1117; border: 1px solid rgba(59,130,246,0.15)">
+          <div class="flex items-center gap-2 px-4 py-3" style="background: #161b22; border-bottom: 1px solid rgba(255,255,255,0.05)">
+            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="4 17 10 11 4 5"></polyline>
+              <line x1="12" y1="19" x2="20" y2="19"></line>
+            </svg>
+            <span class="font-mono" style="font-size: 0.68rem; color: #4b5563">contact.sh</span>
+          </div>
+          <div class="p-5 font-mono space-y-3" style="font-size: 0.78rem">
+            <div class="flex items-start gap-2">
+              <span style="color: #22c55e">❯</span>
+              <div>
+                <span style="color: #60a5fa">echo</span>
+                <span style="color: #94a3b8"> $STATUS</span>
+                <div style="color: #4ade80; margin-top: 2px">→ Open to opportunities</div>
+              </div>
+            </div>
+            <div class="flex items-start gap-2">
+              <span style="color: #22c55e">❯</span>
+              <div class="flex items-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#60a5fa" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                  <circle cx="12" cy="10" r="3"></circle>
+                </svg>
+                <span style="color: #94a3b8">Location:</span>
+                <span style="color: #e2e8f0">Manila, Philippines</span>
+              </div>
+            </div>
+            <div class="flex items-start gap-2">
+              <span style="color: #22c55e">❯</span>
+              <div class="flex items-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#60a5fa" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <polyline points="12 6 12 12 16 14"></polyline>
+                </svg>
+                <span style="color: #94a3b8">Response:</span>
+                <span style="color: #e2e8f0">Within 24 hours</span>
+              </div>
+            </div>
+            <div class="flex items-center gap-2">
+              <span style="color: #22c55e">❯</span>
+              <span class="cursor-blink inline-block w-2 h-3.5 bg-blue-400"></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Dynamic: contact link cards -->
+        <div class="space-y-2">
+          {contactJson.map((contact, i) => (
+            <ContactCard client:load contact={contact} index={i} />
+          ))}
+        </div>
+      </div>
+
+      <!-- Right column: Dynamic form -->
+      <div class="lg:col-span-3">
+        <ContactForm client:load />
+      </div>
+    </div>
   </div>
 </section>

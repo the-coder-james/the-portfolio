@@ -2,31 +2,23 @@
 import "@/styles/global.css"
 import Layout from "@/layout/layout.astro"
 
-const data = Astro.locals.webdata;
-
-import SectionComponent from "@/components/common/astro/SectionComponent.astro"
-
-// Sections
-import MainvisualComponent from "@/components/mainvisual/MainvisualComponent.astro";
-import AboutComponent from "@/components/about/AboutComponent.astro";
-import WorksComponent from "@/components/works/WorksComponent.astro";
-import ContactComponent from "@/components/contact/ContactComponent.astro";
+import { HeaderComponent } from "@/components/common/tsx/HeaderComponent"
+import MainvisualComponent from "@/components/mainvisual/MainvisualComponent.astro"
+import AboutComponent from "@/components/about/AboutComponent.astro"
+import SkillsComponent from "@/components/skills/SkillsComponent.astro"
+import ProjectsComponent from "@/components/projects/ProjectsComponent.astro"
+import ExperienceComponent from "@/components/experience/ExperienceComponent.astro"
+import ContactComponent from "@/components/contact/ContactComponent.astro"
+import FooterComponent from "@/components/footer/FooterComponent.astro"
 ---
 
 <Layout>
-  <SectionComponent id="home" className="relative flex items-center">
-    <MainvisualComponent />
-  </SectionComponent>
-
-  <SectionComponent id="about" className="flex items-center">
-    <AboutComponent />
-  </SectionComponent>
-
-  <SectionComponent id="works">
-    <WorksComponent />
-  </SectionComponent>
-
-  <SectionComponent id="contact">
-    <ContactComponent/>
-  </SectionComponent>
+  <HeaderComponent client:load />
+  <MainvisualComponent />
+  <AboutComponent />
+  <SkillsComponent />
+  <ProjectsComponent />
+  <ExperienceComponent />
+  <ContactComponent />
+  <FooterComponent />
 </Layout>

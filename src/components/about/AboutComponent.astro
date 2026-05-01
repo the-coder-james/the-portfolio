@@ -1,38 +1,54 @@
 ---
-import HeadingComponent from "@/components/common/astro/HeadingComponent.astro"
-import TechstackComponent from "@/components/about/TechstackComponent"
+import { AboutImage } from "@/components/about/AboutImage"
+import { AboutStats } from "@/components/about/AboutStats"
+import { AboutCodeBlock } from "@/components/about/AboutCodeBlock"
+import dataJson from "@/assets/data.json"
 
-const data = Astro.locals.webdata
+const baseUrl = import.meta.env.BASE_URL
+const { user, about } = dataJson
+const name = user.nameDisplay
+const imageUrl = `${baseUrl + user.image.path}`
+const hoverImageUrl = `${baseUrl + user.image.hoverpath}`
+
+const renderBio = (text: string) =>
+  text
+    .replace("{{since}}", String(user.since))
+    .replace("{{professional}}", String(user.professional))
 ---
 
-<div class="flex gap-20 h-full max-lg:flex-col max-lg:mt-0">
-  <div class="w-full text-justify">
-    <HeadingComponent>About</HeadingComponent>
+<section id="about" class="relative py-28 overflow-hidden" style="background: #030712">
+  <div class="absolute top-0 left-0 right-0 h-px" style="background: linear-gradient(90deg, transparent, rgba(59,130,246,0.3), transparent)"></div>
 
-    <p class="text-lg leading-relaxed mt-4 max-lg:text-sm">
-      I’ve been coding since <span class="font-semibold">2015</span>, and began working professionally in 
-      <span class="font-semibold">2019</span>, building everything from small business sites to full-scale 
-      <span class="font-semibold">e-commerce platforms</span> and 
-      <span class="font-semibold">high-performing landing pages</span>.
-    </p>
+  <div class="max-w-7xl mx-auto px-6">
+    <!-- Static: section heading -->
+    <div class="mb-16">
+      <p class="font-mono mb-2" style="font-size: 0.75rem; color: #3b82f6">{about.eyebrow}</p>
+      <h2 style="font-size: clamp(1.8rem, 4vw, 2.8rem); font-weight: 700; color: #f1f5f9; font-family: 'Space Grotesk', sans-serif; line-height: 1.2">
+        {about.headline} <span class="gradient-text">{about.headlineAccent}</span>
+      </h2>
+    </div>
 
-    <p class="text-lg leading-relaxed mt-4 max-lg:text-sm">
-      I enjoy bridging the gap between design and functionality—bringing ideas to life through code that’s 
-      scalable, maintainable, and user-focused. I’m always excited about collaborating with teams, solving 
-      complex problems, and continuously refining my skills.
-    </p>
-    <p class="text-lg leading-relaxed mt-4 max-lg:text-sm">
-      Beyond coding, I’m always exploring new technologies, refining my design eye, and finding ways to grow as a developer.
-      I also believe in maintaining a healthy work-life balance—stepping away from the screen when needed to stay creative,
-      focused, and inspired for the next project.
-    </p>
-  </div>
-  <div class="w-full min-w-[600px] max-lg:min-w-full">
-    <HeadingComponent>Current Stack</HeadingComponent>
-    <div class="flex flex-wrap justify-center gap-5 max-lg:gap-10">
-      { data.user.techstack.map((item:any) => (
-        <TechstackComponent data={item} />
-      )) }
+    <div class="grid lg:grid-cols-2 gap-16 items-start">
+      <!-- Left column -->
+      <div>
+        <!-- Dynamic: profile photo with animated ring and badges -->
+        <AboutImage client:load name={name} imageUrl={imageUrl} hoverImageUrl={hoverImageUrl} />
+
+        <!-- Static: bio paragraphs -->
+        <div class="space-y-5 mb-12">
+          {about.bio.map((p) => (
+            <p style="font-size: 1.05rem; color: #94a3b8; line-height: 1.8; font-family: 'Space Grotesk', sans-serif">
+              {renderBio(p)}
+            </p>
+          ))}
+        </div>
+
+        <!-- Dynamic: stats cards with staggered animation -->
+        <AboutStats client:load stats={about.stats} />
+      </div>
+
+      <!-- Right column: Dynamic code block with per-line animation -->
+      <AboutCodeBlock client:load since={user.since} professional={user.professional} />
     </div>
   </div>
-</div>
+</section>

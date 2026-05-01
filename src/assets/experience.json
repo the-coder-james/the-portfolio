@@ -1,0 +1,56 @@
+[
+  {
+    "year": "2015",
+    "hash": "a3f9c1e",
+    "title": "The Spark",
+    "company": "Self-Taught",
+    "type": "milestone",
+    "description": "Wrote my first line of HTML and immediately got hooked. Started with basic websites, moved to JavaScript and PHP, and never looked back. Every bug became a puzzle worth solving.",
+    "tags": ["HTML", "CSS", "JavaScript", "PHP", "Self-Learning"]
+  },
+  {
+    "year": "2017",
+    "hash": "b72e4d8",
+    "title": "Going Deeper",
+    "company": "Personal Projects",
+    "type": "milestone",
+    "description": "Dove into the LAMP stack and build tools. Learned Apache, MySQL, and started building real projects for friends and local businesses as a freelancer.",
+    "tags": ["PHP", "MySQL", "Apache", "WordPress", "Freelancing"]
+  },
+  {
+    "year": "2019",
+    "hash": "c1892af",
+    "title": "Going Professional",
+    "company": "Upward Next",
+    "type": "job",
+    "description": "Landed my first professional developer position. Started contributing to production codebases, shipping corporate and e-commerce sites for Japanese clients.",
+    "tags": ["LAMP Stack", "WordPress", "Eccube", "Welcart", "Agile"]
+  },
+  {
+    "year": "2021",
+    "hash": "d4560be",
+    "title": "Full-Stack Growth",
+    "company": "Lead Developer",
+    "type": "job",
+    "description": "Took on full-stack responsibilities — architecting databases, building APIs, and leading feature development. Shipped multiple e-commerce platforms and business tools.",
+    "tags": ["PHP", "MySQL", "JavaScript", "E-Commerce", "Lead Dev"]
+  },
+  {
+    "year": "2024",
+    "hash": "e9021dc",
+    "title": "Expanding the Stack",
+    "company": "Upward Next",
+    "type": "job",
+    "description": "Began exploring MERN stack and Generative AI — adding React, Node.js, and LLM tooling to my skill set alongside continued professional LAMP development.",
+    "tags": ["React", "Node.js", "OpenAI", "MongoDB", "Full-Stack"]
+  },
+  {
+    "year": "Now",
+    "hash": "HEAD",
+    "title": "Present & Beyond",
+    "company": "Available for Hire",
+    "type": "present",
+    "description": "Continuing to build, learn, and grow. Excited about new challenges, collaborations, and the next great project. Always exploring what's next in web development.",
+    "tags": ["Open to Opportunities", "Freelance", "Full-Time"]
+  }
+]
