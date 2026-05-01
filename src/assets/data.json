@@ -1,19 +1,30 @@
 {
-  "nav" : [
-    { "text" : "Home", "url" : "#home"},
-    { "text" : "About", "url" : "#about"},
-    { "text" : "Works", "url" : "#works"},
-    { "text" : "Contact", "url" : "#contact"}
+  "nav": [
+    { "label": "About", "href": "#about" },
+    { "label": "Skills", "href": "#skills" },
+    { "label": "Projects", "href": "#projects" },
+    { "label": "Experience", "href": "#experience" },
+    { "label": "Contact", "href": "#contact" }
   ],
 
-  "user" : {
+  "user": {
     "image": {
-      "path" : "/public/testphoto.png",
-      "alt" : "main-photo"
+      "path": "mainimage.png",
+      "hoverpath": "hoverimage.png",
+      "alt": "main-photo"
     },
-    "nameDisplay" : "james",
-    "roleDisplay" : "Full Stack Developer",
-    "techstack" : [
+    "nameDisplay": "james",
+    "roleDisplay": "Full Stack Developer",
+    "roles": [
+      "Full Stack Developer",
+      "LAMP Stack Engineer",
+      "Web Application Builder",
+      "Problem Solver"
+    ],
+    "since": 2015,
+    "professional": 2019,
+    "stackLabels": ["LAMP", "MERN", "AI"],
+    "techstack": [
       {
         "name": "LAMP Stack",
         "icon": "Server",
@@ -48,12 +59,61 @@
           { "icon": "SiHuggingface", "color": "text-yellow-500", "title": "Hugging Face" },
           { "icon": "SiTensorflow", "color": "text-orange-500", "title": "TensorFlow" }
         ],
-        "badge": {
-          "label": "Currently Learning",
-          "icon": "BookOpen",
-          "color": "bg-muted text-muted-foreground"
-        }
+        "badge": { "label": "Currently Learning", "icon": "BookOpen", "color": "bg-muted text-muted-foreground" }
       }
+    ],
+    "extraSkills": {
+      "frontend": ["JavaScript", "TypeScript", "HTML", "CSS", "Tailwind CSS"],
+      "backend": ["REST APIs"],
+      "tools": ["Git", "GitHub", "Docker", "VS Code", "Figma"]
+    }
+  },
+
+  "mainvisual": {
+    "greeting": "// Hello, World! 👋",
+    "headlinePrefix": "Hi! I'm",
+    "rolePrefix": "I'm a",
+    "description": "Building everything from small business sites to full-scale e-commerce platforms — bridging the gap between design and functionality since 2015.",
+    "ctas": [
+      { "label": "View My Work", "href": "#projects", "variant": "primary" },
+      { "label": "Get In Touch", "href": "#contact", "variant": "outline" }
+    ],
+    "socialsLabel": "Let's connect",
+    "floaters": [
+      { "text": "const x = () => {}", "x": "8%", "y": "20%" },
+      { "text": "npm run dev", "x": "82%", "y": "18%" },
+      { "text": "<Component />", "x": "5%", "y": "75%" },
+      { "text": "git commit -m '✨'", "x": "78%", "y": "72%" },
+      { "text": "// TODO: ship it", "x": "70%", "y": "40%" }
+    ]
+  },
+
+  "about": {
+    "eyebrow": "01. about_me.tsx",
+    "headline": "The Human Behind",
+    "headlineAccent": "the Code",
+    "bio": [
+      "I've been coding since {{since}}, and began working professionally in {{professional}}, building everything from small business sites to full-scale e-commerce platforms and high-performing landing pages.",
+      "I enjoy bridging the gap between design and functionality — bringing ideas to life through code that's scalable, maintainable, and user-focused.",
+      "Beyond coding, I'm constantly exploring new technologies — from LAMP and MERN stacks to Generative AI — always finding ways to grow as a developer."
+    ],
+    "stats": [
+      { "label": "Years Coding", "value": "10+", "icon": "💻" },
+      { "label": "Professional Since", "value": "2019", "icon": "🚀" },
+      { "label": "Projects Shipped", "value": "45+", "icon": "📦" },
+      { "label": "Cups of Coffee", "value": "∞", "icon": "☕" }
+    ]
+  },
+
+  "skills": {
+    "eyebrow": "02. skills.config.ts",
+    "headline": "My Tech",
+    "headlineAccent": "Arsenal",
+    "mindset": [
+      { "icon": "🎯", "title": "Clean Code", "desc": "Scalable, maintainable, and readable — always." },
+      { "icon": "🤝", "title": "Collaboration", "desc": "Love working with teams to ship great products." },
+      { "icon": "📐", "title": "Design Sense", "desc": "Bridging the gap between devs and designers." },
+      { "icon": "🔬", "title": "Always Learning", "desc": "Exploring new technologies every single day." }
     ]
   }
 }

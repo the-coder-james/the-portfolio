@@ -1,0 +1,37 @@
+---
+import { ProjectsGrid } from "@/components/projects/ProjectsGrid"
+import projectlistJson from "@/assets/projectlist.json"
+import taglistJson from "@/assets/taglist.json"
+
+const baseUrl = import.meta.env.BASE_URL
+---
+
+<section id="projects" class="relative py-28" style="background: #030712">
+  <div class="absolute top-0 left-0 right-0 h-px" style="background: linear-gradient(90deg, transparent, rgba(59,130,246,0.3), transparent)"></div>
+  <div class="absolute inset-0 pointer-events-none" style="background: radial-gradient(ellipse 70% 40% at 50% 60%, rgba(59,130,246,0.04) 0%, transparent 70%)"></div>
+
+  <div class="max-w-7xl mx-auto px-6">
+    <!-- Static: section heading -->
+    <div class="flex flex-col sm:flex-row sm:items-end justify-between mb-16 gap-6">
+      <div>
+        <p class="font-mono mb-2" style="font-size: 0.75rem; color: #3b82f6">03. featured_work.tsx</p>
+        <h2 style="font-size: clamp(1.8rem, 4vw, 2.8rem); font-weight: 700; color: #f1f5f9; font-family: 'Space Grotesk', sans-serif; line-height: 1.2">
+          Things I've <span class="gradient-text">Built</span>
+        </h2>
+      </div>
+      <span style="font-size: 0.85rem; color: #475569; font-family: 'Space Grotesk', sans-serif">
+        {projectlistJson.length}+ projects shipped
+      </span>
+    </div>
+
+    <!-- Dynamic: grid + "See more" pagination island -->
+    <ProjectsGrid
+      client:load
+      projects={projectlistJson}
+      taglist={taglistJson}
+      baseUrl={baseUrl}
+      initialCount={6}
+      step={6}
+    />
+  </div>
+</section>

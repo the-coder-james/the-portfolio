@@ -2,52 +2,23 @@
 import "@/styles/global.css"
 import Layout from "@/layout/layout.astro"
 
-import dataJson from "@/assets/data.json"
-import contactJson from "@/assets/contact.json"
-import projectlistJson from "@/assets/projectlist.json"
-import taglistJson from "@/assets/taglist.json"
-
-import { NavbarComponent } from "@/components/navbar/NavbarComponent"
-import { HeroComponent } from "@/components/hero/HeroComponent"
-import { AboutSectionComponent } from "@/components/about/AboutSectionComponent"
-import { SkillsComponent } from "@/components/skills/SkillsComponent"
-import { ProjectsComponent } from "@/components/projects/ProjectsComponent"
-import { ExperienceComponent } from "@/components/experience/ExperienceComponent"
-import { ContactSectionComponent } from "@/components/contact/ContactSectionComponent"
-import { FooterComponent } from "@/components/footer/FooterComponent"
-
-const baseUrl = import.meta.env.BASE_URL
-const imageUrl = `${baseUrl}testphoto.png`
+import { HeaderComponent } from "@/components/common/tsx/HeaderComponent"
+import MainvisualComponent from "@/components/mainvisual/MainvisualComponent.astro"
+import AboutComponent from "@/components/about/AboutComponent.astro"
+import SkillsComponent from "@/components/skills/SkillsComponent.astro"
+import ProjectsComponent from "@/components/projects/ProjectsComponent.astro"
+import ExperienceComponent from "@/components/experience/ExperienceComponent.astro"
+import ContactComponent from "@/components/contact/ContactComponent.astro"
+import FooterComponent from "@/components/footer/FooterComponent.astro"
 ---
 
 <Layout>
-  <NavbarComponent client:load />
-  <HeroComponent
-    client:load
-    name={dataJson.user.nameDisplay}
-    role={dataJson.user.roleDisplay}
-    contacts={contactJson}
-    baseUrl={baseUrl}
-  />
-  <AboutSectionComponent
-    client:load
-    name={dataJson.user.nameDisplay}
-    imageUrl={imageUrl}
-  />
-  <SkillsComponent
-    client:load
-    techstack={dataJson.user.techstack}
-  />
-  <ProjectsComponent
-    client:load
-    projects={projectlistJson}
-    taglist={taglistJson}
-    baseUrl={baseUrl}
-  />
-  <ExperienceComponent client:load />
-  <ContactSectionComponent
-    client:load
-    contacts={contactJson}
-  />
-  <FooterComponent client:load />
+  <HeaderComponent client:load />
+  <MainvisualComponent />
+  <AboutComponent />
+  <SkillsComponent />
+  <ProjectsComponent />
+  <ExperienceComponent />
+  <ContactComponent />
+  <FooterComponent />
 </Layout>

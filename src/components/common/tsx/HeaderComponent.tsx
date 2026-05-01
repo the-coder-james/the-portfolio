@@ -2,29 +2,22 @@
 import { useState, useEffect } from "react";
 import { motion } from "motion/react";
 import { Menu, Code2 } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { Sheet, SheetTrigger, SheetContent, SheetClose } from "@/components/ui/sheet";
+import dataJson from "@/assets/data.json";
 
-const navLinks = [
-  { label: "About",      href: "#about" },
-  { label: "Skills",     href: "#skills" },
-  { label: "Projects",   href: "#projects" },
-  { label: "Experience", href: "#experience" },
-  { label: "Contact",    href: "#contact" },
-];
+const navLinks = dataJson.nav;
 
-export function NavbarComponent() {
+export function HeaderComponent() {
   const [scrolled, setScrolled] = useState(false);
   const [activeSection, setActiveSection] = useState("");
 
   useEffect(() => {
     const handleScroll = () => {
       setScrolled(window.scrollY > 40);
-      const sections = navLinks.map((l) => l.href.slice(1));
-      for (let i = sections.length - 1; i >= 0; i--) {
-        const el = document.getElementById(sections[i]);
+      for (let i = navLinks.length - 1; i >= 0; i--) {
+        const el = document.getElementById(navLinks[i].href.slice(1));
         if (el && window.scrollY >= el.offsetTop - 120) {
-          setActiveSection(sections[i]);
+          setActiveSection(navLinks[i].href.slice(1));
           break;
         }
       }
@@ -51,7 +44,6 @@ export function NavbarComponent() {
       }}
     >
       <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-        {/* Logo */}
         <button
           onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
           className="flex items-center gap-2 group"
@@ -64,7 +56,6 @@ export function NavbarComponent() {
           </span>
         </button>
 
-        {/* Desktop nav links */}
         <div className="hidden md:flex items-center gap-1">
           {navLinks.map((link) => {
             const isActive = activeSection === link.href.slice(1);
@@ -92,18 +83,7 @@ export function NavbarComponent() {
           })}
         </div>
 
-        {/* CTA + mobile trigger */}
         <div className="flex items-center gap-3">
-          {/* <Button
-            variant="outline"
-            size="sm"
-            onClick={() => scrollTo("#contact")}
-            className="hidden md:flex text-white border-[rgba(59,130,246,0.4)] bg-[rgba(59,130,246,0.15)] hover:bg-[rgba(59,130,246,0.3)] hover:border-[rgba(59,130,246,0.8)] hover:text-white rounded-lg"
-            style={{ fontFamily: "'Space Grotesk', sans-serif" }}
-          >
-            Hire Me
-          </Button> */}
-
           <Sheet>
             <SheetTrigger className="md:hidden inline-flex w-9 h-9 items-center justify-center rounded-md text-white hover:bg-[rgba(255,255,255,0.06)] transition-colors">
               <Menu size={22} />
