@@ -1,6 +1,6 @@
 "use client";
-import { useState, useEffect } from "react";
-import { motion } from "motion/react";
+import { useState, useEffect, useRef } from "react";
+import { animate } from "animejs";
 import { Menu, Code2 } from "lucide-react";
 import { Sheet, SheetTrigger, SheetContent, SheetClose } from "@/components/ui/sheet";
 import dataJson from "@/assets/data.json";
@@ -8,8 +8,21 @@ import dataJson from "@/assets/data.json";
 const navLinks = dataJson.nav;
 
 export function HeaderComponent() {
+  const navRef = useRef<HTMLElement>(null);
+  const indicatorRef = useRef<HTMLDivElement>(null);
+  const linkRefs = useRef<Record<string, HTMLButtonElement | null>>({});
   const [scrolled, setScrolled] = useState(false);
   const [activeSection, setActiveSection] = useState("");
+
+  useEffect(() => {
+    if (!navRef.current) return;
+    animate(navRef.current, {
+      translateY: [-80, 0],
+      opacity: [0, 1],
+      duration: 600,
+      ease: "out(3)",
+    });
+  }, []);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -26,24 +39,40 @@ export function HeaderComponent() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  useEffect(() => {
+    const indicator = indicatorRef.current;
+    const activeBtn = linkRefs.current[activeSection];
+    if (!indicator || !activeBtn) return;
+    const parent = indicator.parentElement;
+    if (!parent) return;
+    const parentRect = parent.getBoundingClientRect();
+    const btnRect = activeBtn.getBoundingClientRect();
+    animate(indicator, {
+      left: btnRect.left - parentRect.left,
+      width: btnRect.width,
+      opacity: 1,
+      duration: 400,
+      ease: "out(3)",
+    });
+  }, [activeSection]);
+
   const scrollTo = (href: string) => {
     const el = document.querySelector(href);
     if (el) el.scrollIntoView({ behavior: "smooth" });
   };
 
   return (
-    <motion.nav
-      initial={{ y: -80, opacity: 0 }}
-      animate={{ y: 0, opacity: 1 }}
-      transition={{ duration: 0.6, ease: "easeOut" }}
+    <nav
+      ref={navRef}
       className="fixed top-0 left-0 right-0 z-50 transition-all duration-300"
       style={{
         background: scrolled ? "rgba(3,7,18,0.9)" : "transparent",
         backdropFilter: scrolled ? "blur(16px)" : "none",
         borderBottom: scrolled ? "1px solid rgba(59,130,246,0.12)" : "none",
+        opacity: 0,
       }}
     >
-      <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+      <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between relative">
         <button
           onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
           className="flex items-center gap-2 group"
@@ -56,12 +85,19 @@ export function HeaderComponent() {
           </span>
         </button>
 
-        <div className="hidden md:flex items-center gap-1">
+        <div className="hidden md:flex items-center gap-1 relative">
+          <div
+            ref={indicatorRef}
+            className="absolute bottom-0 h-0.5 bg-blue-500 rounded-full pointer-events-none"
+            style={{ left: 0, width: 0, opacity: 0 }}
+          />
           {navLinks.map((link) => {
-            const isActive = activeSection === link.href.slice(1);
+            const id = link.href.slice(1);
+            const isActive = activeSection === id;
             return (
               <button
                 key={link.label}
+                ref={(el) => { linkRefs.current[id] = el; }}
                 onClick={() => scrollTo(link.href)}
                 className="relative px-4 py-2 text-sm transition-colors duration-200"
                 style={{
@@ -72,12 +108,6 @@ export function HeaderComponent() {
                 onMouseLeave={(e) => { if (!isActive) (e.currentTarget as HTMLElement).style.color = "#94a3b8"; }}
               >
                 {link.label}
-                {isActive && (
-                  <motion.div
-                    layoutId="activeNav"
-                    className="absolute bottom-0 left-0 right-0 h-0.5 bg-blue-500 rounded-full"
-                  />
-                )}
               </button>
             );
           })}
@@ -132,6 +162,6 @@ export function HeaderComponent() {
           </Sheet>
         </div>
       </div>
-    </motion.nav>
+    </nav>
   );
 }

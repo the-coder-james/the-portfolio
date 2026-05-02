@@ -1,5 +1,5 @@
-import { motion, useInView } from "motion/react";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { animate, onScroll } from "animejs";
 import { Send } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -14,10 +14,34 @@ const fieldClass =
   "[font-family:'Space_Grotesk',sans-serif] text-[0.88rem]";
 
 export function ContactForm() {
-  const ref = useRef(null);
-  const inView = useInView(ref, { once: true, margin: "-80px" });
+  const ref = useRef<HTMLDivElement>(null);
+  const successRef = useRef<HTMLDivElement>(null);
   const [form, setForm] = useState({ name: "", email: "", message: "" });
   const [submitted, setSubmitted] = useState(false);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    animate(el, {
+      opacity: [0, 1],
+      translateX: [40, 0],
+      duration: 700,
+      delay: 300,
+      ease: "out(3)",
+      autoplay: onScroll({ target: el, enter: "bottom-=80 top" }),
+    });
+  }, []);
+
+  useEffect(() => {
+    if (submitted && successRef.current) {
+      animate(successRef.current, {
+        opacity: [0, 1],
+        scale: [0.85, 1.05, 1],
+        duration: 700,
+        ease: "outElastic(1, 0.6)",
+      });
+    }
+  }, [submitted]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -25,18 +49,12 @@ export function ContactForm() {
   };
 
   return (
-    <motion.div
-      ref={ref}
-      initial={{ opacity: 0, x: 30 }}
-      animate={inView ? { opacity: 1, x: 0 } : {}}
-      transition={{ duration: 0.7, delay: 0.3 }}
-    >
+    <div ref={ref} style={{ opacity: 0 }}>
       {submitted ? (
-        <motion.div
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
+        <div
+          ref={successRef}
           className="rounded-2xl p-12 text-center"
-          style={{ background: "rgba(59,130,246,0.07)", border: "1px solid rgba(59,130,246,0.25)", boxShadow: "0 0 40px rgba(59,130,246,0.1)" }}
+          style={{ background: "rgba(59,130,246,0.07)", border: "1px solid rgba(59,130,246,0.25)", boxShadow: "0 0 40px rgba(59,130,246,0.1)", opacity: 0 }}
         >
           <div className="text-4xl mb-4">🚀</div>
           <h3 style={{ fontSize: "1.4rem", fontWeight: 700, color: "#f1f5f9", fontFamily: "'Space Grotesk'", marginBottom: "8px" }}>
@@ -51,7 +69,7 @@ export function ContactForm() {
           >
             ✓ status: 200 OK — message delivered
           </div>
-        </motion.div>
+        </div>
       ) : (
         <form
           onSubmit={handleSubmit}
@@ -127,6 +145,6 @@ export function ContactForm() {
           </Button>
         </form>
       )}
-    </motion.div>
+    </div>
   );
 }

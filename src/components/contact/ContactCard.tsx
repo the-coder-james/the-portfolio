@@ -1,5 +1,5 @@
-import { motion, useInView } from "motion/react";
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
+import { animate, onScroll } from "animejs";
 
 interface ContactLink {
   url: string;
@@ -29,23 +29,32 @@ const ICON_COLORS: Record<string, string> = {
 };
 
 export function ContactCard({ contact, index }: ContactCardProps) {
-  const ref = useRef(null);
-  const inView = useInView(ref, { once: true, margin: "-80px" });
+  const ref = useRef<HTMLAnchorElement>(null);
   const iconPath = ICON_PATHS[contact.icon] || ICON_PATHS["Globe"];
   const iconColor = ICON_COLORS[contact.icon] || ICON_COLORS["Globe"];
   const displayUrl = contact.url.replace("mailto:", "").replace("https://", "");
 
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    animate(el, {
+      opacity: [0, 1],
+      translateX: [-30, 0],
+      duration: 500,
+      delay: 500 + index * 100,
+      ease: "out(3)",
+      autoplay: onScroll({ target: el, enter: "bottom-=80 top" }),
+    });
+  }, [index]);
+
   return (
-    <motion.a
+    <a
       ref={ref}
       href={contact.url}
       target={contact.icon !== "Mail" ? "_blank" : undefined}
       rel="noopener noreferrer"
-      initial={{ opacity: 0, x: -15 }}
-      animate={inView ? { opacity: 1, x: 0 } : {}}
-      transition={{ delay: 0.5 + index * 0.1 }}
       className="flex items-center gap-3 p-4 rounded-xl transition-all duration-200"
-      style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.06)", textDecoration: "none" }}
+      style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.06)", textDecoration: "none", opacity: 0 }}
       onMouseEnter={(e) => {
         const el = e.currentTarget as HTMLElement;
         el.style.background = "rgba(59,130,246,0.07)";
@@ -77,6 +86,6 @@ export function ContactCard({ contact, index }: ContactCardProps) {
           {displayUrl}
         </div>
       </div>
-    </motion.a>
+    </a>
   );
 }

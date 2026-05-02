@@ -1,7 +1,7 @@
-import { useMemo, useState } from "react";
-import { motion } from "motion/react";
+import { useMemo, useState, type ReactNode } from "react";
 import { Plus, Search, X } from "lucide-react";
 import { ProjectCard } from "@/components/projects/ProjectCard";
+import { TooltipProvider } from "@/components/ui/tooltip";
 
 interface ProjectImage {
   url: string;
@@ -23,6 +23,8 @@ interface Project {
 interface ProjectsGridProps {
   projects: Project[];
   taglist: Record<string, { name: string }>;
+  roles: Record<string, { name: string }>;
+  providers: Record<string, { name: string }>;
   baseUrl: string;
   initialCount?: number;
   step?: number;
@@ -36,12 +38,16 @@ function parseDate(d: string): number {
 export function ProjectsGrid({
   projects,
   taglist,
+  roles,
+  providers,
   baseUrl,
   initialCount = 6,
   step = 6,
 }: ProjectsGridProps) {
   const [query, setQuery] = useState("");
   const [activeTag, setActiveTag] = useState<string | null>(null);
+  const [activeRole, setActiveRole] = useState<string | null>(null);
+  const [activeProvider, setActiveProvider] = useState<string | null>(null);
   const [visible, setVisible] = useState(initialCount);
 
   const sorted = useMemo(
@@ -53,15 +59,19 @@ export function ProjectsGrid({
     const q = query.trim().toLowerCase();
     return sorted.filter((p) => {
       if (activeTag && !p.tags.includes(activeTag)) return false;
+      if (activeRole && String(p.role) !== activeRole) return false;
+      if (activeProvider && String(p.provider) !== activeProvider) return false;
       if (!q) return true;
       return (
         p.title.toLowerCase().includes(q) ||
         p.description.toLowerCase().includes(q)
       );
     });
-  }, [sorted, query, activeTag]);
+  }, [sorted, query, activeTag, activeRole, activeProvider]);
 
   const tagEntries = Object.entries(taglist);
+  const roleEntries = Object.entries(roles);
+  const providerEntries = Object.entries(providers);
   const displayed = filtered.slice(0, visible);
   const hasMore = visible < filtered.length;
   const remaining = filtered.length - visible;
@@ -69,7 +79,7 @@ export function ProjectsGrid({
   const resetVisible = () => setVisible(initialCount);
 
   return (
-    <>
+    <TooltipProvider delayDuration={200}>
       <div className="mb-10 flex flex-col md:flex-row md:items-center gap-4">
         <div className="relative flex-1">
           <Search
@@ -143,6 +153,52 @@ export function ProjectsGrid({
         </div>
       </div>
 
+      <div className="mb-6 flex flex-col gap-3">
+        <FilterRow label="role">
+          <FilterChip
+            label="all"
+            active={activeRole === null}
+            onClick={() => {
+              setActiveRole(null);
+              resetVisible();
+            }}
+          />
+          {roleEntries.map(([id, role]) => (
+            <FilterChip
+              key={id}
+              label={role.name}
+              active={activeRole === id}
+              onClick={() => {
+                setActiveRole(activeRole === id ? null : id);
+                resetVisible();
+              }}
+            />
+          ))}
+        </FilterRow>
+
+        <FilterRow label="via">
+          <FilterChip
+            label="all"
+            active={activeProvider === null}
+            onClick={() => {
+              setActiveProvider(null);
+              resetVisible();
+            }}
+          />
+          {providerEntries.map(([id, provider]) => (
+            <FilterChip
+              key={id}
+              label={provider.name}
+              active={activeProvider === id}
+              onClick={() => {
+                setActiveProvider(activeProvider === id ? null : id);
+                resetVisible();
+              }}
+            />
+          ))}
+        </FilterRow>
+      </div>
+
       <div
         className="font-mono mb-6"
         style={{ fontSize: "0.72rem", color: "#475569" }}
@@ -174,6 +230,8 @@ export function ProjectsGrid({
               project={project}
               index={i}
               taglist={taglist}
+              roles={roles}
+              providers={providers}
               baseUrl={baseUrl}
             />
           ))}
@@ -182,12 +240,10 @@ export function ProjectsGrid({
 
       {hasMore && (
         <div className="flex justify-center mt-12">
-          <motion.button
+          <button
             type="button"
             onClick={() => setVisible((v) => Math.min(v + step, filtered.length))}
-            whileHover={{ scale: 1.03 }}
-            whileTap={{ scale: 0.97 }}
-            className="inline-flex items-center gap-2 px-6 py-3 rounded-xl transition-colors"
+            className="inline-flex items-center gap-2 px-6 py-3 rounded-xl transition-all duration-200 active:scale-95 hover:scale-[1.03]"
             style={{
               background: "rgba(59,130,246,0.08)",
               border: "1px solid rgba(59,130,246,0.25)",
@@ -215,10 +271,34 @@ export function ProjectsGrid({
             >
               +{Math.min(step, remaining)}
             </span>
-          </motion.button>
+          </button>
         </div>
       )}
-    </>
+    </TooltipProvider>
+  );
+}
+
+function FilterRow({
+  label,
+  children,
+}: {
+  label: string;
+  children: ReactNode;
+}) {
+  return (
+    <div className="flex flex-wrap items-center gap-2">
+      <span
+        className="font-mono"
+        style={{
+          fontSize: "0.7rem",
+          color: "#475569",
+          minWidth: "42px",
+        }}
+      >
+        // {label}
+      </span>
+      {children}
+    </div>
   );
 }
 
