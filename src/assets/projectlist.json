@@ -259,7 +259,7 @@
     "tech": 1,
     "provider": 1,
     "image" : {
-      "url" : "projects/azuma.jpg",
+      "url" : "projects/shinetsu.jpg",
       "alt" : "azuma"
     },
     "description" : "The corporate homepage of 信越定期自動車株式会社 (Shinetsu Teiki Jidousha Co., Ltd.), a Japanese logistics and freight transport provider headquartered in Nagano, Japan. It communicates the company’s history and core service areas — scheduled and general freight transport, cargo handling, and warehousing — along with operational locations, service details, corporate information, and contact channels supporting B2B logistics and transportation solutions.",
@@ -364,20 +364,6 @@
     "siteurl" : "http://secretary-voyage.com/"
   },
   {
-    "title" : "Executive Partner Assistant (EPA)",
-    "date" : "2026.2.27",
-    "tags" : ["1"],
-    "role" : 2,
-    "tech": 1,
-    "provider": 1,
-    "image" : {
-      "url" : "projects/epa.jpg",
-      "alt" : "epa"
-    },
-    "description" : "A corporate landing page for a business support service branded as “ EPA（Exective Partner Assistant）” focused on executive‑level assistant development and placement. It promotes training and deployment of strategic assistant personnel who go beyond traditional secretarial tasks to support executive decision‑making, information organization, internal/external communication and administrative alignment so that leaders can focus on core business priorities. It includes a summary of EPA roles, outcomes, service offerings, and a contact form.",
-    "siteurl" : "http://secretary-voyage.com/"
-  },
-  {
     "title" : "Nagoya Unagi",
     "date" : "2021.10.12",
     "tags" : ["2"],
@@ -399,7 +385,7 @@
     "tech": 1,
     "provider": 1,
     "image" : {
-      "url" : "projects/munagi.jpg",
+      "url" : "projects/cervis.jpg",
       "alt" : "munagi"
     },
     "description" : "The company as a professional provider of electrical and air-conditioning equipment solutions. It details comprehensive services including installation, maintenance, cleaning, and facility management. Beyond air-conditioning, the company offers integrated solutions for all types of building systems, serving large-scale commercial and industrial facilities.",
@@ -469,7 +455,7 @@
     "tech": 1,
     "provider": 1,
     "image" : {
-      "url" : "projects/cycoo.jpg",
+      "url" : "projects/ntech.jpg",
       "alt" : "cycoo"
     },
     "description" : "The corporate homepage of 株式会社N‑tech, a construction and demolition services company based in Tokyo (Edogawa Ward), Japan. It positions the firm as a **general contractor specializing in building 解体工事 (demolition work), アスベスト撤去工事 (asbestos removal), リフォーム・改修工事 (renovation and repair), テナント工事 (tenant interior work) and 仮設工事 (temporary facility work). The site highlights safety‑focused施工 (work execution), compliance, service details, company profile, representative message and contact information.",
@@ -516,5 +502,19 @@
     },
     "description" : "A Japanese cemetery offering pet-friendly burial plots. Established in 2011, it has sold approximately 2,000 plots and is now opening a new area called “Garden Area / Hills Area”. The site emphasizes sunny, green, elevated plots, encourages site visits, and provides information on plot availability and cemetery features.",
     "siteurl" : "https://moeginosatotsurumakireien.com/"
+  },
+  {
+    "title" : "the-portfolio",
+    "date" : "2025.9.19",
+    "tags" : ["4"],
+    "role" : 2,
+    "tech": 2,
+    "provider": 2,
+    "image" : {
+      "url" : "projects/portfolio.jpg",
+      "alt" : "portfolio"
+    },
+    "description" : "This portfolio that I have created and vibe-coded. Not purely though.",
+    "siteurl" : "https://alejandrejames.github.io/the-portfolio/"
   }
 ]

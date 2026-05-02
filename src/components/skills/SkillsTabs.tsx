@@ -1,5 +1,5 @@
-import { motion, useInView } from "motion/react";
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
+import { animate, stagger, onScroll } from "animejs";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 
@@ -54,40 +54,62 @@ function buildCategories(techstack: TechStack[], extra: ExtraSkills) {
   ];
 }
 
-function SkillBadge({ skill, index }: { skill: string; index: number }) {
+function SkillBadge({ skill }: { skill: string }) {
   return (
-    <motion.div
-      initial={{ opacity: 0, scale: 0.82 }}
-      animate={{ opacity: 1, scale: 1 }}
-      transition={{ duration: 0.22, delay: index * 0.065 }}
-      whileHover={{ scale: 1.07 }}
-    >
+    <div className="skill-tab-badge" style={{ opacity: 0, display: "inline-block" }}>
       <Badge
         variant="outline"
-        className="cursor-default select-none rounded-xl font-mono transition-colors"
+        className="cursor-default select-none rounded-xl font-mono transition-transform hover:scale-105"
         style={{ padding: "9px 16px", fontSize: "0.82rem", color: "#93c5fd", background: "rgba(59,130,246,0.07)", border: "1px solid rgba(59,130,246,0.16)" }}
         onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = "rgba(59,130,246,0.16)"; (e.currentTarget as HTMLElement).style.borderColor = "rgba(59,130,246,0.42)"; }}
         onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = "rgba(59,130,246,0.07)"; (e.currentTarget as HTMLElement).style.borderColor = "rgba(59,130,246,0.16)"; }}
       >
         {skill}
       </Badge>
-    </motion.div>
+    </div>
   );
 }
 
+function animateBadgesIn(container: HTMLElement | null) {
+  if (!container) return;
+  const badges = container.querySelectorAll(".skill-tab-badge");
+  animate(badges, {
+    opacity: [0, 1],
+    scale: [0.6, 1],
+    translateY: [10, 0],
+    duration: 400,
+    delay: stagger(45, { from: "first" }),
+    ease: "outElastic(1, 0.7)",
+  });
+}
+
 export function SkillsTabs({ techstack, extraSkills }: SkillsTabsProps) {
-  const ref = useRef(null);
-  const inView = useInView(ref, { once: true, margin: "-80px" });
+  const ref = useRef<HTMLDivElement>(null);
+  const tabRefs = useRef<Record<string, HTMLDivElement | null>>({});
   const categories = buildCategories(techstack, extraSkills);
 
+  useEffect(() => {
+    const root = ref.current;
+    if (!root) return;
+    animate(root, {
+      opacity: [0, 1],
+      translateY: [20, 0],
+      duration: 600,
+      delay: 200,
+      ease: "out(3)",
+      autoplay: onScroll({ target: root, enter: "bottom-=80 top" }),
+    });
+    // Animate the default-active tab badges on mount
+    setTimeout(() => animateBadgesIn(tabRefs.current["frontend"]), 400);
+  }, []);
+
   return (
-    <motion.div
-      ref={ref}
-      initial={{ opacity: 0, y: 15 }}
-      animate={inView ? { opacity: 1, y: 0 } : {}}
-      transition={{ delay: 0.2 }}
-    >
-      <Tabs defaultValue="frontend" className="gap-0">
+    <div ref={ref} style={{ opacity: 0 }}>
+      <Tabs
+        defaultValue="frontend"
+        className="gap-0"
+        onValueChange={(val) => animateBadgesIn(tabRefs.current[val])}
+      >
         <TabsList
           className="h-auto p-1 mb-8 flex-wrap justify-start gap-1"
           style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.07)", borderRadius: "12px" }}
@@ -106,10 +128,8 @@ export function SkillsTabs({ techstack, extraSkills }: SkillsTabsProps) {
         </TabsList>
         {categories.map((cat) => (
           <TabsContent key={cat.id} value={cat.id}>
-            <motion.div
-              initial={{ opacity: 0, x: -10 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.3 }}
+            <div
+              ref={(el) => { tabRefs.current[cat.id] = el; }}
               className="rounded-2xl p-6"
               style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.06)" }}
             >
@@ -120,12 +140,12 @@ export function SkillsTabs({ techstack, extraSkills }: SkillsTabsProps) {
                 </span>
               </div>
               <div className="flex flex-wrap gap-3">
-                {cat.skills.map((skill, i) => <SkillBadge key={skill} skill={skill} index={i} />)}
+                {cat.skills.map((skill) => <SkillBadge key={skill} skill={skill} />)}
               </div>
-            </motion.div>
+            </div>
           </TabsContent>
         ))}
       </Tabs>
-    </motion.div>
+    </div>
   );
 }

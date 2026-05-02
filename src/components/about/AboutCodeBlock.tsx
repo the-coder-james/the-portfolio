@@ -1,5 +1,5 @@
-import { motion, useInView } from "motion/react";
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
+import { animate, stagger, onScroll } from "animejs";
 
 interface AboutCodeBlockProps {
   since: number;
@@ -61,17 +61,41 @@ function CodeLine({ line }: { line: CodeLineType }) {
 }
 
 export function AboutCodeBlock({ since, professional }: AboutCodeBlockProps) {
-  const ref = useRef(null);
-  const inView = useInView(ref, { once: true, margin: "-100px" });
+  const ref = useRef<HTMLDivElement>(null);
   const CODE_BIO = buildCodeBio(since, professional);
 
+  useEffect(() => {
+    const root = ref.current;
+    if (!root) return;
+
+    animate(root, {
+      opacity: [0, 1],
+      translateX: [40, 0],
+      duration: 700,
+      delay: 400,
+      ease: "out(3)",
+      autoplay: onScroll({ target: root, enter: "bottom-=100 top" }),
+    });
+
+    animate(root.querySelectorAll(".code-line"), {
+      opacity: [0, 1],
+      translateX: [-8, 0],
+      duration: 350,
+      delay: stagger(40, { start: 600 }),
+      ease: "out(2)",
+      autoplay: onScroll({ target: root, enter: "bottom-=100 top" }),
+    });
+
+    animate(root.querySelectorAll(".code-lineno"), {
+      opacity: [0, 1],
+      duration: 250,
+      delay: stagger(40, { start: 600 }),
+      autoplay: onScroll({ target: root, enter: "bottom-=100 top" }),
+    });
+  }, []);
+
   return (
-    <motion.div
-      ref={ref}
-      initial={{ opacity: 0, x: 30 }}
-      animate={inView ? { opacity: 1, x: 0 } : {}}
-      transition={{ duration: 0.7, delay: 0.4 }}
-    >
+    <div ref={ref} style={{ opacity: 0 }}>
       <div
         className="rounded-2xl overflow-hidden"
         style={{ background: "#0d1117", border: "1px solid rgba(59,130,246,0.15)", boxShadow: "0 20px 50px rgba(0,0,0,0.4)" }}
@@ -104,19 +128,14 @@ export function AboutCodeBlock({ since, professional }: AboutCodeBlockProps) {
             {CODE_BIO.map((line, i) =>
               line.type === "blank"
                 ? <div key={i} style={{ height: "0.9rem" }} />
-                : <span key={i} style={{ lineHeight: 1.6 }}>{i + 1}</span>
+                : <span key={i} className="code-lineno" style={{ lineHeight: 1.6, opacity: 0 }}>{i + 1}</span>
             )}
           </div>
           <div className="font-mono flex-1" style={{ fontSize: "0.78rem", lineHeight: 1.6, overflow: "hidden" }}>
             {CODE_BIO.map((line, i) => (
-              <motion.div
-                key={i}
-                initial={{ opacity: 0 }}
-                animate={inView ? { opacity: 1 } : {}}
-                transition={{ delay: 0.6 + i * 0.04 }}
-              >
+              <div key={i} className="code-line" style={{ opacity: 0 }}>
                 <CodeLine line={line} />
-              </motion.div>
+              </div>
             ))}
           </div>
         </div>
@@ -131,6 +150,6 @@ export function AboutCodeBlock({ since, professional }: AboutCodeBlockProps) {
           </span>
         </div>
       </div>
-    </motion.div>
+    </div>
   );
 }

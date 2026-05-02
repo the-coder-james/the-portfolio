@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react";
-import { motion } from "motion/react";
+import { useState, useEffect, useRef } from "react";
+import { animate, stagger } from "animejs";
 
 interface TypingHeadlineProps {
   name: string;
@@ -39,16 +39,49 @@ function useTypingEffect(sequences: string[]) {
 
 export function TypingHeadline({ name, sequences, headlinePrefix, rolePrefix }: TypingHeadlineProps) {
   const typedText = useTypingEffect(sequences);
+  const headlineRef = useRef<HTMLHeadingElement>(null);
+  const roleRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const h = headlineRef.current;
+    if (!h) return;
+    const fullText = `${headlinePrefix} ${name}`;
+    h.innerHTML = fullText
+      .split("")
+      .map((ch) =>
+        ch === " "
+          ? `<span class="ah-char" style="display:inline-block;width:0.25em;">&nbsp;</span>`
+          : `<span class="ah-char" style="display:inline-block;will-change:transform,opacity,filter;">${ch}</span>`
+      )
+      .join("");
+
+    animate(".ah-char", {
+      opacity: [0, 1],
+      translateY: [40, 0],
+      filter: ["blur(8px)", "blur(0px)"],
+      rotateX: [-90, 0],
+      duration: 700,
+      delay: stagger(35, { start: 300 }),
+      ease: "out(3)",
+    });
+  }, [name, headlinePrefix]);
+
+  useEffect(() => {
+    if (!roleRef.current) return;
+    animate(roleRef.current, {
+      opacity: [0, 1],
+      translateY: [12, 0],
+      duration: 600,
+      delay: 900,
+      ease: "out(2)",
+    });
+  }, []);
 
   return (
     <>
-      <motion.div
-        initial={{ opacity: 0, y: 30 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.5, duration: 0.7 }}
-        className="mb-2"
-      >
+      <div className="mb-2">
         <h1
+          ref={headlineRef}
           className="glitch"
           data-text={`${headlinePrefix} ${name}`}
           style={{
@@ -58,18 +91,17 @@ export function TypingHeadline({ name, sequences, headlinePrefix, rolePrefix }: 
             color: "#ffffff",
             letterSpacing: "-0.02em",
             fontFamily: "'Space Grotesk', sans-serif",
+            perspective: "800px",
           }}
         >
           {headlinePrefix} {name}
         </h1>
-      </motion.div>
+      </div>
 
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.8 }}
+      <div
+        ref={roleRef}
         className="flex items-center gap-2 mb-6"
-        style={{ height: "2.5rem" }}
+        style={{ height: "2.5rem", opacity: 0 }}
       >
         <span style={{ fontSize: "clamp(1.1rem, 2.5vw, 1.6rem)", color: "#94a3b8", fontFamily: "'Space Grotesk', sans-serif" }}>
           {rolePrefix}{" "}
@@ -84,7 +116,7 @@ export function TypingHeadline({ name, sequences, headlinePrefix, rolePrefix }: 
           className="cursor-blink inline-block w-0.5 h-7 bg-blue-400"
           style={{ marginLeft: "2px" }}
         />
-      </motion.div>
+      </div>
     </>
   );
 }

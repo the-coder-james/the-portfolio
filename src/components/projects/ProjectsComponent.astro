@@ -2,6 +2,8 @@
 import { ProjectsGrid } from "@/components/projects/ProjectsGrid"
 import projectlistJson from "@/assets/projectlist.json"
 import taglistJson from "@/assets/taglist.json"
+import rolesJson from "@/assets/roles.json"
+import providersJson from "@/assets/projectprovider.json"
 
 const baseUrl = import.meta.env.BASE_URL
 ---
@@ -29,6 +31,8 @@ const baseUrl = import.meta.env.BASE_URL
       client:load
       projects={projectlistJson}
       taglist={taglistJson}
+      roles={rolesJson}
+      providers={providersJson}
       baseUrl={baseUrl}
       initialCount={6}
       step={6}

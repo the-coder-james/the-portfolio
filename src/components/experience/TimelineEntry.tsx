@@ -1,5 +1,5 @@
-import { motion, useInView } from "motion/react";
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
+import { animate, onScroll } from "animejs";
 import { Badge } from "@/components/ui/badge";
 
 interface TimelineItem {
@@ -18,17 +18,53 @@ interface TimelineEntryProps {
 }
 
 export function TimelineEntry({ item, index }: TimelineEntryProps) {
-  const ref = useRef(null);
-  const inView = useInView(ref, { once: true, margin: "-80px" });
+  const ref = useRef<HTMLDivElement>(null);
+  const dotRef = useRef<HTMLDivElement>(null);
+  const pulseRef = useRef<HTMLDivElement>(null);
   const isEven = index % 2 === 0;
 
+  useEffect(() => {
+    const el = ref.current;
+    const dot = dotRef.current;
+    if (!el) return;
+
+    animate(el, {
+      opacity: [0, 1],
+      translateX: [isEven ? -50 : 50, 0],
+      filter: ["blur(6px)", "blur(0px)"],
+      duration: 700,
+      delay: 400 + index * 100,
+      ease: "out(3)",
+      autoplay: onScroll({ target: el, enter: "bottom-=80 top" }),
+    });
+
+    if (dot) {
+      animate(dot, {
+        scale: [0, 1.4, 1],
+        opacity: [0, 1],
+        duration: 700,
+        delay: 600 + index * 100,
+        ease: "outElastic(1, 0.5)",
+        autoplay: onScroll({ target: el, enter: "bottom-=80 top" }),
+      });
+    }
+
+    if (pulseRef.current && item.type === "present") {
+      animate(pulseRef.current, {
+        scale: [1, 2.2, 1],
+        opacity: [0.6, 0, 0.6],
+        duration: 2000,
+        loop: true,
+        ease: "inOut(2)",
+      });
+    }
+  }, [index, isEven, item.type]);
+
   return (
-    <motion.div
+    <div
       ref={ref}
-      initial={{ opacity: 0, x: isEven ? -30 : 30 }}
-      animate={inView ? { opacity: 1, x: 0 } : {}}
-      transition={{ duration: 0.6, delay: 0.5 + index * 0.12 }}
       className={`relative flex items-start gap-6 md:gap-0 ${isEven ? "md:flex-row" : "md:flex-row-reverse"}`}
+      style={{ opacity: 0 }}
     >
       <div className={`md:w-[45%] pl-14 md:pl-0 ${isEven ? "md:pr-10 md:text-right" : "md:pl-10 md:text-left"}`}>
         <div
@@ -85,24 +121,25 @@ export function TimelineEntry({ item, index }: TimelineEntryProps) {
 
       <div className="absolute left-6 md:left-1/2 md:-translate-x-1/2 top-6">
         <div
+          ref={dotRef}
           className="w-3 h-3 rounded-full relative"
           style={{
             background: item.type === "present" ? "#4ade80" : "#3b82f6",
             boxShadow: item.type === "present" ? "0 0 12px rgba(74,222,128,0.6)" : "0 0 12px rgba(59,130,246,0.5)",
+            opacity: 0,
           }}
         >
           {item.type === "present" && (
-            <motion.div
+            <div
+              ref={pulseRef}
               className="absolute inset-0 rounded-full"
               style={{ background: "rgba(74,222,128,0.3)" }}
-              animate={{ scale: [1, 2, 1] }}
-              transition={{ duration: 2, repeat: Infinity }}
             />
           )}
         </div>
       </div>
 
       <div className="hidden md:block md:w-[45%]" />
-    </motion.div>
+    </div>
   );
 }

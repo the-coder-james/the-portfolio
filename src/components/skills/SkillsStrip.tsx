@@ -1,5 +1,5 @@
-import { motion, useInView } from "motion/react";
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
+import { animate, stagger, onScroll } from "animejs";
 import { Badge } from "@/components/ui/badge";
 
 interface TechTool {
@@ -44,30 +44,45 @@ function buildAllSkills(techstack: TechStack[], extra: ExtraSkills) {
 }
 
 export function SkillsStrip({ techstack, extraSkills }: SkillsStripProps) {
-  const ref = useRef(null);
-  const inView = useInView(ref, { once: true, margin: "-80px" });
+  const containerRef = useRef<HTMLDivElement>(null);
   const allSkills = buildAllSkills(techstack, extraSkills);
 
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+
+    animate(container, {
+      opacity: [0, 1],
+      translateY: [20, 0],
+      duration: 700,
+      ease: "out(3)",
+      autoplay: onScroll({ target: container, enter: "bottom-=80 top" }),
+    });
+
+    animate(container.querySelectorAll(".skill-badge"), {
+      opacity: [0, 1],
+      scale: [0.5, 1],
+      translateY: [12, 0],
+      rotate: [-8, 0],
+      duration: 600,
+      delay: stagger(40, { from: "center" }),
+      ease: "outElastic(1, 0.7)",
+      autoplay: onScroll({ target: container, enter: "bottom-=80 top" }),
+    });
+  }, []);
+
   return (
-    <motion.div
-      ref={ref}
-      initial={{ opacity: 0, y: 15 }}
-      animate={inView ? { opacity: 1, y: 0 } : {}}
-      transition={{ delay: 0.8 }}
+    <div
+      ref={containerRef}
       className="overflow-hidden rounded-xl py-5 px-6"
-      style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.05)" }}
+      style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.05)", opacity: 0 }}
     >
       <p className="font-mono mb-4" style={{ fontSize: "0.65rem", color: "#1e3a5f", textAlign: "center" }}>
         // technologies I work with
       </p>
       <div className="flex flex-wrap gap-2 justify-center">
-        {allSkills.map((tech, i) => (
-          <motion.div
-            key={tech}
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={inView ? { opacity: 1, scale: 1 } : {}}
-            transition={{ delay: 0.9 + i * 0.04 }}
-          >
+        {allSkills.map((tech) => (
+          <div key={tech} className="skill-badge" style={{ opacity: 0 }}>
             <Badge
               variant="outline"
               className="font-mono rounded-xl cursor-default"
@@ -75,9 +90,9 @@ export function SkillsStrip({ techstack, extraSkills }: SkillsStripProps) {
             >
               {tech}
             </Badge>
-          </motion.div>
+          </div>
         ))}
       </div>
-    </motion.div>
+    </div>
   );
 }
