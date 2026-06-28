@@ -17,7 +17,8 @@ interface Project {
   provider: number;
   image: ProjectImage;
   description: string;
-  siteurl: string;
+  siteurl: string | false;
+  "siteurl-reason"?: string;
 }
 
 interface ProjectsGridProps {

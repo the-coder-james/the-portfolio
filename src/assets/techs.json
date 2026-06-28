@@ -3,6 +3,12 @@
     "name" : "L.A.M.P. (Linux, Apache, MySQL, PHP)"
   },
   "2": {
-    "name" : "MERN"
+    "name" : "React Core"
+  },
+  "3": {
+    "name" : "Swift"
+  },
+  "4": {
+    "name" : "RNS (React Native Supabase)"
   }
 }

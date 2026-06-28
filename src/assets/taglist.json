@@ -11,4 +11,15 @@
   "4" : {
     "name" : "AstroJs"
   }
+  ,
+  "5" : {
+    "name" : "Swift"
+  }
+  ,
+  "6" : {
+    "name" : "React native"
+  },
+  "7" : {
+    "name" : "React"
+  }
 }
