@@ -1,5 +1,6 @@
 import { useEffect, useRef } from "react";
-import { animate, stagger, onScroll } from "animejs";
+import { stagger, inView, spring } from "motion";
+import { animateEl } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 
 interface TechTool {
@@ -51,24 +52,14 @@ export function SkillsStrip({ techstack, extraSkills }: SkillsStripProps) {
     const container = containerRef.current;
     if (!container) return;
 
-    animate(container, {
-      opacity: [0, 1],
-      translateY: [20, 0],
-      duration: 700,
-      ease: "out(3)",
-      autoplay: onScroll({ target: container, enter: "bottom-=80 top" }),
-    });
-
-    animate(container.querySelectorAll(".skill-badge"), {
-      opacity: [0, 1],
-      scale: [0.5, 1],
-      translateY: [12, 0],
-      rotate: [-8, 0],
-      duration: 600,
-      delay: stagger(40, { from: "center" }),
-      ease: "outElastic(1, 0.7)",
-      autoplay: onScroll({ target: container, enter: "bottom-=80 top" }),
-    });
+    inView(container, () => {
+      animateEl(container as Element, { opacity: [0, 1], y: [20, 0] }, { type: spring(0.5, 0.3) });
+      animateEl(
+        container.querySelectorAll<Element>(".skill-badge"),
+        { opacity: [0, 1], scale: [0.5, 1], y: [12, 0], rotate: [-8, 0] },
+        { delay: stagger(0.035, { from: "center" }), type: spring(0.4, 0.05) }
+      );
+    }, { margin: "-60px" });
   }, []);
 
   return (

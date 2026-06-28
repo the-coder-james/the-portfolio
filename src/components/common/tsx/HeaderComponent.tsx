@@ -1,6 +1,7 @@
 "use client";
 import { useState, useEffect, useRef } from "react";
-import { animate } from "animejs";
+import { spring } from "motion";
+import { animateEl } from "@/lib/utils";
 import { Menu, Code2 } from "lucide-react";
 import { Sheet, SheetTrigger, SheetContent, SheetClose } from "@/components/ui/sheet";
 import dataJson from "@/assets/data.json";
@@ -16,12 +17,11 @@ export function HeaderComponent() {
 
   useEffect(() => {
     if (!navRef.current) return;
-    animate(navRef.current, {
-      translateY: [-80, 0],
-      opacity: [0, 1],
-      duration: 600,
-      ease: "out(3)",
-    });
+    animateEl(
+      navRef.current as Element,
+      { y: [-80, 0], opacity: [0, 1] },
+      { type: spring(0.55, 0.2) }
+    );
   }, []);
 
   useEffect(() => {
@@ -47,13 +47,11 @@ export function HeaderComponent() {
     if (!parent) return;
     const parentRect = parent.getBoundingClientRect();
     const btnRect = activeBtn.getBoundingClientRect();
-    animate(indicator, {
-      left: btnRect.left - parentRect.left,
-      width: btnRect.width,
-      opacity: 1,
-      duration: 400,
-      ease: "out(3)",
-    });
+    animateEl(
+      indicator as Element,
+      { left: btnRect.left - parentRect.left, width: btnRect.width, opacity: 1 },
+      { type: spring(0.3, 0.1) }
+    );
   }, [activeSection]);
 
   const scrollTo = (href: string) => {

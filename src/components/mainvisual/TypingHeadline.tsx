@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from "react";
-import { animate, stagger } from "animejs";
+import { stagger, spring } from "motion";
+import { animateEl } from "@/lib/utils";
 
 interface TypingHeadlineProps {
   name: string;
@@ -55,26 +56,20 @@ export function TypingHeadline({ name, sequences, headlinePrefix, rolePrefix }: 
       )
       .join("");
 
-    animate(".ah-char", {
-      opacity: [0, 1],
-      translateY: [40, 0],
-      filter: ["blur(8px)", "blur(0px)"],
-      rotateX: [-90, 0],
-      duration: 700,
-      delay: stagger(35, { start: 300 }),
-      ease: "out(3)",
-    });
+    animateEl(
+      ".ah-char",
+      { opacity: [0, 1], y: [40, 0], filter: ["blur(8px)", "blur(0px)"], rotateX: [-90, 0] },
+      { delay: stagger(0.035, { startDelay: 0.3 }), type: spring(0.6, 0.2) }
+    );
   }, [name, headlinePrefix]);
 
   useEffect(() => {
     if (!roleRef.current) return;
-    animate(roleRef.current, {
-      opacity: [0, 1],
-      translateY: [12, 0],
-      duration: 600,
-      delay: 900,
-      ease: "out(2)",
-    });
+    animateEl(
+      roleRef.current,
+      { opacity: [0, 1], y: [12, 0] },
+      { delay: 0.9, type: spring(0.5, 0.3) }
+    );
   }, []);
 
   return (

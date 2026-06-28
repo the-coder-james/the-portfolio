@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
-import { animate, onScroll } from "animejs";
+import { inView, spring } from "motion";
+import { animateEl } from "@/lib/utils";
 import { ExternalLink, ArrowUpRight } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
@@ -93,25 +94,17 @@ export function ProjectCard({ project, index, taglist, roles, providers, baseUrl
     const scan = scanRef.current;
     if (!el) return;
 
-    animate(el, {
-      opacity: [0, 1],
-      translateY: [50, 0],
-      rotateX: [10, 0],
-      scale: [0.95, 1],
-      duration: 800,
-      delay: index * 120,
-      ease: "out(3)",
-      autoplay: onScroll({ target: el, enter: "bottom-=80 top" }),
-    });
+    inView(el, () => {
+      animateEl(
+        el as Element,
+        { opacity: [0, 1], y: [50, 0], rotateX: [10, 0], scale: [0.95, 1] },
+        { delay: index * 0.07, type: spring(0.7, 0.2) }
+      );
+    }, { margin: "-60px" });
 
+    // Scan line: CSS animation — cleaner than a JS loop
     if (scan) {
-      animate(scan, {
-        top: ["-10%", "110%"],
-        duration: 2200,
-        ease: "linear",
-        loop: true,
-        autoplay: onScroll({ target: el, enter: "bottom top", leave: "top bottom", sync: false }),
-      });
+      scan.style.animation = "scanLine 2.2s linear infinite";
     }
   }, [index]);
 

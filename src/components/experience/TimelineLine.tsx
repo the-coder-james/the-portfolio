@@ -1,5 +1,6 @@
 import { useEffect, useRef } from "react";
-import { animate, onScroll } from "animejs";
+import { inView } from "motion";
+import { animateEl } from "@/lib/utils";
 
 export function TimelineLine() {
   const ref = useRef<HTMLDivElement>(null);
@@ -7,14 +8,13 @@ export function TimelineLine() {
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
-    animate(el, {
-      scaleY: [0, 1],
-      opacity: [0.3, 1],
-      duration: 1500,
-      delay: 300,
-      ease: "inOut(2)",
-      autoplay: onScroll({ target: el, enter: "bottom-=80 top" }),
-    });
+    inView(el, () => {
+      animateEl(
+        el as Element,
+        { scaleY: [0, 1], opacity: [0.3, 1] },
+        { duration: 1.4, delay: 0.2, ease: "easeInOut" }
+      );
+    }, { margin: "-60px" });
   }, []);
 
   return (

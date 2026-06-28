@@ -1,5 +1,6 @@
 import { useEffect, useRef } from "react";
-import { animate, stagger, onScroll } from "animejs";
+import { stagger, inView, spring } from "motion";
+import { animateEl } from "@/lib/utils";
 
 interface MindsetCard {
   icon: string;
@@ -17,14 +18,13 @@ export function SkillsMindset({ cards }: SkillsMindsetProps) {
   useEffect(() => {
     const root = ref.current;
     if (!root) return;
-    animate(root.querySelectorAll(".mindset-card"), {
-      opacity: [0, 1],
-      translateX: [40, 0],
-      duration: 550,
-      delay: stagger(120, { start: 400 }),
-      ease: "out(3)",
-      autoplay: onScroll({ target: root, enter: "bottom-=80 top" }),
-    });
+    inView(root, () => {
+      animateEl(
+        root.querySelectorAll<Element>(".mindset-card"),
+        { opacity: [0, 1], x: [40, 0] },
+        { delay: stagger(0.1, { startDelay: 0.1 }), type: spring(0.5, 0.2) }
+      );
+    }, { margin: "-60px" });
   }, []);
 
   return (

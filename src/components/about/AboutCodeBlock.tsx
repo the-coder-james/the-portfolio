@@ -1,5 +1,6 @@
 import { useEffect, useRef } from "react";
-import { animate, stagger, onScroll } from "animejs";
+import { stagger, inView, spring } from "motion";
+import { animateEl } from "@/lib/utils";
 
 interface AboutCodeBlockProps {
   since: number;
@@ -68,30 +69,19 @@ export function AboutCodeBlock({ since, professional }: AboutCodeBlockProps) {
     const root = ref.current;
     if (!root) return;
 
-    animate(root, {
-      opacity: [0, 1],
-      translateX: [40, 0],
-      duration: 700,
-      delay: 400,
-      ease: "out(3)",
-      autoplay: onScroll({ target: root, enter: "bottom-=100 top" }),
-    });
-
-    animate(root.querySelectorAll(".code-line"), {
-      opacity: [0, 1],
-      translateX: [-8, 0],
-      duration: 350,
-      delay: stagger(40, { start: 600 }),
-      ease: "out(2)",
-      autoplay: onScroll({ target: root, enter: "bottom-=100 top" }),
-    });
-
-    animate(root.querySelectorAll(".code-lineno"), {
-      opacity: [0, 1],
-      duration: 250,
-      delay: stagger(40, { start: 600 }),
-      autoplay: onScroll({ target: root, enter: "bottom-=100 top" }),
-    });
+    inView(root, () => {
+      animateEl(root as Element, { opacity: [0, 1], x: [40, 0] }, { delay: 0.2, type: spring(0.6, 0.25) });
+      animateEl(
+        root.querySelectorAll(".code-line"),
+        { opacity: [0, 1], x: [-8, 0] },
+        { delay: stagger(0.04, { startDelay: 0.4 }), type: spring(0.35, 0.3) }
+      );
+      animateEl(
+        root.querySelectorAll(".code-lineno"),
+        { opacity: [0, 1] },
+        { delay: stagger(0.04, { startDelay: 0.4 }), duration: 0.25 }
+      );
+    }, { margin: "-80px" });
   }, []);
 
   return (
