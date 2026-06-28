@@ -497,8 +497,8 @@
     "tech": 1,
     "provider": 1,
     "image" : {
-      "url" : "projects/nextlevel.jpg",
-      "alt" : "nextlevel"
+      "url" : "projects/moe.jpg",
+      "alt" : "moegi"
     },
     "description" : "A Japanese cemetery offering pet-friendly burial plots. Established in 2011, it has sold approximately 2,000 plots and is now opening a new area called “Garden Area / Hills Area”. The site emphasizes sunny, green, elevated plots, encourages site visits, and provides information on plot availability and cemetery features.",
     "siteurl" : "https://moeginosatotsurumakireien.com/"
@@ -507,7 +507,7 @@
     "title" : "the-portfolio",
     "date" : "2025.9.19",
     "tags" : ["4"],
-    "role" : 2,
+    "role" : 1,
     "tech": 2,
     "provider": 2,
     "image" : {
@@ -516,5 +516,49 @@
     },
     "description" : "This portfolio that I have created and vibe-coded. Not purely though.",
     "siteurl" : "https://alejandrejames.github.io/the-portfolio/"
+  },
+  {
+    "title" : "the-gym-app",
+    "date" : "2026.6.7",
+    "tags" : ["6"],
+    "role" : 1,
+    "tech": 4,
+    "provider": 2,
+    "image" : {
+      "url" : "projects/thegymapp.jpg",
+      "alt" : "gymapp"
+    },
+    "description" : "A general-purpose gym tracker for iOS, built with Expo (React Native) and backed by Supabase. Plan and log any training goal — build programs, track workouts, monitor PRs, and log body composition metrics. Works offline-first: reads serve from an encrypted local cache and all writes queue while offline and replay automatically on reconnect.",
+    "siteurl" : false,
+    "siteurl-reason" : "The app is on local device first, since I am planning to release this officialy and not open source."
+  },
+  {
+    "title" : "the-usage-monitor",
+    "date" : "2026.6.11",
+    "tags" : ["5"],
+    "role" : 1,
+    "tech": 3,
+    "provider": 2,
+    "image" : {
+      "url" : "projects/usagemonitor.jpg",
+      "alt" : "usagemonitor"
+    },
+    "description" : "A macOS menu-bar app that shows your Claude subscription usage (5-hour session % and 7-day weekly %) with Liquid Glass styling (macOS 26). macOS-only. ",
+    "siteurl" : "https://github.com/alejandrejames/the-usage-monitor"
+  },
+  {
+    "title" : "Site Monitoring System Sauron",
+    "date" : "2026.6.7",
+    "tags" : ["7"],
+    "role" : 1,
+    "tech": 2,
+    "provider": 1,
+    "image" : {
+      "url" : "projects/sitemonitor.jpg",
+      "alt" : "sitemonitor"
+    },
+    "description" : "Multi-site health & SEO monitoring system. Runs scheduled Playwright checks against deployed client sites, sends critical alerts to Chatwork, and emits daily status digests to Google Sheets.",
+    "siteurl" : false,
+    "siteurl-reason" : "The site is not accessible as this is a company proprietary app."
   }
 ]

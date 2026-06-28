@@ -18,7 +18,8 @@ interface Project {
   provider: number;
   image: ProjectImage;
   description: string;
-  siteurl: string;
+  siteurl: string | false;
+  "siteurl-reason"?: string;
 }
 
 interface ProjectCardProps {
@@ -257,30 +258,65 @@ export function ProjectCard({ project, index, taglist, roles, providers, baseUrl
         </Tooltip>
 
         <div className="flex items-center">
-          <a
-            href={project.siteurl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="ml-auto group inline-flex items-center gap-2 px-3 py-2 rounded-lg transition-all duration-300"
-            style={{
-              fontSize: "0.8rem",
-              fontFamily: "'Space Grotesk'",
-              background: hovered ? accent + "20" : "rgba(255,255,255,0.04)",
-              border: `1px solid ${hovered ? accent + "40" : "rgba(255,255,255,0.07)"}`,
-              color: hovered ? accent : "#94a3b8",
-              textDecoration: "none",
-            }}
-          >
-            <ExternalLink size={14} />
-            <span>Live Site</span>
-            <ArrowUpRight
-              size={14}
+          {project.siteurl === false ? (
+            <Tooltip delayDuration={200}>
+              <TooltipTrigger asChild>
+                <span
+                  className="ml-auto inline-flex items-center gap-2 px-3 py-2 rounded-lg cursor-default select-none"
+                  style={{
+                    fontSize: "0.8rem",
+                    fontFamily: "'Space Grotesk'",
+                    background: "rgba(255,255,255,0.02)",
+                    border: "1px solid rgba(255,255,255,0.05)",
+                    color: "#334155",
+                  }}
+                >
+                  <ExternalLink size={14} />
+                  <span>Not Available</span>
+                </span>
+              </TooltipTrigger>
+              <TooltipContent
+                side="top"
+                align="end"
+                className="max-w-xs font-[Space_Grotesk] leading-relaxed"
+                style={{
+                  background: "#0d1117",
+                  border: `1px solid ${accent}40`,
+                  color: "#94a3b8",
+                  fontSize: "0.78rem",
+                  padding: "8px 12px",
+                  boxShadow: `0 8px 24px rgba(0,0,0,0.5), 0 0 20px ${accent}15`,
+                }}
+              >
+                {project["siteurl-reason"] ?? "No live URL available."}
+              </TooltipContent>
+            </Tooltip>
+          ) : (
+            <a
+              href={project.siteurl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="ml-auto group inline-flex items-center gap-2 px-3 py-2 rounded-lg transition-all duration-300"
               style={{
-                transition: "transform 0.3s ease",
-                transform: hovered ? "translate(2px, -2px)" : "none",
+                fontSize: "0.8rem",
+                fontFamily: "'Space Grotesk'",
+                background: hovered ? accent + "20" : "rgba(255,255,255,0.04)",
+                border: `1px solid ${hovered ? accent + "40" : "rgba(255,255,255,0.07)"}`,
+                color: hovered ? accent : "#94a3b8",
+                textDecoration: "none",
               }}
-            />
-          </a>
+            >
+              <ExternalLink size={14} />
+              <span>Live Site</span>
+              <ArrowUpRight
+                size={14}
+                style={{
+                  transition: "transform 0.3s ease",
+                  transform: hovered ? "translate(2px, -2px)" : "none",
+                }}
+              />
+            </a>
+          )}
         </div>
       </div>
     </div>
