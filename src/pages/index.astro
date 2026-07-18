@@ -3,6 +3,7 @@ import "@/styles/global.css"
 import Layout from "@/layout/layout.astro"
 
 import { HeaderComponent } from "@/components/common/tsx/HeaderComponent"
+import { ScrollStack } from "@/components/common/tsx/ScrollStack"
 import MainvisualComponent from "@/components/mainvisual/MainvisualComponent.astro"
 import AboutComponent from "@/components/about/AboutComponent.astro"
 import SkillsComponent from "@/components/skills/SkillsComponent.astro"
@@ -14,6 +15,7 @@ import FooterComponent from "@/components/footer/FooterComponent.astro"
 
 <Layout>
   <HeaderComponent client:load />
+  <ScrollStack client:load />
   <MainvisualComponent />
   <AboutComponent />
   <SkillsComponent />

@@ -20,7 +20,7 @@ const socials = contactJson
   .map((c) => ({ label: c.name, href: c.url, iconKey: c.name }))
 ---
 
-<section id="hero" class="relative min-h-screen flex items-center overflow-hidden" style="background: #030712">
+<section id="hero" data-stack-section class="sticky top-0 min-h-screen flex items-center overflow-hidden" style="background: #030712">
   <!-- Dynamic: particle canvas -->
   <ParticleCanvas client:load />
 
