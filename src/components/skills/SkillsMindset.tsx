@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react";
-import { stagger, inView, spring } from "motion";
+import { stagger, inView } from "motion";
 import { animateEl } from "@/lib/utils";
 
 interface MindsetCard {
@@ -22,7 +22,7 @@ export function SkillsMindset({ cards }: SkillsMindsetProps) {
       animateEl(
         root.querySelectorAll<Element>(".mindset-card"),
         { opacity: [0, 1], x: [40, 0] },
-        { delay: stagger(0.1, { startDelay: 0.1 }), type: spring(0.5, 0.2) }
+        { delay: stagger(0.1, { startDelay: 0.1 }), type: "spring", visualDuration: 0.5, bounce: 0.2 }
       );
     }, { margin: "-60px" });
   }, []);

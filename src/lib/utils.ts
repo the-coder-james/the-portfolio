@@ -1,11 +1,7 @@
 import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"
 import { animate as motionAnimate } from "motion"
-import type { DOMKeyframesDefinition, AnimationOptions, KeyframeGenerator } from "motion-dom"
-
-type AnimateElOptions = Omit<AnimationOptions, "type"> & {
-  type?: AnimationOptions["type"] | KeyframeGenerator<number>
-}
+import type { DOMKeyframesDefinition, AnimationOptions } from "motion-dom"
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -14,7 +10,7 @@ export function cn(...inputs: ClassValue[]) {
 export function animateEl(
   el: Element | NodeListOf<Element> | Element[] | string,
   keyframes: DOMKeyframesDefinition,
-  options?: AnimateElOptions
+  options?: AnimationOptions
 ) {
-  return motionAnimate(el as Element, keyframes, options as AnimationOptions)
+  return motionAnimate(el as Element, keyframes, options)
 }

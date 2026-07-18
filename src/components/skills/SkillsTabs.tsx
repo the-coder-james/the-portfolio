@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react";
-import { stagger, inView, spring } from "motion";
+import { stagger, inView } from "motion";
 import { animateEl } from "@/lib/utils";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
@@ -76,7 +76,7 @@ function animateBadgesIn(container: HTMLElement | null) {
   animateEl(
     container.querySelectorAll<Element>(".skill-tab-badge"),
     { opacity: [0, 1], scale: [0.6, 1], y: [10, 0] },
-    { delay: stagger(0.04), type: spring(0.4, 0.05) }
+    { delay: stagger(0.04), type: "spring", visualDuration: 0.4, bounce: 0.05 }
   );
 }
 
@@ -89,7 +89,7 @@ export function SkillsTabs({ techstack, extraSkills }: SkillsTabsProps) {
     const root = ref.current;
     if (!root) return;
     inView(root, () => {
-      animateEl(root as Element, { opacity: [0, 1], y: [20, 0] }, { delay: 0.1, type: spring(0.5, 0.25) });
+      animateEl(root as Element, { opacity: [0, 1], y: [20, 0] }, { delay: 0.1, type: "spring", visualDuration: 0.5, bounce: 0.25 });
     }, { margin: "-60px" });
     // Animate the default-active tab badges on mount
     setTimeout(() => animateBadgesIn(tabRefs.current["frontend"]), 400);

@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react";
-import { inView, spring } from "motion";
+import { inView } from "motion";
 import { animateEl } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 
@@ -33,10 +33,10 @@ export function TimelineEntry({ item, index }: TimelineEntryProps) {
       animateEl(
         el as Element,
         { opacity: [0, 1], x: [isEven ? -50 : 50, 0], filter: ["blur(6px)", "blur(0px)"] },
-        { delay: 0.05 + index * 0.06, type: spring(0.6, 0.2) }
+        { delay: 0.05 + index * 0.06, type: "spring", visualDuration: 0.6, bounce: 0.2 }
       );
       if (dot) {
-        animateEl(dot as Element, { scale: [0, 1.4, 1], opacity: [0, 1] }, { delay: 0.2 + index * 0.06, type: spring(0.4, 0.05) });
+        animateEl(dot as Element, { scale: [0, 1.4, 1], opacity: [0, 1] }, { delay: 0.2 + index * 0.06, type: "spring", visualDuration: 0.4, bounce: 0.05 });
       }
       if (pulseRef.current && item.type === "present") {
         pulseRef.current.style.animation = "pulse 2s ease-in-out infinite";

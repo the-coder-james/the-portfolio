@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { inView, spring } from "motion";
+import { inView } from "motion";
 import { animateEl } from "@/lib/utils";
 import { ExternalLink, ArrowUpRight } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
@@ -98,7 +98,7 @@ export function ProjectCard({ project, index, taglist, roles, providers, baseUrl
       animateEl(
         el as Element,
         { opacity: [0, 1], y: [50, 0], rotateX: [10, 0], scale: [0.95, 1] },
-        { delay: index * 0.07, type: spring(0.7, 0.2) }
+        { delay: index * 0.07, type: "spring", visualDuration: 0.7, bounce: 0.2 }
       );
     }, { margin: "-60px" });
 

@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react";
-import { stagger, spring } from "motion";
+import { stagger } from "motion";
 import { animateEl } from "@/lib/utils";
 
 interface TerminalCardProps {
@@ -36,21 +36,21 @@ export function TerminalCard({ name, since, professional, stackLabels }: Termina
     animateEl(
       root as Element,
       { x: [60, 0], opacity: [0, 1], scale: [0.96, 1] },
-      { delay: 0.4, type: spring(0.8, 0.25) }
+      { delay: 0.4, type: "spring", visualDuration: 0.8, bounce: 0.25 }
     );
 
     // Traffic light dots pop in
     animateEl(
       root.querySelectorAll<Element>(".tc-dot"),
       { scale: [0, 1], opacity: [0, 0.8] },
-      { delay: stagger(0.08, { startDelay: 0.55 }), type: spring(0.4, 0.1) }
+      { delay: stagger(0.08, { startDelay: 0.55 }), type: "spring", visualDuration: 0.4, bounce: 0.1 }
     );
 
     // Code lines blur-slide in
     animateEl(
       root.querySelectorAll<Element>(".tc-line"),
       { x: [-12, 0], opacity: [0, 1], filter: ["blur(4px)", "blur(0px)"] },
-      { delay: stagger(0.1, { startDelay: 0.7 }), type: spring(0.4, 0.3) }
+      { delay: stagger(0.1, { startDelay: 0.7 }), type: "spring", visualDuration: 0.4, bounce: 0.3 }
     );
 
     // Line numbers fade in sync
@@ -64,7 +64,7 @@ export function TerminalCard({ name, since, professional, stackLabels }: Termina
     animateEl(
       root.querySelectorAll<Element>(".tc-output"),
       { y: [8, 0], opacity: [0, 1] },
-      { delay: stagger(0.12, { startDelay: 1.4 }), type: spring(0.5, 0.2) }
+      { delay: stagger(0.12, { startDelay: 1.4 }), type: "spring", visualDuration: 0.5, bounce: 0.2 }
     );
 
     // Gentle float idle loop via CSS (avoids JS loop overhead)

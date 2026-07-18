@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react";
-import { stagger, inView, spring } from "motion";
+import { stagger, inView } from "motion";
 import { animateEl } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 
@@ -53,11 +53,11 @@ export function SkillsStrip({ techstack, extraSkills }: SkillsStripProps) {
     if (!container) return;
 
     inView(container, () => {
-      animateEl(container as Element, { opacity: [0, 1], y: [20, 0] }, { type: spring(0.5, 0.3) });
+      animateEl(container as Element, { opacity: [0, 1], y: [20, 0] }, { type: "spring", visualDuration: 0.5, bounce: 0.3 });
       animateEl(
         container.querySelectorAll<Element>(".skill-badge"),
         { opacity: [0, 1], scale: [0.5, 1], y: [12, 0], rotate: [-8, 0] },
-        { delay: stagger(0.035, { from: "center" }), type: spring(0.4, 0.05) }
+        { delay: stagger(0.035, { from: "center" }), type: "spring", visualDuration: 0.4, bounce: 0.05 }
       );
     }, { margin: "-60px" });
   }, []);

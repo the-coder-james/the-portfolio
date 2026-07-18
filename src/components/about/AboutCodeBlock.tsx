@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react";
-import { stagger, inView, spring } from "motion";
+import { stagger, inView } from "motion";
 import { animateEl } from "@/lib/utils";
 
 interface AboutCodeBlockProps {
@@ -70,11 +70,11 @@ export function AboutCodeBlock({ since, professional }: AboutCodeBlockProps) {
     if (!root) return;
 
     inView(root, () => {
-      animateEl(root as Element, { opacity: [0, 1], x: [40, 0] }, { delay: 0.2, type: spring(0.6, 0.25) });
+      animateEl(root as Element, { opacity: [0, 1], x: [40, 0] }, { delay: 0.2, type: "spring", visualDuration: 0.6, bounce: 0.25 });
       animateEl(
         root.querySelectorAll(".code-line"),
         { opacity: [0, 1], x: [-8, 0] },
-        { delay: stagger(0.04, { startDelay: 0.4 }), type: spring(0.35, 0.3) }
+        { delay: stagger(0.04, { startDelay: 0.4 }), type: "spring", visualDuration: 0.35, bounce: 0.3 }
       );
       animateEl(
         root.querySelectorAll(".code-lineno"),

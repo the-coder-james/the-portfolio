@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { inView, spring } from "motion";
+import { inView } from "motion";
 import { animateEl } from "@/lib/utils";
 
 interface AboutImageProps {
@@ -21,10 +21,10 @@ export function AboutImage({ name, imageUrl, hoverImageUrl }: AboutImageProps) {
     if (!wrapper) return;
 
     inView(wrapper, () => {
-      animateEl(wrapper as Element, { opacity: [0, 1], scale: [0.85, 1] }, { delay: 0.15, type: spring(0.6, 0.25) });
-      animateEl(portraitRef.current! as Element, { rotate: [-12, 0] }, { delay: 0.25, type: spring(0.7, 0.05) });
-      animateEl(availableRef.current! as Element, { opacity: [0, 1], scale: [0, 1] }, { delay: 0.45, type: spring(0.4, 0.1) });
-      animateEl(yearsRef.current! as Element, { opacity: [0, 1], x: [-12, 0] }, { delay: 0.35, type: spring(0.5, 0.2) });
+      animateEl(wrapper as Element, { opacity: [0, 1], scale: [0.85, 1] }, { delay: 0.15, type: "spring", visualDuration: 0.6, bounce: 0.25 });
+      animateEl(portraitRef.current! as Element, { rotate: [-12, 0] }, { delay: 0.25, type: "spring", visualDuration: 0.7, bounce: 0.05 });
+      animateEl(availableRef.current! as Element, { opacity: [0, 1], scale: [0, 1] }, { delay: 0.45, type: "spring", visualDuration: 0.4, bounce: 0.1 });
+      animateEl(yearsRef.current! as Element, { opacity: [0, 1], x: [-12, 0] }, { delay: 0.35, type: "spring", visualDuration: 0.5, bounce: 0.2 });
     }, { margin: "-80px" });
 
     if (ringRef.current) {

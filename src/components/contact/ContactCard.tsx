@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react";
-import { inView, spring } from "motion";
+import { inView } from "motion";
 import { animateEl } from "@/lib/utils";
 
 interface ContactLink {
@@ -39,7 +39,7 @@ export function ContactCard({ contact, index }: ContactCardProps) {
     const el = ref.current;
     if (!el) return;
     inView(el, () => {
-      animateEl(el as Element, { opacity: [0, 1], x: [-30, 0] }, { delay: 0.05 + index * 0.08, type: spring(0.5, 0.2) });
+      animateEl(el as Element, { opacity: [0, 1], x: [-30, 0] }, { delay: 0.05 + index * 0.08, type: "spring", visualDuration: 0.5, bounce: 0.2 });
     }, { margin: "-60px" });
   }, [index]);
 

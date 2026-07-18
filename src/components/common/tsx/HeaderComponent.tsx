@@ -1,6 +1,5 @@
 "use client";
 import { useState, useEffect, useRef } from "react";
-import { spring } from "motion";
 import { animateEl } from "@/lib/utils";
 import { Menu, Code2 } from "lucide-react";
 import { Sheet, SheetTrigger, SheetContent, SheetClose } from "@/components/ui/sheet";
@@ -20,7 +19,7 @@ export function HeaderComponent() {
     animateEl(
       navRef.current as Element,
       { y: [-80, 0], opacity: [0, 1] },
-      { type: spring(0.55, 0.2) }
+      { type: "spring", visualDuration: 0.55, bounce: 0.2 }
     );
   }, []);
 
@@ -50,7 +49,7 @@ export function HeaderComponent() {
     animateEl(
       indicator as Element,
       { left: btnRect.left - parentRect.left, width: btnRect.width, opacity: 1 },
-      { type: spring(0.3, 0.1) }
+      { type: "spring", visualDuration: 0.3, bounce: 0.1 }
     );
   }, [activeSection]);
 
@@ -62,7 +61,7 @@ export function HeaderComponent() {
   return (
     <nav
       ref={navRef}
-      className="fixed top-0 left-0 right-0 z-50 transition-all duration-300"
+      className="fixed top-0 left-0 right-0 z-[60] transition-all duration-300"
       style={{
         background: scrolled ? "rgba(3,7,18,0.9)" : "transparent",
         backdropFilter: scrolled ? "blur(16px)" : "none",

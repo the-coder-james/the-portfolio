@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { inView, spring } from "motion";
+import { inView } from "motion";
 import { animateEl } from "@/lib/utils";
 import { Send } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -24,13 +24,13 @@ export function ContactForm() {
     const el = ref.current;
     if (!el) return;
     inView(el, () => {
-      animateEl(el as Element, { opacity: [0, 1], x: [40, 0] }, { delay: 0.15, type: spring(0.6, 0.2) });
+      animateEl(el as Element, { opacity: [0, 1], x: [40, 0] }, { delay: 0.15, type: "spring", visualDuration: 0.6, bounce: 0.2 });
     }, { margin: "-60px" });
   }, []);
 
   useEffect(() => {
     if (submitted && successRef.current) {
-      animateEl(successRef.current as Element, { opacity: [0, 1], scale: [0.85, 1] }, { type: spring(0.5, 0.05) });
+      animateEl(successRef.current as Element, { opacity: [0, 1], scale: [0.85, 1] }, { type: "spring", visualDuration: 0.5, bounce: 0.05 });
     }
   }, [submitted]);
 

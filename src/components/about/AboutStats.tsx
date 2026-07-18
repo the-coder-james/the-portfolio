@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react";
-import { stagger, inView, spring } from "motion";
+import { stagger, inView } from "motion";
 import { animateEl } from "@/lib/utils";
 
 interface Stat {
@@ -31,7 +31,7 @@ export function AboutStats({ stats }: AboutStatsProps) {
       animateEl(
         root.querySelectorAll<Element>(".stat-card"),
         { opacity: [0, 1], y: [30, 0], scale: [0.9, 1] },
-        { delay: stagger(0.1, { startDelay: 0.1 }), type: spring(0.5, 0.2) }
+        { delay: stagger(0.1, { startDelay: 0.1 }), type: "spring", visualDuration: 0.5, bounce: 0.2 }
       );
 
       // Count-up for numeric stats
