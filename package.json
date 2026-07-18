@@ -41,9 +41,11 @@
     "tailwindcss-animate": "^1.0.7"
   },
   "devDependencies": {
+    "@astrojs/check": "^0.9.9",
     "@babel/plugin-transform-runtime": "^7.28.3",
     "@types/node": "^24.5.2",
     "react-icons": "^5.5.0",
-    "tw-animate-css": "^1.3.8"
+    "tw-animate-css": "^1.3.8",
+    "typescript": "^5.9.3"
   }
 }
