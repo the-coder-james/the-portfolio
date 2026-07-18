@@ -1,5 +1,6 @@
 import { useEffect, useRef } from "react";
-import { animate, stagger, onScroll } from "animejs";
+import { stagger, inView, spring } from "motion";
+import { animateEl } from "@/lib/utils";
 
 interface Stat {
   label: string;
@@ -26,34 +27,32 @@ export function AboutStats({ stats }: AboutStatsProps) {
     const root = ref.current;
     if (!root) return;
 
-    animate(root.querySelectorAll(".stat-card"), {
-      opacity: [0, 1],
-      translateY: [30, 0],
-      scale: [0.9, 1],
-      duration: 600,
-      delay: stagger(100, { start: 300 }),
-      ease: "out(3)",
-      autoplay: onScroll({ target: root, enter: "bottom-=100 top" }),
-    });
+    inView(root, () => {
+      animateEl(
+        root.querySelectorAll<Element>(".stat-card"),
+        { opacity: [0, 1], y: [30, 0], scale: [0.9, 1] },
+        { delay: stagger(0.1, { startDelay: 0.1 }), type: spring(0.5, 0.2) }
+      );
 
-    // Count-up tween for any numeric stat values
-    root.querySelectorAll<HTMLElement>(".stat-value").forEach((el) => {
-      const original = el.dataset.value || el.textContent || "";
-      const parsed = parseNumeric(original);
-      if (!parsed) return;
-      const counter = { v: 0 };
-      animate(counter, {
-        v: parsed.num,
-        duration: 1400,
-        delay: 600,
-        ease: "out(3)",
-        onUpdate: () => {
-          const fixed = parsed.num % 1 !== 0 ? counter.v.toFixed(1) : Math.floor(counter.v).toString();
+      // Count-up for numeric stats
+      root.querySelectorAll<HTMLElement>(".stat-value").forEach((el) => {
+        const original = el.dataset.value || el.textContent || "";
+        const parsed = parseNumeric(original);
+        if (!parsed) return;
+        let start: number | null = null;
+        const duration = 1400;
+        const tick = (ts: number) => {
+          if (!start) start = ts;
+          const progress = Math.min((ts - start) / duration, 1);
+          const eased = 1 - Math.pow(1 - progress, 3);
+          const val = eased * parsed.num;
+          const fixed = parsed.num % 1 !== 0 ? val.toFixed(1) : Math.floor(val).toString();
           el.textContent = fixed + parsed.suffix;
-        },
-        autoplay: onScroll({ target: root, enter: "bottom-=100 top" }),
+          if (progress < 1) requestAnimationFrame(tick);
+        };
+        setTimeout(() => requestAnimationFrame(tick), 300);
       });
-    });
+    }, { margin: "-80px" });
   }, [stats]);
 
   return (

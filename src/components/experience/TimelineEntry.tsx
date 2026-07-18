@@ -1,5 +1,6 @@
 import { useEffect, useRef } from "react";
-import { animate, onScroll } from "animejs";
+import { inView, spring } from "motion";
+import { animateEl } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 
 interface TimelineItem {
@@ -28,36 +29,19 @@ export function TimelineEntry({ item, index }: TimelineEntryProps) {
     const dot = dotRef.current;
     if (!el) return;
 
-    animate(el, {
-      opacity: [0, 1],
-      translateX: [isEven ? -50 : 50, 0],
-      filter: ["blur(6px)", "blur(0px)"],
-      duration: 700,
-      delay: 400 + index * 100,
-      ease: "out(3)",
-      autoplay: onScroll({ target: el, enter: "bottom-=80 top" }),
-    });
-
-    if (dot) {
-      animate(dot, {
-        scale: [0, 1.4, 1],
-        opacity: [0, 1],
-        duration: 700,
-        delay: 600 + index * 100,
-        ease: "outElastic(1, 0.5)",
-        autoplay: onScroll({ target: el, enter: "bottom-=80 top" }),
-      });
-    }
-
-    if (pulseRef.current && item.type === "present") {
-      animate(pulseRef.current, {
-        scale: [1, 2.2, 1],
-        opacity: [0.6, 0, 0.6],
-        duration: 2000,
-        loop: true,
-        ease: "inOut(2)",
-      });
-    }
+    inView(el, () => {
+      animateEl(
+        el as Element,
+        { opacity: [0, 1], x: [isEven ? -50 : 50, 0], filter: ["blur(6px)", "blur(0px)"] },
+        { delay: 0.05 + index * 0.06, type: spring(0.6, 0.2) }
+      );
+      if (dot) {
+        animateEl(dot as Element, { scale: [0, 1.4, 1], opacity: [0, 1] }, { delay: 0.2 + index * 0.06, type: spring(0.4, 0.05) });
+      }
+      if (pulseRef.current && item.type === "present") {
+        pulseRef.current.style.animation = "pulse 2s ease-in-out infinite";
+      }
+    }, { margin: "-60px" });
   }, [index, isEven, item.type]);
 
   return (

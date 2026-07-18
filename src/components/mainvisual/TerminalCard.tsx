@@ -1,5 +1,6 @@
 import { useEffect, useRef } from "react";
-import { animate, createTimeline, stagger } from "animejs";
+import { stagger, spring } from "motion";
+import { animateEl } from "@/lib/utils";
 
 interface TerminalCardProps {
   name: string;
@@ -31,63 +32,43 @@ export function TerminalCard({ name, since, professional, stackLabels }: Termina
     const root = rootRef.current;
     if (!root) return;
 
-    const tl = createTimeline({ defaults: { ease: "out(3)" } });
+    // Card entrance with spring
+    animateEl(
+      root as Element,
+      { x: [60, 0], opacity: [0, 1], scale: [0.96, 1] },
+      { delay: 0.4, type: spring(0.8, 0.25) }
+    );
 
-    tl.add(root, {
-      opacity: [0, 1],
-      translateX: [60, 0],
-      scale: [0.96, 1],
-      duration: 800,
-      delay: 400,
-    })
-      .add(
-        root.querySelectorAll(".tc-dot"),
-        {
-          scale: [0, 1],
-          opacity: [0, 0.8],
-          duration: 400,
-          delay: stagger(80),
-          ease: "out(4)",
-        },
-        "-=500"
-      )
-      .add(
-        root.querySelectorAll(".tc-line"),
-        {
-          opacity: [0, 1],
-          translateX: [-12, 0],
-          filter: ["blur(4px)", "blur(0px)"],
-          duration: 400,
-          delay: stagger(180),
-        },
-        "-=200"
-      )
-      .add(
-        root.querySelectorAll(".tc-lineno"),
-        {
-          opacity: [0, 1],
-          duration: 250,
-          delay: stagger(180),
-        },
-        "<<"
-      )
-      .add(
-        root.querySelectorAll(".tc-output"),
-        {
-          opacity: [0, 1],
-          translateY: [6, 0],
-          duration: 400,
-          delay: stagger(220),
-        }
-      );
+    // Traffic light dots pop in
+    animateEl(
+      root.querySelectorAll<Element>(".tc-dot"),
+      { scale: [0, 1], opacity: [0, 0.8] },
+      { delay: stagger(0.08, { startDelay: 0.55 }), type: spring(0.4, 0.1) }
+    );
 
-    // gentle floating idle loop
-    animate(root, {
-      translateY: [0, -10, 0],
-      duration: 4000,
-      ease: "inOut(2)",
-      loop: true,
-    });
+    // Code lines blur-slide in
+    animateEl(
+      root.querySelectorAll<Element>(".tc-line"),
+      { x: [-12, 0], opacity: [0, 1], filter: ["blur(4px)", "blur(0px)"] },
+      { delay: stagger(0.1, { startDelay: 0.7 }), type: spring(0.4, 0.3) }
+    );
+
+    // Line numbers fade in sync
+    animateEl(
+      root.querySelectorAll<Element>(".tc-lineno"),
+      { opacity: [0, 1] },
+      { delay: stagger(0.1, { startDelay: 0.7 }), duration: 0.25 }
+    );
+
+    // Output lines slide up
+    animateEl(
+      root.querySelectorAll<Element>(".tc-output"),
+      { y: [8, 0], opacity: [0, 1] },
+      { delay: stagger(0.12, { startDelay: 1.4 }), type: spring(0.5, 0.2) }
+    );
+
+    // Gentle float idle loop via CSS (avoids JS loop overhead)
+    root.style.animation = "terminalFloat 4s ease-in-out infinite";
   }, []);
 
   return (

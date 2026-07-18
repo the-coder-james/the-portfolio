@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
-import { animate, createTimeline, onScroll } from "animejs";
+import { inView, spring } from "motion";
+import { animateEl } from "@/lib/utils";
 
 interface AboutImageProps {
   name: string;
@@ -19,53 +20,16 @@ export function AboutImage({ name, imageUrl, hoverImageUrl }: AboutImageProps) {
     const wrapper = wrapperRef.current;
     if (!wrapper) return;
 
-    const tl = createTimeline({
-      defaults: { ease: "out(3)" },
-      autoplay: onScroll({ target: wrapper, enter: "bottom-=100 top" }),
-    });
-
-    tl.add(wrapper, {
-      opacity: [0, 1],
-      scale: [0.85, 1],
-      duration: 600,
-      delay: 250,
-    })
-      .add(
-        portraitRef.current!,
-        {
-          rotate: [-12, 0],
-          duration: 700,
-          ease: "outElastic(1, 0.6)",
-        },
-        "-=400"
-      )
-      .add(
-        availableRef.current!,
-        {
-          opacity: [0, 1],
-          scale: [0, 1],
-          duration: 600,
-          ease: "outElastic(1, 0.5)",
-        },
-        "-=200"
-      )
-      .add(
-        yearsRef.current!,
-        {
-          opacity: [0, 1],
-          translateX: [-12, 0],
-          duration: 500,
-        },
-        "-=400"
-      );
+    inView(wrapper, () => {
+      animateEl(wrapper as Element, { opacity: [0, 1], scale: [0.85, 1] }, { delay: 0.15, type: spring(0.6, 0.25) });
+      animateEl(portraitRef.current! as Element, { rotate: [-12, 0] }, { delay: 0.25, type: spring(0.7, 0.05) });
+      animateEl(availableRef.current! as Element, { opacity: [0, 1], scale: [0, 1] }, { delay: 0.45, type: spring(0.4, 0.1) });
+      animateEl(yearsRef.current! as Element, { opacity: [0, 1], x: [-12, 0] }, { delay: 0.35, type: spring(0.5, 0.2) });
+    }, { margin: "-80px" });
 
     if (ringRef.current) {
-      animate(ringRef.current, {
-        rotate: 360,
-        duration: 12000,
-        ease: "linear",
-        loop: true,
-      });
+      // CSS handles the rotation — no JS loop needed
+      ringRef.current.style.animation = "spin 12s linear infinite";
     }
   }, []);
 

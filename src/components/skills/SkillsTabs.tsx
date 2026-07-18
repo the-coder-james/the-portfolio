@@ -1,5 +1,6 @@
 import { useEffect, useRef } from "react";
-import { animate, stagger, onScroll } from "animejs";
+import { stagger, inView, spring } from "motion";
+import { animateEl } from "@/lib/utils";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 
@@ -72,15 +73,11 @@ function SkillBadge({ skill }: { skill: string }) {
 
 function animateBadgesIn(container: HTMLElement | null) {
   if (!container) return;
-  const badges = container.querySelectorAll(".skill-tab-badge");
-  animate(badges, {
-    opacity: [0, 1],
-    scale: [0.6, 1],
-    translateY: [10, 0],
-    duration: 400,
-    delay: stagger(45, { from: "first" }),
-    ease: "outElastic(1, 0.7)",
-  });
+  animateEl(
+    container.querySelectorAll<Element>(".skill-tab-badge"),
+    { opacity: [0, 1], scale: [0.6, 1], y: [10, 0] },
+    { delay: stagger(0.04), type: spring(0.4, 0.05) }
+  );
 }
 
 export function SkillsTabs({ techstack, extraSkills }: SkillsTabsProps) {
@@ -91,14 +88,9 @@ export function SkillsTabs({ techstack, extraSkills }: SkillsTabsProps) {
   useEffect(() => {
     const root = ref.current;
     if (!root) return;
-    animate(root, {
-      opacity: [0, 1],
-      translateY: [20, 0],
-      duration: 600,
-      delay: 200,
-      ease: "out(3)",
-      autoplay: onScroll({ target: root, enter: "bottom-=80 top" }),
-    });
+    inView(root, () => {
+      animateEl(root as Element, { opacity: [0, 1], y: [20, 0] }, { delay: 0.1, type: spring(0.5, 0.25) });
+    }, { margin: "-60px" });
     // Animate the default-active tab badges on mount
     setTimeout(() => animateBadgesIn(tabRefs.current["frontend"]), 400);
   }, []);

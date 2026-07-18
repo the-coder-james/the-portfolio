@@ -1,5 +1,6 @@
 import { useEffect, useRef } from "react";
-import { animate, onScroll } from "animejs";
+import { inView, spring } from "motion";
+import { animateEl } from "@/lib/utils";
 
 interface ContactLink {
   url: string;
@@ -37,14 +38,9 @@ export function ContactCard({ contact, index }: ContactCardProps) {
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
-    animate(el, {
-      opacity: [0, 1],
-      translateX: [-30, 0],
-      duration: 500,
-      delay: 500 + index * 100,
-      ease: "out(3)",
-      autoplay: onScroll({ target: el, enter: "bottom-=80 top" }),
-    });
+    inView(el, () => {
+      animateEl(el as Element, { opacity: [0, 1], x: [-30, 0] }, { delay: 0.05 + index * 0.08, type: spring(0.5, 0.2) });
+    }, { margin: "-60px" });
   }, [index]);
 
   return (

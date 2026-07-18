@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
-import { animate, onScroll } from "animejs";
+import { inView, spring } from "motion";
+import { animateEl } from "@/lib/utils";
 import { Send } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -22,24 +23,14 @@ export function ContactForm() {
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
-    animate(el, {
-      opacity: [0, 1],
-      translateX: [40, 0],
-      duration: 700,
-      delay: 300,
-      ease: "out(3)",
-      autoplay: onScroll({ target: el, enter: "bottom-=80 top" }),
-    });
+    inView(el, () => {
+      animateEl(el as Element, { opacity: [0, 1], x: [40, 0] }, { delay: 0.15, type: spring(0.6, 0.2) });
+    }, { margin: "-60px" });
   }, []);
 
   useEffect(() => {
     if (submitted && successRef.current) {
-      animate(successRef.current, {
-        opacity: [0, 1],
-        scale: [0.85, 1.05, 1],
-        duration: 700,
-        ease: "outElastic(1, 0.6)",
-      });
+      animateEl(successRef.current as Element, { opacity: [0, 1], scale: [0.85, 1] }, { type: spring(0.5, 0.05) });
     }
   }, [submitted]);
 
