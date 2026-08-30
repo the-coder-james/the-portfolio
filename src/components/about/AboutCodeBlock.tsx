@@ -35,29 +35,29 @@ type CodeLineType = ReturnType<typeof buildCodeBio>[number];
 
 function CodeLine({ line }: { line: CodeLineType }) {
   if (line.type === "blank")         return <div style={{ height: "0.9rem" }} />;
-  if (line.type === "comment")       return <div style={{ color: "#4b5563" }}>{line.content}</div>;
+  if (line.type === "comment")       return <div style={{ color: "var(--color-ink-dim)" }}>{line.content}</div>;
   if (line.type === "keyword")       return (
     <div>
-      <span style={{ color: "#c084fc" }}>{line.content}</span>
-      <span style={{ color: "#60a5fa" }}> Developer</span>
-      <span style={{ color: "#94a3b8" }}> extends </span>
-      <span style={{ color: "#60a5fa" }}>Human</span>
-      <span style={{ color: "#e2e8f0" }}> {"{"}</span>
+      <span style={{ color: "var(--color-syn-keyword)" }}>{line.content}</span>
+      <span style={{ color: "var(--color-brand-400)" }}> Developer</span>
+      <span style={{ color: "var(--color-ink-dim)" }}> extends </span>
+      <span style={{ color: "var(--color-brand-400)" }}>Human</span>
+      <span style={{ color: "var(--color-ink-muted)" }}> {"{"}</span>
     </div>
   );
   if (line.type === "indent")        return (
     <div style={{ paddingLeft: "1.5rem" }}>
-      <span style={{ color: "#fcd34d" }}>{line.label}</span>
-      <span style={{ color: "#94a3b8" }}> = </span>
-      <span style={{ color: line.label === "started" || line.label === "professional" ? "#a5b4fc" : "#86efac" }}>
+      <span style={{ color: "var(--color-syn-fn)" }}>{line.label}</span>
+      <span style={{ color: "var(--color-ink-dim)" }}> = </span>
+      <span style={{ color: line.label === "started" || line.label === "professional" ? "var(--color-syn-number)" : "var(--color-syn-string)" }}>
         {line.value}
       </span>
-      <span style={{ color: "#94a3b8" }}>;</span>
+      <span style={{ color: "var(--color-ink-dim)" }}>;</span>
     </div>
   );
-  if (line.type === "method")        return <div style={{ color: "#e2e8f0" }}>{line.content}</div>;
-  if (line.type === "method-body")   return <div style={{ color: "#94a3b8" }}>{line.content}</div>;
-  if (line.type === "keyword-close") return <div style={{ color: "#e2e8f0" }}>{line.content}</div>;
+  if (line.type === "method")        return <div style={{ color: "var(--color-ink-muted)" }}>{line.content}</div>;
+  if (line.type === "method-body")   return <div style={{ color: "var(--color-ink-dim)" }}>{line.content}</div>;
+  if (line.type === "keyword-close") return <div style={{ color: "var(--color-ink-muted)" }}>{line.content}</div>;
   return null;
 }
 
@@ -88,23 +88,23 @@ export function AboutCodeBlock({ since, professional }: AboutCodeBlockProps) {
     <div ref={ref} style={{ opacity: 0 }}>
       <div
         className="rounded-2xl overflow-hidden"
-        style={{ background: "#0d1117", border: "1px solid rgba(59,130,246,0.15)", boxShadow: "0 20px 50px rgba(0,0,0,0.4)" }}
+        style={{ background: "var(--color-surface-code)", border: "1px solid var(--tint-brand-15)", boxShadow: "0 20px 50px var(--shadow-black-40)" }}
       >
         <div
           className="flex items-center justify-between px-4 py-3"
-          style={{ background: "#161b22", borderBottom: "1px solid rgba(255,255,255,0.05)" }}
+          style={{ background: "var(--color-surface-code-head)", borderBottom: "1px solid var(--tint-white-05)" }}
         >
           <div className="flex items-center gap-2">
             <div className="flex gap-1.5">
-              <div className="w-2.5 h-2.5 rounded-full" style={{ background: "#ff5f57" }} />
-              <div className="w-2.5 h-2.5 rounded-full" style={{ background: "#febc2e" }} />
-              <div className="w-2.5 h-2.5 rounded-full" style={{ background: "#28c840" }} />
+              <div className="w-2.5 h-2.5 rounded-full" style={{ background: "var(--color-chrome-red)" }} />
+              <div className="w-2.5 h-2.5 rounded-full" style={{ background: "var(--color-chrome-yellow)" }} />
+              <div className="w-2.5 h-2.5 rounded-full" style={{ background: "var(--color-chrome-green)" }} />
             </div>
-            <span className="font-mono ml-2" style={{ fontSize: "0.7rem", color: "#4b5563" }}>about.ts</span>
+            <span className="font-mono ml-2" style={{ fontSize: "0.7rem", color: "var(--color-ink-dim)" }}>about.ts</span>
           </div>
           <span
             className="px-2 py-0.5 rounded font-mono"
-            style={{ background: "rgba(59,130,246,0.15)", fontSize: "0.6rem", color: "#60a5fa" }}
+            style={{ background: "var(--tint-brand-15)", fontSize: "0.6rem", color: "var(--color-brand-400)" }}
           >
             TypeScript
           </span>
@@ -113,7 +113,7 @@ export function AboutCodeBlock({ since, professional }: AboutCodeBlockProps) {
         <div className="p-6 flex gap-4">
           <div
             className="flex flex-col select-none font-mono"
-            style={{ color: "#2d3748", fontSize: "0.75rem", minWidth: "24px", textAlign: "right", lineHeight: 1.6 }}
+            style={{ color: "var(--color-chrome-line)", fontSize: "0.75rem", minWidth: "24px", textAlign: "right", lineHeight: 1.6 }}
           >
             {CODE_BIO.map((line, i) =>
               line.type === "blank"
@@ -132,10 +132,10 @@ export function AboutCodeBlock({ since, professional }: AboutCodeBlockProps) {
 
         <div
           className="flex items-center gap-3 px-4 py-2"
-          style={{ background: "#161b22", borderTop: "1px solid rgba(255,255,255,0.04)" }}
+          style={{ background: "var(--color-surface-code-head)", borderTop: "1px solid var(--tint-white-04)" }}
         >
-          <div className="w-1.5 h-1.5 rounded-full" style={{ background: "#3b82f6" }} />
-          <span style={{ fontSize: "0.62rem", color: "#374151", fontFamily: "'JetBrains Mono'" }}>
+          <div className="w-1.5 h-1.5 rounded-full" style={{ background: "var(--color-brand)" }} />
+          <span style={{ fontSize: "0.62rem", color: "var(--color-ink-faint)", fontFamily: "'JetBrains Mono'" }}>
             Ln 21, Col 1 · TypeScript · No errors
           </span>
         </div>

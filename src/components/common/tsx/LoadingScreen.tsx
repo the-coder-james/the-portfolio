@@ -192,9 +192,9 @@ export function LoadingScreen() {
       className="fixed inset-0 flex items-center justify-center"
       style={{
         zIndex: 9999,
-        background: "#030712",
+        background: "var(--color-surface-base)",
         backgroundImage:
-          "radial-gradient(ellipse at center, rgba(59,130,246,0.08) 0%, transparent 60%), linear-gradient(rgba(59,130,246,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(59,130,246,0.04) 1px, transparent 1px)",
+          "radial-gradient(ellipse at center, var(--tint-brand-08) 0%, transparent 60%), linear-gradient(var(--tint-brand-04) 1px, transparent 1px), linear-gradient(90deg, var(--tint-brand-04) 1px, transparent 1px)",
         backgroundSize: "auto, 40px 40px, 40px 40px",
       }}
     >
@@ -206,40 +206,40 @@ export function LoadingScreen() {
             fontSize: "2.4rem",
             fontWeight: 700,
             letterSpacing: "-0.02em",
-            color: "#f1f5f9",
-            textShadow: "0 0 20px rgba(59,130,246,0.4)",
+            color: "var(--color-ink)",
+            textShadow: "0 0 20px var(--tint-brand-40)",
             opacity: 0,
           }}
         >
-          <span style={{ color: "#60a5fa" }}>&lt;</span>
+          <span style={{ color: "var(--color-brand-400)" }}>&lt;</span>
           james
-          <span style={{ color: "#60a5fa" }}>/&gt;</span>
+          <span style={{ color: "var(--color-brand-400)" }}>/&gt;</span>
         </div>
 
         <div
           className="rounded-xl overflow-hidden mb-6"
           style={{
-            background: "#0d1117",
-            border: "1px solid rgba(59,130,246,0.18)",
-            boxShadow: "0 0 40px rgba(59,130,246,0.08)",
+            background: "var(--color-surface-code)",
+            border: "1px solid var(--tint-brand-18)",
+            boxShadow: "0 0 40px var(--tint-brand-08)",
           }}
         >
           <div
             className="flex items-center gap-1.5 px-3 py-2"
-            style={{ background: "#161b22", borderBottom: "1px solid rgba(255,255,255,0.05)" }}
+            style={{ background: "var(--color-surface-code-head)", borderBottom: "1px solid var(--tint-white-05)" }}
           >
-            <div className="w-2.5 h-2.5 rounded-full" style={{ background: "#ff5f57" }} />
-            <div className="w-2.5 h-2.5 rounded-full" style={{ background: "#febc2e" }} />
-            <div className="w-2.5 h-2.5 rounded-full" style={{ background: "#28c840" }} />
-            <span className="ml-2 font-mono" style={{ fontSize: "0.65rem", color: "#4b5563" }}>
+            <div className="w-2.5 h-2.5 rounded-full" style={{ background: "var(--color-chrome-red)" }} />
+            <div className="w-2.5 h-2.5 rounded-full" style={{ background: "var(--color-chrome-yellow)" }} />
+            <div className="w-2.5 h-2.5 rounded-full" style={{ background: "var(--color-chrome-green)" }} />
+            <span className="ml-2 font-mono" style={{ fontSize: "0.65rem", color: "var(--color-ink-dim)" }}>
               boot.sh
             </span>
           </div>
           <div className="px-5 py-4 font-mono" style={{ fontSize: "0.78rem", lineHeight: 1.9 }}>
             {BOOT_LINES.map((l, i) => (
               <div key={i} className="boot-line" style={{ opacity: 0 }}>
-                <span style={{ color: l.prompt === "✓" ? "#4ade80" : "#22c55e" }}>{l.prompt}</span>
-                <span style={{ color: l.prompt === "✓" ? "#4ade80" : "#94a3b8", marginLeft: "8px" }}>
+                <span style={{ color: l.prompt === "✓" ? "var(--color-success)" : "var(--color-success-strong)" }}>{l.prompt}</span>
+                <span style={{ color: l.prompt === "✓" ? "var(--color-success)" : "var(--color-ink-dim)", marginLeft: "8px" }}>
                   {l.text}
                 </span>
               </div>
@@ -247,23 +247,23 @@ export function LoadingScreen() {
           </div>
         </div>
 
-        <div className="flex items-center gap-3 font-mono" style={{ fontSize: "0.7rem", color: "#475569" }}>
+        <div className="flex items-center gap-3 font-mono" style={{ fontSize: "0.7rem", color: "var(--color-ink-dim)" }}>
           <span>loading</span>
           <div
             className="flex-1 h-1 rounded-full overflow-hidden"
-            style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(59,130,246,0.12)" }}
+            style={{ background: "var(--tint-white-05)", border: "1px solid var(--tint-brand-12)" }}
           >
             <div
               ref={barRef}
               className="h-full"
               style={{
                 width: "0%",
-                background: "linear-gradient(90deg, #1d4ed8, #3b82f6, #60a5fa)",
-                boxShadow: "0 0 12px rgba(59,130,246,0.6)",
+                background: "linear-gradient(90deg, var(--color-brand-900), var(--color-brand), var(--color-brand-400))",
+                boxShadow: "0 0 12px var(--tint-brand-60)",
               }}
             />
           </div>
-          <span ref={percentRef} style={{ color: "#60a5fa", minWidth: "30px", textAlign: "right" }}>
+          <span ref={percentRef} style={{ color: "var(--color-brand-400)", minWidth: "30px", textAlign: "right" }}>
             00%
           </span>
         </div>

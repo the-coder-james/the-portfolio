@@ -86,7 +86,7 @@ export function ProjectsGrid({
           <Search
             size={15}
             className="absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none"
-            style={{ color: "#475569" }}
+            style={{ color: "var(--color-ink-dim)" }}
           />
           <input
             type="text"
@@ -98,19 +98,19 @@ export function ProjectsGrid({
             placeholder="search projects..."
             className="w-full pl-10 pr-10 py-2.5 rounded-xl outline-none transition-colors"
             style={{
-              background: "rgba(255,255,255,0.03)",
-              border: "1px solid rgba(255,255,255,0.08)",
-              color: "#e2e8f0",
+              background: "var(--tint-white-03)",
+              border: "1px solid var(--tint-white-08)",
+              color: "var(--color-ink-muted)",
               fontFamily: "'JetBrains Mono', monospace",
               fontSize: "0.82rem",
             }}
             onFocus={(e) => {
-              e.currentTarget.style.borderColor = "rgba(59,130,246,0.5)";
-              e.currentTarget.style.background = "rgba(59,130,246,0.05)";
+              e.currentTarget.style.borderColor = "var(--tint-brand-50)";
+              e.currentTarget.style.background = "var(--tint-brand-05)";
             }}
             onBlur={(e) => {
-              e.currentTarget.style.borderColor = "rgba(255,255,255,0.08)";
-              e.currentTarget.style.background = "rgba(255,255,255,0.03)";
+              e.currentTarget.style.borderColor = "var(--tint-white-08)";
+              e.currentTarget.style.background = "var(--tint-white-03)";
             }}
           />
           {query && (
@@ -122,9 +122,9 @@ export function ProjectsGrid({
                 resetVisible();
               }}
               className="absolute right-3 top-1/2 -translate-y-1/2 w-6 h-6 rounded-md flex items-center justify-center transition-colors"
-              style={{ color: "#475569" }}
-              onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.color = "#93c5fd")}
-              onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.color = "#475569")}
+              style={{ color: "var(--color-ink-dim)" }}
+              onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.color = "var(--color-brand-300)")}
+              onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.color = "var(--color-ink-dim)")}
             >
               <X size={14} />
             </button>
@@ -202,7 +202,7 @@ export function ProjectsGrid({
 
       <div
         className="font-mono mb-6"
-        style={{ fontSize: "0.72rem", color: "#475569" }}
+        style={{ fontSize: "0.72rem", color: "var(--color-ink-dim)" }}
       >
         // showing {displayed.length} of {filtered.length}
         {filtered.length !== sorted.length && ` (${sorted.length} total)`}
@@ -212,14 +212,14 @@ export function ProjectsGrid({
         <div
           className="rounded-2xl py-16 text-center"
           style={{
-            background: "rgba(255,255,255,0.02)",
-            border: "1px solid rgba(255,255,255,0.06)",
-            color: "#475569",
+            background: "var(--tint-white-02)",
+            border: "1px solid var(--tint-white-06)",
+            color: "var(--color-ink-dim)",
             fontFamily: "'Space Grotesk', sans-serif",
           }}
         >
           <p style={{ fontSize: "0.95rem" }}>No projects match your filters.</p>
-          <p className="font-mono mt-1" style={{ fontSize: "0.72rem", color: "#334155" }}>
+          <p className="font-mono mt-1" style={{ fontSize: "0.72rem", color: "var(--color-ink-faint)" }}>
             // try clearing the search or tag
           </p>
         </div>
@@ -246,29 +246,29 @@ export function ProjectsGrid({
             onClick={() => setVisible((v) => Math.min(v + step, filtered.length))}
             className="inline-flex items-center gap-2 px-6 py-3 rounded-xl transition-all duration-200 active:scale-95 hover:scale-[1.03]"
             style={{
-              background: "rgba(59,130,246,0.08)",
-              border: "1px solid rgba(59,130,246,0.25)",
-              color: "#93c5fd",
+              background: "var(--tint-brand-08)",
+              border: "1px solid var(--tint-brand-25)",
+              color: "var(--color-brand-300)",
               fontFamily: "'Space Grotesk', sans-serif",
               fontSize: "0.9rem",
               fontWeight: 500,
             }}
             onMouseEnter={(e) => {
               const el = e.currentTarget as HTMLElement;
-              el.style.background = "rgba(59,130,246,0.15)";
-              el.style.borderColor = "rgba(59,130,246,0.45)";
+              el.style.background = "var(--tint-brand-15)";
+              el.style.borderColor = "var(--tint-brand-45)";
             }}
             onMouseLeave={(e) => {
               const el = e.currentTarget as HTMLElement;
-              el.style.background = "rgba(59,130,246,0.08)";
-              el.style.borderColor = "rgba(59,130,246,0.25)";
+              el.style.background = "var(--tint-brand-08)";
+              el.style.borderColor = "var(--tint-brand-25)";
             }}
           >
             <Plus size={16} />
             See more
             <span
               className="font-mono"
-              style={{ fontSize: "0.7rem", color: "#60a5fa", marginLeft: "4px" }}
+              style={{ fontSize: "0.7rem", color: "var(--color-brand-400)", marginLeft: "4px" }}
             >
               +{Math.min(step, remaining)}
             </span>
@@ -292,7 +292,7 @@ function FilterRow({
         className="font-mono"
         style={{
           fontSize: "0.7rem",
-          color: "#475569",
+          color: "var(--color-ink-dim)",
           minWidth: "42px",
         }}
       >
@@ -320,21 +320,21 @@ function FilterChip({
       style={{
         padding: "8px 14px",
         fontSize: "0.75rem",
-        background: active ? "rgba(59,130,246,0.18)" : "rgba(255,255,255,0.03)",
-        border: `1px solid ${active ? "rgba(59,130,246,0.5)" : "rgba(255,255,255,0.08)"}`,
-        color: active ? "#93c5fd" : "#64748b",
+        background: active ? "var(--tint-brand-18)" : "var(--tint-white-03)",
+        border: `1px solid ${active ? "var(--tint-brand-50)" : "var(--tint-white-08)"}`,
+        color: active ? "var(--color-brand-300)" : "var(--color-ink-dim)",
       }}
       onMouseEnter={(e) => {
         if (active) return;
         const el = e.currentTarget as HTMLElement;
-        el.style.color = "#93c5fd";
-        el.style.borderColor = "rgba(59,130,246,0.3)";
+        el.style.color = "var(--color-brand-300)";
+        el.style.borderColor = "var(--tint-brand-30)";
       }}
       onMouseLeave={(e) => {
         if (active) return;
         const el = e.currentTarget as HTMLElement;
-        el.style.color = "#64748b";
-        el.style.borderColor = "rgba(255,255,255,0.08)";
+        el.style.color = "var(--color-ink-dim)";
+        el.style.borderColor = "var(--tint-white-08)";
       }}
     >
       {label}

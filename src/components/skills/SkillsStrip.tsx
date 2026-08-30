@@ -66,9 +66,9 @@ export function SkillsStrip({ techstack, extraSkills }: SkillsStripProps) {
     <div
       ref={containerRef}
       className="overflow-hidden rounded-xl py-5 px-6"
-      style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.05)", opacity: 0 }}
+      style={{ background: "var(--tint-white-02)", border: "1px solid var(--tint-white-05)", opacity: 0 }}
     >
-      <p className="font-mono mb-4" style={{ fontSize: "0.65rem", color: "#1e3a5f", textAlign: "center" }}>
+      <p className="font-mono mb-4" style={{ fontSize: "0.65rem", color: "var(--color-brand-300)", textAlign: "center" }}>
         // technologies I work with
       </p>
       <div className="flex flex-wrap gap-2 justify-center">
@@ -77,7 +77,7 @@ export function SkillsStrip({ techstack, extraSkills }: SkillsStripProps) {
             <Badge
               variant="outline"
               className="font-mono rounded-xl cursor-default"
-              style={{ padding: "5px 11px", fontSize: "0.7rem", color: "#93c5fd", background: "rgba(59,130,246,0.07)", border: "1px solid rgba(59,130,246,0.16)" }}
+              style={{ padding: "5px 11px", fontSize: "0.7rem", color: "var(--color-brand-300)", background: "var(--tint-brand-07)", border: "1px solid var(--tint-brand-16)" }}
             >
               {tech}
             </Badge>

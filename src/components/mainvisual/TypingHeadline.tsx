@@ -83,7 +83,7 @@ export function TypingHeadline({ name, sequences, headlinePrefix, rolePrefix }: 
             fontSize: "clamp(2.8rem, 7vw, 5.5rem)",
             fontWeight: 700,
             lineHeight: 1.1,
-            color: "#ffffff",
+            color: "var(--color-ink)",
             letterSpacing: "-0.02em",
             fontFamily: "'Space Grotesk', sans-serif",
             perspective: "800px",
@@ -98,7 +98,7 @@ export function TypingHeadline({ name, sequences, headlinePrefix, rolePrefix }: 
         className="flex items-center gap-2 mb-6"
         style={{ height: "2.5rem", opacity: 0 }}
       >
-        <span style={{ fontSize: "clamp(1.1rem, 2.5vw, 1.6rem)", color: "#94a3b8", fontFamily: "'Space Grotesk', sans-serif" }}>
+        <span style={{ fontSize: "clamp(1.1rem, 2.5vw, 1.6rem)", color: "var(--color-ink-dim)", fontFamily: "'Space Grotesk', sans-serif" }}>
           {rolePrefix}{" "}
         </span>
         <span

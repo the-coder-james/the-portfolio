@@ -22,11 +22,11 @@ const ICON_PATHS: Record<string, string> = {
 };
 
 const ICON_COLORS: Record<string, string> = {
-  Github: "#e2e8f0",
-  Linkedin: "#60a5fa",
-  Mail: "#818cf8",
-  Website: "#34d399",
-  Globe: "#34d399",
+  Github: "var(--color-ink-muted)",
+  Linkedin: "var(--color-brand-400)",
+  Mail: "var(--color-accent-2)",
+  Website: "var(--color-accent-3)",
+  Globe: "var(--color-accent-3)",
 };
 
 export function ContactCard({ contact, index }: ContactCardProps) {
@@ -50,23 +50,23 @@ export function ContactCard({ contact, index }: ContactCardProps) {
       target={contact.icon !== "Mail" ? "_blank" : undefined}
       rel="noopener noreferrer"
       className="flex items-center gap-3 p-4 rounded-xl transition-all duration-200"
-      style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.06)", textDecoration: "none", opacity: 0 }}
+      style={{ background: "var(--tint-white-02)", border: "1px solid var(--tint-white-06)", textDecoration: "none", opacity: 0 }}
       onMouseEnter={(e) => {
         const el = e.currentTarget as HTMLElement;
-        el.style.background = "rgba(59,130,246,0.07)";
-        el.style.borderColor = "rgba(59,130,246,0.3)";
+        el.style.background = "var(--tint-brand-07)";
+        el.style.borderColor = "var(--tint-brand-30)";
         el.style.transform = "translateX(4px)";
       }}
       onMouseLeave={(e) => {
         const el = e.currentTarget as HTMLElement;
-        el.style.background = "rgba(255,255,255,0.02)";
-        el.style.borderColor = "rgba(255,255,255,0.06)";
+        el.style.background = "var(--tint-white-02)";
+        el.style.borderColor = "var(--tint-white-06)";
         el.style.transform = "translateX(0)";
       }}
     >
       <div
         className="w-8 h-8 rounded-lg flex items-center justify-center"
-        style={{ background: "rgba(255,255,255,0.04)", color: iconColor }}
+        style={{ background: "var(--tint-white-04)", color: iconColor }}
       >
         {iconPath && (
           <svg viewBox="0 0 24 24" fill="currentColor" style={{ width: 15, height: 15 }}>
@@ -75,10 +75,10 @@ export function ContactCard({ contact, index }: ContactCardProps) {
         )}
       </div>
       <div>
-        <div style={{ fontSize: "0.82rem", color: "#e2e8f0", fontFamily: "'Space Grotesk'", fontWeight: 500 }}>
+        <div style={{ fontSize: "0.82rem", color: "var(--color-ink-muted)", fontFamily: "'Space Grotesk'", fontWeight: 500 }}>
           {contact.name}
         </div>
-        <div style={{ fontSize: "0.72rem", color: "#475569", fontFamily: "'JetBrains Mono'" }}>
+        <div style={{ fontSize: "0.72rem", color: "var(--color-ink-dim)", fontFamily: "'JetBrains Mono'" }}>
           {displayUrl}
         </div>
       </div>

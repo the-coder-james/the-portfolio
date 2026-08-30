@@ -20,7 +20,7 @@ const socials = contactJson
   .map((c) => ({ label: c.name, href: c.url, iconKey: c.name }))
 ---
 
-<section id="hero" data-stack-section class="sticky top-0 min-h-screen flex items-center overflow-hidden" style="background: #030712">
+<section id="hero" data-stack-section class="sticky top-0 min-h-screen flex items-center overflow-hidden" style="background: var(--color-surface-base)">
   <!-- Dynamic: particle canvas -->
   <ParticleCanvas client:load />
 
@@ -28,14 +28,14 @@ const socials = contactJson
   <div class="absolute inset-0 dot-grid opacity-30" style="z-index: 0"></div>
   <div
     class="absolute inset-0 pointer-events-none"
-    style="background: radial-gradient(ellipse 60% 50% at 50% 50%, rgba(59,130,246,0.07) 0%, transparent 70%); z-index: 0"
+    style="background: radial-gradient(ellipse 60% 50% at 50% 50%, var(--tint-brand-07) 0%, transparent 70%); z-index: 0"
   ></div>
 
   <!-- Static floating code snippets (lg+) -->
   {mainvisual.floaters.map((f) => (
     <div
       class="absolute hidden lg:block select-none pointer-events-none font-mono"
-      style={`left: ${f.x}; top: ${f.y}; font-size: 0.7rem; color: rgba(59,130,246,0.25); z-index: 1`}
+      style={`left: ${f.x}; top: ${f.y}; font-size: 0.7rem; color: var(--tint-brand-25); z-index: 1`}
     >
       {f.text}
     </div>
@@ -49,14 +49,14 @@ const socials = contactJson
         <!-- Static: "Available for hire" badge -->
         <div
           class="inline-flex items-center gap-2 mb-6 px-3 py-1.5 rounded-full"
-          style="background: rgba(59,130,246,0.1); border: 1px solid rgba(59,130,246,0.25)"
+          style="background: var(--tint-brand-10); border: 1px solid var(--tint-brand-25)"
         >
           <span class="w-1.5 h-1.5 rounded-full bg-blue-400 cursor-blink"></span>
-          <span class="font-mono" style="font-size: 0.7rem; color: #60a5fa">Available for hire</span>
+          <span class="font-mono" style="font-size: 0.7rem; color: var(--color-brand-400)">Available for hire</span>
         </div>
 
         <!-- Static: greeting line -->
-        <p class="font-mono mb-2" style="font-size: 1rem; color: #60a5fa">
+        <p class="font-mono mb-2" style="font-size: 1rem; color: var(--color-brand-400)">
           {mainvisual.greeting}
         </p>
 
@@ -72,7 +72,7 @@ const socials = contactJson
         <!-- Static: description -->
         <p
           class="mb-8"
-          style="font-size: 1rem; color: #64748b; line-height: 1.7; max-width: 480px; font-family: 'Space Grotesk', sans-serif"
+          style="font-size: 1rem; color: var(--color-ink-dim); line-height: 1.7; max-width: 480px; font-family: 'Space Grotesk', sans-serif"
         >
           {mainvisual.description}
         </p>
@@ -84,8 +84,8 @@ const socials = contactJson
               href={cta.href}
               class={`px-6 py-3 rounded-lg text-white transition-all duration-200 ${cta.variant === "primary" ? "hero-btn-primary" : "hero-btn-outline"}`}
               style={cta.variant === "primary"
-                ? "background: linear-gradient(135deg, #2563eb, #3b82f6); box-shadow: 0 4px 20px rgba(59,130,246,0.35); font-family: 'Space Grotesk', sans-serif; font-size: 0.9rem; font-weight: 500; text-decoration: none"
-                : "background: transparent; border: 1px solid rgba(255,255,255,0.15); font-family: 'Space Grotesk', sans-serif; font-size: 0.9rem; font-weight: 500; text-decoration: none"}
+                ? "background: linear-gradient(135deg, var(--color-brand-700), var(--color-brand)); box-shadow: 0 4px 20px var(--tint-brand-35); font-family: 'Space Grotesk', sans-serif; font-size: 0.9rem; font-weight: 500; text-decoration: none"
+                : "background: transparent; border: 1px solid var(--tint-white-15); font-family: 'Space Grotesk', sans-serif; font-size: 0.9rem; font-weight: 500; text-decoration: none"}
             >
               {cta.label}
             </a>
@@ -101,7 +101,7 @@ const socials = contactJson
                 href={s.href}
                 aria-label={s.label}
                 class="w-9 h-9 rounded-lg flex items-center justify-center transition-all duration-200 hero-social-link"
-                style="background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); color: #64748b"
+                style="background: var(--tint-white-04); border: 1px solid var(--tint-white-08); color: var(--color-ink-dim)"
               >
                 {pathD && (
                   <svg viewBox="0 0 24 24" fill="currentColor" style="width: 16px; height: 16px">
@@ -111,7 +111,7 @@ const socials = contactJson
               </a>
             )
           })}
-          <span style="color: #334155; font-size: 0.75rem; margin-left: 4px; font-family: 'Space Grotesk'">
+          <span style="color: var(--color-ink-faint); font-size: 0.75rem; margin-left: 4px; font-family: 'Space Grotesk'">
             {mainvisual.socialsLabel}
           </span>
         </div>
@@ -128,7 +128,7 @@ const socials = contactJson
     </div>
 
     <!-- Static: scroll hint -->
-    <div class="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1 hero-scroll-hint" style="color: #334155">
+    <div class="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1 hero-scroll-hint" style="color: var(--color-ink-faint)">
       <span style="font-size: 0.65rem; font-family: 'JetBrains Mono'">scroll</span>
       <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <line x1="12" y1="5" x2="12" y2="19"></line>
@@ -141,18 +141,18 @@ const socials = contactJson
 <style>
   .hero-btn-primary:hover {
     transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(59, 130, 246, 0.5) !important;
+    box-shadow: 0 8px 25px var(--tint-brand-50) !important;
   }
   .hero-btn-outline:hover {
-    border-color: rgba(59, 130, 246, 0.6) !important;
-    background: rgba(59, 130, 246, 0.08) !important;
+    border-color: var(--tint-brand-60) !important;
+    background: var(--tint-brand-08) !important;
   }
   .hero-social-link:hover {
-    color: #60a5fa !important;
-    border-color: rgba(59, 130, 246, 0.4) !important;
-    background: rgba(59, 130, 246, 0.1) !important;
+    color: var(--color-brand-400) !important;
+    border-color: var(--tint-brand-40) !important;
+    background: var(--tint-brand-10) !important;
   }
   .hero-scroll-hint:hover {
-    color: #60a5fa;
+    color: var(--color-brand-400);
   }
 </style>

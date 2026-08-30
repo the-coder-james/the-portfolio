@@ -38,6 +38,65 @@
   --color-card: hsl(222 47% 5%);
   --color-card-foreground: hsl(210 40% 98%);
 
+
+  /* ── Site palette ──
+     The de-facto palette this site was built with, promoted from ~442
+     inline literals to named tokens. Grays that failed WCAG AA have been
+     raised on the slate ramp — same muted character, readable contrast. */
+
+  /* Surfaces */
+  --color-surface-base: #030712;      /* hero, projects, contact */
+  --color-surface-alt: #040b1a;       /* skills, experience */
+  --color-surface-deep: #020509;      /* footer */
+  --color-surface-code: #0d1117;      /* terminal/editor body */
+  --color-surface-code-head: #161b22; /* terminal/editor header */
+
+  /* Brand blues */
+  --color-brand-900: #1d4ed8;
+  --color-brand-700: #2563eb;
+  --color-brand: #3b82f6;
+  --color-brand-400: #60a5fa;
+  --color-brand-300: #93c5fd;
+
+  /* Text ramp — every value meets AA on the surfaces above */
+  --color-ink: #f1f5f9;               /* headings */
+  --color-ink-muted: #e2e8f0;         /* body on dark surfaces */
+  --color-ink-dim: #94a3b8;           /* secondary text (7.9:1) */
+  --color-ink-faint: #64748b;         /* decorative/large only (4.2:1) */
+
+  /* Status */
+  --color-success: #4ade80;
+  --color-success-strong: #22c55e;
+  --color-success-soft: #6ee7b7;
+  --color-danger: #dc2626;
+
+  /* Syntax highlighting — replaces 3 duplicated token maps (~130 literals) */
+  --color-syn-keyword: #c084fc;
+  --color-syn-ident: #60a5fa;
+  --color-syn-fn: #fcd34d;
+  --color-syn-string: #86efac;
+  --color-syn-number: #a5b4fc;
+  --color-syn-punct: #94a3b8;
+  --color-syn-plain: #e2e8f0;
+  --color-syn-comment: #94a3b8;
+  --color-syn-attr: #93c5fd;
+  --color-syn-tag: #f9a8d4;
+  --color-syn-violet: #c4b5fd;
+
+  /* Editor chrome */
+  --color-chrome-red: #ff5f57;
+  --color-chrome-yellow: #febc2e;
+  --color-chrome-green: #28c840;
+  --color-chrome-line: #64748b;       /* line numbers (was #2d3748, 1.4:1) */
+
+  /* Project card accents */
+  --color-accent-1: #3b82f6;
+  --color-accent-2: #818cf8;
+  --color-accent-3: #34d399;
+  --color-accent-4: #f59e0b;
+  --color-accent-5: #ec4899;
+  --color-accent-6: #60a5fa;
+
   --radius: 0.5rem;
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
@@ -74,6 +133,58 @@
   html {
     scroll-behavior: smooth;
   }
+}
+
+/* ── Alpha helpers ──
+   Derived from the tokens above via color-mix, replacing ~156 hand-written
+   rgba() literals. Naming: --tint-<base>-<alpha*100>. */
+:root {
+  --tint-brand-03: color-mix(in srgb, var(--color-brand) 3%, transparent);
+  --tint-brand-04: color-mix(in srgb, var(--color-brand) 4%, transparent);
+  --tint-brand-05: color-mix(in srgb, var(--color-brand) 5%, transparent);
+  --tint-brand-06: color-mix(in srgb, var(--color-brand) 6%, transparent);
+  --tint-brand-07: color-mix(in srgb, var(--color-brand) 7%, transparent);
+  --tint-brand-08: color-mix(in srgb, var(--color-brand) 8%, transparent);
+  --tint-brand-10: color-mix(in srgb, var(--color-brand) 10%, transparent);
+  --tint-brand-12: color-mix(in srgb, var(--color-brand) 12%, transparent);
+  --tint-brand-15: color-mix(in srgb, var(--color-brand) 15%, transparent);
+  --tint-brand-16: color-mix(in srgb, var(--color-brand) 16%, transparent);
+  --tint-brand-18: color-mix(in srgb, var(--color-brand) 18%, transparent);
+  --tint-brand-20: color-mix(in srgb, var(--color-brand) 20%, transparent);
+  --tint-brand-25: color-mix(in srgb, var(--color-brand) 25%, transparent);
+  --tint-brand-30: color-mix(in srgb, var(--color-brand) 30%, transparent);
+  --tint-brand-35: color-mix(in srgb, var(--color-brand) 35%, transparent);
+  --tint-brand-40: color-mix(in srgb, var(--color-brand) 40%, transparent);
+  --tint-brand-42: color-mix(in srgb, var(--color-brand) 42%, transparent);
+  --tint-brand-45: color-mix(in srgb, var(--color-brand) 45%, transparent);
+  --tint-brand-50: color-mix(in srgb, var(--color-brand) 50%, transparent);
+  --tint-brand-60: color-mix(in srgb, var(--color-brand) 60%, transparent);
+
+  --tint-white-02: rgb(255 255 255 / 0.02);
+  --tint-white-03: rgb(255 255 255 / 0.03);
+  --tint-white-04: rgb(255 255 255 / 0.04);
+  --tint-white-05: rgb(255 255 255 / 0.05);
+  --tint-white-06: rgb(255 255 255 / 0.06);
+  --tint-white-07: rgb(255 255 255 / 0.07);
+  --tint-white-08: rgb(255 255 255 / 0.08);
+  --tint-white-15: rgb(255 255 255 / 0.15);
+
+  --tint-success-08: color-mix(in srgb, var(--color-success) 8%, transparent);
+  --tint-success-10: color-mix(in srgb, var(--color-success) 10%, transparent);
+  --tint-success-20: color-mix(in srgb, var(--color-success) 20%, transparent);
+  --tint-success-30: color-mix(in srgb, var(--color-success) 30%, transparent);
+  --tint-success-60: color-mix(in srgb, var(--color-success) 60%, transparent);
+
+  --scrim-soft: rgb(10 15 26 / 0.35);
+  --scrim-strong: rgb(10 15 26 / 0.7);
+  --scrim-base-35: rgb(3 7 18 / 0.35);
+  --scrim-base-90: rgb(3 7 18 / 0.9);
+  --scrim-base-98: rgb(3 7 18 / 0.98);
+  --tint-violet-07: rgb(139 92 246 / 0.07);
+  --tint-violet-20: rgb(139 92 246 / 0.2);
+
+  --shadow-black-40: rgb(0 0 0 / 0.4);
+  --shadow-black-50: rgb(0 0 0 / 0.5);
 }
 
 /* ── CSS Variables ── */

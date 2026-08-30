@@ -9,6 +9,17 @@ export function ParticleCanvas() {
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
+    // Canvas draw calls can't resolve CSS custom properties, so read the
+    // brand token once at init and reuse its channels for every fill/stroke.
+    const brand = getComputedStyle(document.documentElement)
+      .getPropertyValue("--color-brand")
+      .trim() || "#3b82f6";
+    const rgb = (() => {
+      const h = brand.replace("#", "");
+      if (h.length !== 6) return "59,130,246";
+      return [0, 2, 4].map((i) => parseInt(h.slice(i, i + 2), 16)).join(",");
+    })();
+
     const resize = () => {
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
@@ -40,7 +51,7 @@ export function ParticleCanvas() {
         if (p.y > canvas.height) p.y = 0;
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(59,130,246,${p.alpha})`;
+        ctx.fillStyle = `rgba(${rgb},${p.alpha})`;
         ctx.fill();
       });
       for (let i = 0; i < particles.length; i++) {
@@ -52,7 +63,7 @@ export function ParticleCanvas() {
             ctx.beginPath();
             ctx.moveTo(particles[i].x, particles[i].y);
             ctx.lineTo(particles[j].x, particles[j].y);
-            ctx.strokeStyle = `rgba(59,130,246,${0.08 * (1 - dist / 120)})`;
+            ctx.strokeStyle = `rgba(${rgb},${0.08 * (1 - dist / 120)})`;
             ctx.lineWidth = 0.5;
             ctx.stroke();
           }

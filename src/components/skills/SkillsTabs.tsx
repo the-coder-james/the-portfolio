@@ -61,9 +61,9 @@ function SkillBadge({ skill }: { skill: string }) {
       <Badge
         variant="outline"
         className="cursor-default select-none rounded-xl font-mono transition-transform hover:scale-105"
-        style={{ padding: "9px 16px", fontSize: "0.82rem", color: "#93c5fd", background: "rgba(59,130,246,0.07)", border: "1px solid rgba(59,130,246,0.16)" }}
-        onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = "rgba(59,130,246,0.16)"; (e.currentTarget as HTMLElement).style.borderColor = "rgba(59,130,246,0.42)"; }}
-        onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = "rgba(59,130,246,0.07)"; (e.currentTarget as HTMLElement).style.borderColor = "rgba(59,130,246,0.16)"; }}
+        style={{ padding: "9px 16px", fontSize: "0.82rem", color: "var(--color-brand-300)", background: "var(--tint-brand-07)", border: "1px solid var(--tint-brand-16)" }}
+        onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = "var(--tint-brand-16)"; (e.currentTarget as HTMLElement).style.borderColor = "var(--tint-brand-42)"; }}
+        onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = "var(--tint-brand-07)"; (e.currentTarget as HTMLElement).style.borderColor = "var(--tint-brand-16)"; }}
       >
         {skill}
       </Badge>
@@ -104,7 +104,7 @@ export function SkillsTabs({ techstack, extraSkills }: SkillsTabsProps) {
       >
         <TabsList
           className="h-auto p-1 mb-8 flex-wrap justify-start gap-1"
-          style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.07)", borderRadius: "12px" }}
+          style={{ background: "var(--tint-white-03)", border: "1px solid var(--tint-white-07)", borderRadius: "12px" }}
         >
           {categories.map((cat) => (
             <TabsTrigger
@@ -123,11 +123,11 @@ export function SkillsTabs({ techstack, extraSkills }: SkillsTabsProps) {
             <div
               ref={(el) => { tabRefs.current[cat.id] = el; }}
               className="rounded-2xl p-6"
-              style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.06)" }}
+              style={{ background: "var(--tint-white-02)", border: "1px solid var(--tint-white-06)" }}
             >
               <div className="flex items-center gap-2 mb-6">
                 <span className="text-xl">{cat.icon}</span>
-                <span style={{ fontSize: "1rem", color: "#e2e8f0", fontWeight: 600, fontFamily: "'Space Grotesk', sans-serif" }}>
+                <span style={{ fontSize: "1rem", color: "var(--color-ink-muted)", fontWeight: 600, fontFamily: "'Space Grotesk', sans-serif" }}>
                   {cat.label}
                 </span>
               </div>

@@ -54,38 +54,38 @@ export function TimelineEntry({ item, index }: TimelineEntryProps) {
         <div
           className="card-glow rounded-2xl p-5 text-left"
           style={{
-            background: item.type === "present" ? "rgba(59,130,246,0.07)" : "rgba(255,255,255,0.02)",
-            border: item.type === "present" ? "1px solid rgba(59,130,246,0.3)" : "1px solid rgba(255,255,255,0.06)",
+            background: item.type === "present" ? "var(--tint-brand-07)" : "var(--tint-white-02)",
+            border: item.type === "present" ? "1px solid var(--tint-brand-30)" : "1px solid var(--tint-white-06)",
           }}
         >
           <div className="flex items-center gap-2 mb-3 flex-wrap">
             <Badge
               variant="outline"
               className="font-mono rounded"
-              style={{ fontSize: "0.6rem", color: "#60a5fa", background: "rgba(59,130,246,0.12)", border: "1px solid rgba(59,130,246,0.2)" }}
+              style={{ fontSize: "0.6rem", color: "var(--color-brand-400)", background: "var(--tint-brand-12)", border: "1px solid var(--tint-brand-20)" }}
             >
               {item.hash}
             </Badge>
-            <span style={{ fontSize: "0.75rem", color: "#3b82f6", fontFamily: "'JetBrains Mono'", fontWeight: 600 }}>
+            <span style={{ fontSize: "0.75rem", color: "var(--color-brand)", fontFamily: "'JetBrains Mono'", fontWeight: 600 }}>
               {item.year}
             </span>
             {item.type === "present" && (
               <Badge
                 className="gap-1 rounded-full"
-                style={{ fontSize: "0.6rem", color: "#4ade80", background: "rgba(74,222,128,0.1)", border: "1px solid rgba(74,222,128,0.2)" }}
+                style={{ fontSize: "0.6rem", color: "var(--color-success)", background: "var(--tint-success-10)", border: "1px solid var(--tint-success-20)" }}
               >
                 <span className="w-1 h-1 rounded-full bg-green-400 cursor-blink" />
                 Live
               </Badge>
             )}
           </div>
-          <h3 style={{ fontSize: "1rem", fontWeight: 700, color: "#f1f5f9", fontFamily: "'Space Grotesk', sans-serif", marginBottom: "2px" }}>
+          <h3 style={{ fontSize: "1rem", fontWeight: 700, color: "var(--color-ink)", fontFamily: "'Space Grotesk', sans-serif", marginBottom: "2px" }}>
             {item.title}
           </h3>
-          <p style={{ fontSize: "0.78rem", color: "#3b82f6", fontFamily: "'Space Grotesk', sans-serif", marginBottom: "10px" }}>
+          <p style={{ fontSize: "0.78rem", color: "var(--color-brand)", fontFamily: "'Space Grotesk', sans-serif", marginBottom: "10px" }}>
             {item.company}
           </p>
-          <p style={{ fontSize: "0.82rem", color: "#64748b", lineHeight: 1.7, fontFamily: "'Space Grotesk', sans-serif", marginBottom: "12px" }}>
+          <p style={{ fontSize: "0.82rem", color: "var(--color-ink-dim)", lineHeight: 1.7, fontFamily: "'Space Grotesk', sans-serif", marginBottom: "12px" }}>
             {item.description}
           </p>
           <div className="flex flex-wrap gap-1.5">
@@ -94,7 +94,7 @@ export function TimelineEntry({ item, index }: TimelineEntryProps) {
                 key={tag}
                 variant="outline"
                 className="font-mono rounded"
-                style={{ fontSize: "0.6rem", color: "#60a5fa", background: "rgba(59,130,246,0.07)", border: "1px solid rgba(59,130,246,0.12)" }}
+                style={{ fontSize: "0.6rem", color: "var(--color-brand-400)", background: "var(--tint-brand-07)", border: "1px solid var(--tint-brand-12)" }}
               >
                 {tag}
               </Badge>
@@ -108,8 +108,8 @@ export function TimelineEntry({ item, index }: TimelineEntryProps) {
           ref={dotRef}
           className="w-3 h-3 rounded-full relative"
           style={{
-            background: item.type === "present" ? "#4ade80" : "#3b82f6",
-            boxShadow: item.type === "present" ? "0 0 12px rgba(74,222,128,0.6)" : "0 0 12px rgba(59,130,246,0.5)",
+            background: item.type === "present" ? "var(--color-success)" : "var(--color-brand)",
+            boxShadow: item.type === "present" ? "0 0 12px var(--tint-success-60)" : "0 0 12px var(--tint-brand-50)",
             opacity: 0,
           }}
         >
@@ -117,7 +117,7 @@ export function TimelineEntry({ item, index }: TimelineEntryProps) {
             <div
               ref={pulseRef}
               className="absolute inset-0 rounded-full"
-              style={{ background: "rgba(74,222,128,0.3)" }}
+              style={{ background: "var(--tint-success-30)" }}
             />
           )}
         </div>

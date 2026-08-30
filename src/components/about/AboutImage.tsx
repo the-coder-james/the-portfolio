@@ -43,21 +43,21 @@ export function AboutImage({ name, imageUrl, hoverImageUrl }: AboutImageProps) {
         <div
           className="absolute inset-0 rounded-full"
           style={{
-            background: "linear-gradient(135deg, #3b82f6, #1d4ed8, #0f172a)",
+            background: "linear-gradient(135deg, var(--color-brand), var(--color-brand-900), var(--color-surface-code))",
             padding: "3px",
             borderRadius: "9999px",
-            boxShadow: "0 0 40px rgba(59,130,246,0.45), 0 0 80px rgba(59,130,246,0.15)",
+            boxShadow: "0 0 40px var(--tint-brand-45), 0 0 80px var(--tint-brand-15)",
           }}
         />
         <div
           ref={ringRef}
           className="absolute -inset-2 rounded-full pointer-events-none"
-          style={{ border: "1.5px dashed rgba(59,130,246,0.3)", borderRadius: "9999px" }}
+          style={{ border: "1.5px dashed var(--tint-brand-30)", borderRadius: "9999px" }}
         />
         <div
           ref={portraitRef}
           className="relative rounded-full overflow-hidden"
-          style={{ width: "170px", height: "170px", border: "3px solid rgba(59,130,246,0.6)", boxShadow: "0 0 30px rgba(59,130,246,0.35)" }}
+          style={{ width: "170px", height: "170px", border: "3px solid var(--tint-brand-60)", boxShadow: "0 0 30px var(--tint-brand-35)" }}
           onMouseEnter={() => setHovered(true)}
           onMouseLeave={() => setHovered(false)}
         >
@@ -78,20 +78,20 @@ export function AboutImage({ name, imageUrl, hoverImageUrl }: AboutImageProps) {
               style={{ opacity: hovered ? 1 : 0 }}
             />
           )}
-          <div className="absolute inset-0 pointer-events-none" style={{ background: "linear-gradient(180deg, transparent 60%, rgba(3,7,18,0.35) 100%)" }} />
+          <div className="absolute inset-0 pointer-events-none" style={{ background: "linear-gradient(180deg, transparent 60%, var(--scrim-base-35) 100%)" }} />
         </div>
         <div
           ref={availableRef}
           className="absolute -bottom-1 -right-1 flex items-center gap-1.5 px-2.5 py-1 rounded-full"
-          style={{ background: "#0d1117", border: "1px solid rgba(59,130,246,0.35)", boxShadow: "0 4px 12px rgba(0,0,0,0.4)", opacity: 0 }}
+          style={{ background: "var(--color-surface-code)", border: "1px solid var(--tint-brand-35)", boxShadow: "0 4px 12px var(--shadow-black-40)", opacity: 0 }}
         >
           <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 cursor-blink" />
-          <span className="font-mono" style={{ fontSize: "0.6rem", color: "#6ee7b7", whiteSpace: "nowrap" }}>available</span>
+          <span className="font-mono" style={{ fontSize: "0.6rem", color: "var(--color-success-soft)", whiteSpace: "nowrap" }}>available</span>
         </div>
         <div
           ref={yearsRef}
           className="absolute -top-2 -left-4 px-2.5 py-1 rounded-lg font-mono"
-          style={{ background: "rgba(59,130,246,0.15)", border: "1px solid rgba(59,130,246,0.3)", fontSize: "0.6rem", color: "#93c5fd", whiteSpace: "nowrap", opacity: 0 }}
+          style={{ background: "var(--tint-brand-15)", border: "1px solid var(--tint-brand-30)", fontSize: "0.6rem", color: "var(--color-brand-300)", whiteSpace: "nowrap", opacity: 0 }}
         >
           10+ yrs coding
         </div>

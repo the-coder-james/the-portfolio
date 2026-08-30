@@ -61,7 +61,7 @@ export function AboutStats({ stats }: AboutStatsProps) {
         <div
           key={stat.label}
           className="stat-card card-glow rounded-xl p-5"
-          style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.06)", opacity: 0 }}
+          style={{ background: "var(--tint-white-02)", border: "1px solid var(--tint-white-06)", opacity: 0 }}
         >
           <div className="text-2xl mb-2">{stat.icon}</div>
           <div
@@ -71,7 +71,7 @@ export function AboutStats({ stats }: AboutStatsProps) {
           >
             {stat.value}
           </div>
-          <div style={{ fontSize: "0.78rem", color: "#475569", marginTop: "4px", fontFamily: "'Space Grotesk', sans-serif" }}>
+          <div style={{ fontSize: "0.78rem", color: "var(--color-ink-dim)", marginTop: "4px", fontFamily: "'Space Grotesk', sans-serif" }}>
             {stat.label}
           </div>
         </div>
