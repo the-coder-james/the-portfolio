@@ -1,7 +1,7 @@
-import { useRef, type ReactNode } from "react";
-import { useInView } from "motion/react";
+import type { ReactNode } from "react";
 import { AnimatedGroup } from "@/components/motion-primitives/animated-group";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
+import { useRevealed } from "@/hooks/useRevealed";
 
 type Preset = "fade" | "slide" | "scale" | "blur" | "blur-slide" | "zoom" | "flip" | "bounce" | "rotate" | "swing";
 
@@ -32,8 +32,7 @@ export function RevealGroup({
   preset = "fade",
   margin = "-60px",
 }: RevealGroupProps) {
-  const sentinel = useRef<HTMLSpanElement>(null);
-  const inView = useInView(sentinel, { once: true, margin: margin as any });
+  const { ref: sentinel, revealed } = useRevealed<HTMLSpanElement>(margin);
   const reduced = useReducedMotion();
 
   if (reduced) {
@@ -43,7 +42,7 @@ export function RevealGroup({
   return (
     <>
       <span ref={sentinel} aria-hidden="true" style={{ display: "block", height: 0 }} />
-      {inView ? (
+      {revealed ? (
         <AnimatedGroup className={className} preset={preset}>
           {children}
         </AnimatedGroup>

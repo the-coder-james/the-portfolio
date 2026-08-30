@@ -1,8 +1,9 @@
 import { useEffect, useRef, useState } from "react";
-import { useInView } from "motion/react";
+
 import { SlidingNumber } from "@/components/motion-primitives/sliding-number";
 import { RevealGroup } from "@/components/common/tsx/RevealGroup";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
+import { useRevealed } from "@/hooks/useRevealed";
 
 interface Stat {
   label: string;
@@ -63,8 +64,7 @@ function StatValue({ value, start }: { value: string; start: boolean }) {
 }
 
 export function AboutStats({ stats }: AboutStatsProps) {
-  const ref = useRef<HTMLDivElement>(null);
-  const inView = useInView(ref, { once: true, margin: "-80px" });
+  const { ref, revealed } = useRevealed<HTMLDivElement>("-80px");
 
   return (
     <div ref={ref}>
@@ -80,7 +80,7 @@ export function AboutStats({ stats }: AboutStatsProps) {
               className="gradient-text"
               style={{ fontSize: "1.8rem", fontWeight: 700, lineHeight: 1, fontFamily: "'Space Grotesk', sans-serif" }}
             >
-              <StatValue value={stat.value} start={inView} />
+              <StatValue value={stat.value} start={revealed} />
             </div>
             <div style={{ fontSize: "0.78rem", color: "var(--color-ink-dim)", marginTop: "4px", fontFamily: "'Space Grotesk', sans-serif" }}>
               {stat.label}

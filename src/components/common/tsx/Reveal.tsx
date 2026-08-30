@@ -1,6 +1,7 @@
-import { useRef, type ReactNode } from "react";
-import { motion, useInView } from "motion/react";
+import type { ReactNode } from "react";
+import { motion } from "motion/react";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
+import { useRevealed } from "@/hooks/useRevealed";
 
 interface RevealProps {
   children: ReactNode;
@@ -25,8 +26,7 @@ export function Reveal({
   delay = 0,
   margin = "-60px",
 }: RevealProps) {
-  const ref = useRef<HTMLDivElement>(null);
-  const inView = useInView(ref, { once: true, margin: margin as any });
+  const { ref, revealed } = useRevealed<HTMLDivElement>(margin);
   const reduced = useReducedMotion();
 
   if (reduced) {
@@ -38,7 +38,7 @@ export function Reveal({
       ref={ref}
       className={className}
       initial={{ opacity: 0, x, y }}
-      animate={inView ? { opacity: 1, x: 0, y: 0 } : undefined}
+      animate={revealed ? { opacity: 1, x: 0, y: 0 } : undefined}
       transition={{ delay, type: "spring", visualDuration: 0.5, bounce: 0.2 }}
     >
       {children}

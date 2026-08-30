@@ -1,6 +1,7 @@
 import { useRef, useState } from "react";
-import { motion, useInView } from "motion/react";
+import { motion } from "motion/react";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
+import { useRevealed } from "@/hooks/useRevealed";
 import { ExternalLink, ArrowUpRight } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
@@ -97,8 +98,7 @@ const CODE_PREVIEWS = [
 ];
 
 export function ProjectCard({ project, index, taglist, roles, providers, baseUrl }: ProjectCardProps) {
-  const ref = useRef<HTMLDivElement>(null);
-  const inView = useInView(ref, { once: true, margin: "-60px" });
+  const { ref, revealed } = useRevealed<HTMLDivElement>("-60px");
   const reduced = useReducedMotion();
   const [hovered, setHovered] = useState(false);
   const accent = ACCENTS[index % ACCENTS.length];
@@ -122,7 +122,7 @@ export function ProjectCard({ project, index, taglist, roles, providers, baseUrl
       onBlur={() => setHovered(false)}
       tabIndex={0}
       initial={reduced ? false : { opacity: 0, y: 50, scale: 0.95 }}
-      animate={inView ? { opacity: 1, y: 0, scale: 1 } : undefined}
+      animate={revealed ? { opacity: 1, y: 0, scale: 1 } : undefined}
       transition={{ delay: index * 0.07, type: "spring", visualDuration: 0.7, bounce: 0.2 }}
       className="rounded-2xl overflow-hidden flex flex-col"
       style={{

@@ -1,7 +1,8 @@
 import { useRef } from "react";
-import { motion, useInView } from "motion/react";
+import { motion } from "motion/react";
 import { Badge } from "@/components/ui/badge";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
+import { useRevealed } from "@/hooks/useRevealed";
 
 interface TimelineItem {
   year: string;
@@ -19,8 +20,7 @@ interface TimelineEntryProps {
 }
 
 export function TimelineEntry({ item, index }: TimelineEntryProps) {
-  const ref = useRef<HTMLLIElement>(null);
-  const inView = useInView(ref, { once: true, margin: "-60px" });
+  const { ref, revealed } = useRevealed<HTMLLIElement>("-60px");
   const reduced = useReducedMotion();
   const isEven = index % 2 === 0;
   const isPresent = item.type === "present";
@@ -30,7 +30,7 @@ export function TimelineEntry({ item, index }: TimelineEntryProps) {
       ref={ref}
       className={`relative flex items-start gap-6 md:gap-0 ${isEven ? "md:flex-row" : "md:flex-row-reverse"}`}
       initial={reduced ? false : { opacity: 0, x: isEven ? -50 : 50, filter: "blur(6px)" }}
-      animate={inView ? { opacity: 1, x: 0, filter: "blur(0px)" } : undefined}
+      animate={revealed ? { opacity: 1, x: 0, filter: "blur(0px)" } : undefined}
       transition={{ delay: 0.05 + index * 0.06, type: "spring", visualDuration: 0.6, bounce: 0.2 }}
     >
       <div className={`md:w-[45%] pl-14 md:pl-0 ${isEven ? "md:pr-10 md:text-right" : "md:pl-10 md:text-left"}`}>
@@ -90,7 +90,7 @@ export function TimelineEntry({ item, index }: TimelineEntryProps) {
         <motion.div
           className="w-3 h-3 rounded-full relative"
           initial={reduced ? false : { scale: 0, opacity: 0 }}
-          animate={inView ? { scale: [0, 1.4, 1], opacity: 1 } : undefined}
+          animate={revealed ? { scale: [0, 1.4, 1], opacity: 1 } : undefined}
           transition={{ delay: 0.2 + index * 0.06, type: "spring", visualDuration: 0.4, bounce: 0.05 }}
           style={{
             background: isPresent ? "var(--color-success)" : "var(--color-brand)",

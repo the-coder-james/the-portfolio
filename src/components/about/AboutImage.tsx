@@ -1,6 +1,7 @@
-import { useRef, useState } from "react";
-import { motion, useInView } from "motion/react";
+import { useState } from "react";
+import { motion } from "motion/react";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
+import { useRevealed } from "@/hooks/useRevealed";
 
 interface AboutImageProps {
   name: string;
@@ -9,14 +10,13 @@ interface AboutImageProps {
 }
 
 export function AboutImage({ name, imageUrl, hoverImageUrl }: AboutImageProps) {
-  const wrapperRef = useRef<HTMLDivElement>(null);
-  const inView = useInView(wrapperRef, { once: true, margin: "-80px" });
+  const { ref: wrapperRef, revealed } = useRevealed<HTMLDivElement>("-80px");
   const reduced = useReducedMotion();
   const [hovered, setHovered] = useState(false);
 
   const reveal = (delay: number, from: Record<string, number>) => ({
     initial: reduced ? false : { opacity: 0, ...from },
-    animate: inView ? { opacity: 1, scale: 1, x: 0, rotate: 0 } : undefined,
+    animate: revealed ? { opacity: 1, scale: 1, x: 0, rotate: 0 } : undefined,
     transition: { delay, type: "spring" as const, visualDuration: 0.5, bounce: 0.2 },
   });
 
@@ -25,7 +25,7 @@ export function AboutImage({ name, imageUrl, hoverImageUrl }: AboutImageProps) {
       ref={wrapperRef}
       className="flex justify-center lg:justify-start mb-10"
       initial={reduced ? false : { opacity: 0, scale: 0.85 }}
-      animate={inView ? { opacity: 1, scale: 1 } : undefined}
+      animate={revealed ? { opacity: 1, scale: 1 } : undefined}
       transition={{ delay: 0.15, type: "spring", visualDuration: 0.6, bounce: 0.25 }}
     >
       <div className="relative">
@@ -47,7 +47,7 @@ export function AboutImage({ name, imageUrl, hoverImageUrl }: AboutImageProps) {
           className="relative rounded-full overflow-hidden"
           style={{ width: "170px", height: "170px", border: "3px solid var(--tint-brand-60)", boxShadow: "0 0 30px var(--tint-brand-35)" }}
           initial={reduced ? false : { rotate: -12 }}
-          animate={inView ? { rotate: 0 } : undefined}
+          animate={revealed ? { rotate: 0 } : undefined}
           transition={{ delay: 0.25, type: "spring", visualDuration: 0.7, bounce: 0.05 }}
           onMouseEnter={() => setHovered(true)}
           onMouseLeave={() => setHovered(false)}
