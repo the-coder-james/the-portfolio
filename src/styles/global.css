@@ -239,6 +239,14 @@
 }
 
 
+/* Fades the hard left/right cut where marquee content enters and exits.
+   A static mask beats ScrollFade's scroll listeners here: a marquee always
+   overflows both edges, so the fades are never conditional. */
+.edge-fade-x {
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+}
+
 /* ── Interaction states ──
    These replace imperative `e.currentTarget.style.X = ...` handlers. Doing it
    in CSS means keyboard users get the same affordance as mouse users, which

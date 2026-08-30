@@ -74,9 +74,11 @@ export function SkillsStrip({ techstack, extraSkills }: SkillsStripProps) {
       {reduced ? (
         <div className="flex flex-wrap gap-2 justify-center">{badges}</div>
       ) : (
-        <InfiniteSlider gap={8} speed={30} speedOnHover={8}>
-          {badges}
-        </InfiniteSlider>
+        <div className="edge-fade-x">
+          <InfiniteSlider gap={8} speed={30} speedOnHover={8}>
+            {badges}
+          </InfiniteSlider>
+        </div>
       )}
     </div>
   );
