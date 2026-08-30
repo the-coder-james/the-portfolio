@@ -1,43 +1,76 @@
 @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap');
 
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+@import "tw-animate-css";
 
-@layer base {
-  :root {
-    --background: 222 47% 4%;
-    --foreground: 210 40% 98%;
-    --card: 222 47% 5%;
-    --card-foreground: 210 40% 98%;
-    --popover: 222 47% 5%;
-    --popover-foreground: 210 40% 98%;
-    --primary: 217 91% 60%;
-    --primary-foreground: 222 47% 4%;
-    --secondary: 217 33% 17%;
-    --secondary-foreground: 210 40% 98%;
-    --muted: 217 33% 17%;
-    --muted-foreground: 215 20% 55%;
-    --accent: 217 33% 17%;
-    --accent-foreground: 210 40% 98%;
-    --destructive: 0 84% 60%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 217 33% 17%;
-    --input: 217 33% 17%;
-    --ring: 217 91% 60%;
-    --radius: 0.5rem;
-  }
+/* v3 used `darkMode: ["class"]`. In v4 that is declared in CSS. */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* ── Design tokens ──
+   Ported from tailwind.config.mjs. In v4 the theme lives here; each
+   --color-* key generates the matching bg-/text-/border-* utilities. */
+@theme {
+  --color-border: hsl(217 33% 17%);
+  --color-input: hsl(217 33% 17%);
+  --color-ring: hsl(217 91% 60%);
+
+  --color-background: hsl(222 47% 4%);
+  --color-foreground: hsl(210 40% 98%);
+
+  --color-primary: hsl(217 91% 60%);
+  --color-primary-foreground: hsl(222 47% 4%);
+
+  --color-secondary: hsl(217 33% 17%);
+  --color-secondary-foreground: hsl(210 40% 98%);
+
+  --color-destructive: hsl(0 84% 60%);
+  --color-destructive-foreground: hsl(210 40% 98%);
+
+  --color-muted: hsl(217 33% 17%);
+  --color-muted-foreground: hsl(215 20% 55%);
+
+  --color-accent: hsl(217 33% 17%);
+  --color-accent-foreground: hsl(210 40% 98%);
+
+  --color-popover: hsl(222 47% 5%);
+  --color-popover-foreground: hsl(210 40% 98%);
+
+  --color-card: hsl(222 47% 5%);
+  --color-card-foreground: hsl(210 40% 98%);
+
+  --radius: 0.5rem;
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+
+  /* container: center + 2rem padding + 1400px 2xl cap (was theme.container) */
+  --breakpoint-2xl: 1400px;
+}
+
+/* v3's `container` config has no direct v4 equivalent; express it as a utility. */
+@utility container {
+  margin-inline: auto;
+  padding-inline: 2rem;
 }
 
 @layer base {
-  * {
-    @apply border-border;
+  /* v4 defaults border-color to currentColor; v3 defaulted to gray-200.
+     Preserve the v3 behaviour this codebase was written against. */
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--color-border);
   }
+
   body {
-    @apply bg-background text-foreground;
+    background-color: var(--color-background);
+    color: var(--color-foreground);
     font-family: 'Space Grotesk', sans-serif;
     background-color: #030712;
   }
+
   html {
     scroll-behavior: smooth;
   }
