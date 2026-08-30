@@ -1,6 +1,5 @@
-import { useEffect, useRef } from "react";
-import { stagger, inView } from "motion";
-import { animateEl } from "@/lib/utils";
+import { AnimatedGroup } from "@/components/motion-primitives/animated-group";
+import { Reveal } from "@/components/common/tsx/Reveal";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 
@@ -57,7 +56,7 @@ function buildCategories(techstack: TechStack[], extra: ExtraSkills) {
 
 function SkillBadge({ skill }: { skill: string }) {
   return (
-    <div className="skill-tab-badge" style={{ opacity: 0, display: "inline-block" }}>
+    <div style={{ display: "inline-block" }}>
       <Badge
         variant="outline"
         className="skill-badge-interactive cursor-default select-none rounded-xl font-mono transition-transform hover:scale-105"
@@ -69,36 +68,15 @@ function SkillBadge({ skill }: { skill: string }) {
   );
 }
 
-function animateBadgesIn(container: HTMLElement | null) {
-  if (!container) return;
-  animateEl(
-    container.querySelectorAll<Element>(".skill-tab-badge"),
-    { opacity: [0, 1], scale: [0.6, 1], y: [10, 0] },
-    { delay: stagger(0.04), type: "spring", visualDuration: 0.4, bounce: 0.05 }
-  );
-}
-
 export function SkillsTabs({ techstack, extraSkills }: SkillsTabsProps) {
-  const ref = useRef<HTMLDivElement>(null);
-  const tabRefs = useRef<Record<string, HTMLDivElement | null>>({});
   const categories = buildCategories(techstack, extraSkills);
 
-  useEffect(() => {
-    const root = ref.current;
-    if (!root) return;
-    inView(root, () => {
-      animateEl(root as Element, { opacity: [0, 1], y: [20, 0] }, { delay: 0.1, type: "spring", visualDuration: 0.5, bounce: 0.25 });
-    }, { margin: "-60px" });
-    // Animate the default-active tab badges on mount
-    setTimeout(() => animateBadgesIn(tabRefs.current["frontend"]), 400);
-  }, []);
 
   return (
-    <div ref={ref} style={{ opacity: 0 }}>
+    <Reveal y={20} delay={0.1}>
       <Tabs
         defaultValue="frontend"
         className="gap-0"
-        onValueChange={(val) => animateBadgesIn(tabRefs.current[val])}
       >
         <TabsList
           className="h-auto p-1 mb-8 flex-wrap justify-start gap-1"
@@ -119,23 +97,22 @@ export function SkillsTabs({ techstack, extraSkills }: SkillsTabsProps) {
         {categories.map((cat) => (
           <TabsContent key={cat.id} value={cat.id}>
             <div
-              ref={(el) => { tabRefs.current[cat.id] = el; }}
               className="rounded-2xl p-6"
               style={{ background: "var(--tint-white-02)", border: "1px solid var(--tint-white-06)" }}
             >
               <div className="flex items-center gap-2 mb-6">
-                <span className="text-xl">{cat.icon}</span>
+                <span className="text-xl" aria-hidden="true">{cat.icon}</span>
                 <span style={{ fontSize: "1rem", color: "var(--color-ink-muted)", fontWeight: 600, fontFamily: "'Space Grotesk', sans-serif" }}>
                   {cat.label}
                 </span>
               </div>
-              <div className="flex flex-wrap gap-3">
+              <AnimatedGroup className="flex flex-wrap gap-3" preset="scale">
                 {cat.skills.map((skill) => <SkillBadge key={skill} skill={skill} />)}
-              </div>
+              </AnimatedGroup>
             </div>
           </TabsContent>
         ))}
       </Tabs>
-    </div>
+    </Reveal>
   );
 }

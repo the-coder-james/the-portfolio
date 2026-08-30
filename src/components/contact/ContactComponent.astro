@@ -1,6 +1,6 @@
 ---
 import SectionShell from "@/components/common/astro/SectionShell.astro"
-import { ContactCard } from "@/components/contact/ContactCard"
+import { ContactCardList } from "@/components/contact/ContactCardList"
 import { ContactForm } from "@/components/contact/ContactForm"
 import contactJson from "@/assets/contact.json"
 ---
@@ -74,11 +74,7 @@ import contactJson from "@/assets/contact.json"
       </div>
 
       <!-- Dynamic: contact link cards -->
-      <div class="space-y-2">
-        {contactJson.map((contact, i) => (
-          <ContactCard client:load contact={contact} index={i} />
-        ))}
-      </div>
+      <ContactCardList client:load contacts={contactJson} />
     </div>
 
     <!-- Right column: Dynamic form -->

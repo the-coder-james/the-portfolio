@@ -1,7 +1,7 @@
-import { useEffect, useRef } from "react";
-import { inView } from "motion";
-import { animateEl } from "@/lib/utils";
+import { useRef } from "react";
+import { motion, useInView } from "motion/react";
 import { Badge } from "@/components/ui/badge";
+import { useReducedMotion } from "@/hooks/useReducedMotion";
 
 interface TimelineItem {
   year: string;
@@ -19,36 +19,19 @@ interface TimelineEntryProps {
 }
 
 export function TimelineEntry({ item, index }: TimelineEntryProps) {
-  const ref = useRef<HTMLDivElement>(null);
-  const dotRef = useRef<HTMLDivElement>(null);
-  const pulseRef = useRef<HTMLDivElement>(null);
+  const ref = useRef<HTMLLIElement>(null);
+  const inView = useInView(ref, { once: true, margin: "-60px" });
+  const reduced = useReducedMotion();
   const isEven = index % 2 === 0;
-
-  useEffect(() => {
-    const el = ref.current;
-    const dot = dotRef.current;
-    if (!el) return;
-
-    inView(el, () => {
-      animateEl(
-        el as Element,
-        { opacity: [0, 1], x: [isEven ? -50 : 50, 0], filter: ["blur(6px)", "blur(0px)"] },
-        { delay: 0.05 + index * 0.06, type: "spring", visualDuration: 0.6, bounce: 0.2 }
-      );
-      if (dot) {
-        animateEl(dot as Element, { scale: [0, 1.4, 1], opacity: [0, 1] }, { delay: 0.2 + index * 0.06, type: "spring", visualDuration: 0.4, bounce: 0.05 });
-      }
-      if (pulseRef.current && item.type === "present") {
-        pulseRef.current.style.animation = "pulse 2s ease-in-out infinite";
-      }
-    }, { margin: "-60px" });
-  }, [index, isEven, item.type]);
+  const isPresent = item.type === "present";
 
   return (
-    <div
+    <motion.li
       ref={ref}
       className={`relative flex items-start gap-6 md:gap-0 ${isEven ? "md:flex-row" : "md:flex-row-reverse"}`}
-      style={{ opacity: 0 }}
+      initial={reduced ? false : { opacity: 0, x: isEven ? -50 : 50, filter: "blur(6px)" }}
+      animate={inView ? { opacity: 1, x: 0, filter: "blur(0px)" } : undefined}
+      transition={{ delay: 0.05 + index * 0.06, type: "spring", visualDuration: 0.6, bounce: 0.2 }}
     >
       <div className={`md:w-[45%] pl-14 md:pl-0 ${isEven ? "md:pr-10 md:text-right" : "md:pl-10 md:text-left"}`}>
         <div
@@ -103,27 +86,29 @@ export function TimelineEntry({ item, index }: TimelineEntryProps) {
         </div>
       </div>
 
-      <div className="absolute left-6 md:left-1/2 md:-translate-x-1/2 top-6">
-        <div
-          ref={dotRef}
+      <div className="absolute left-6 md:left-1/2 md:-translate-x-1/2 top-6" aria-hidden="true">
+        <motion.div
           className="w-3 h-3 rounded-full relative"
+          initial={reduced ? false : { scale: 0, opacity: 0 }}
+          animate={inView ? { scale: [0, 1.4, 1], opacity: 1 } : undefined}
+          transition={{ delay: 0.2 + index * 0.06, type: "spring", visualDuration: 0.4, bounce: 0.05 }}
           style={{
-            background: item.type === "present" ? "var(--color-success)" : "var(--color-brand)",
-            boxShadow: item.type === "present" ? "0 0 12px var(--tint-success-60)" : "0 0 12px var(--tint-brand-50)",
-            opacity: 0,
+            background: isPresent ? "var(--color-success)" : "var(--color-brand)",
+            boxShadow: isPresent ? "0 0 12px var(--tint-success-60)" : "0 0 12px var(--tint-brand-50)",
           }}
         >
-          {item.type === "present" && (
+          {/* The "currently here" pulse loops forever, so it is suppressed
+              under reduced motion rather than left running. */}
+          {isPresent && !reduced && (
             <div
-              ref={pulseRef}
-              className="absolute inset-0 rounded-full"
+              className="absolute inset-0 rounded-full pulse-ring"
               style={{ background: "var(--tint-success-30)" }}
             />
           )}
-        </div>
+        </motion.div>
       </div>
 
       <div className="hidden md:block md:w-[45%]" />
-    </div>
+    </motion.li>
   );
 }

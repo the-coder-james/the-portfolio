@@ -349,6 +349,27 @@
   transform: translateX(4px);
 }
 
+/* Project card scan sweep. Was el.style.animation. */
+.scan-line {
+  animation: scanLine 2.2s linear infinite;
+}
+
+/* Rotating dashed ring on the portrait. Was el.style.animation. */
+.spin-slow {
+  animation: spin 12s linear infinite;
+}
+
+/* Hero terminal idle float. Was assigned via el.style.animation. */
+.terminal-float {
+  animation: terminalFloat 4s ease-in-out infinite;
+}
+
+/* Timeline "present" marker. Was assigned via el.style.animation, which
+   nothing could gate; as a class it is suppressed with the rest below. */
+.pulse-ring {
+  animation: pulse 2s ease-in-out infinite;
+}
+
 /* ── Cursor blink ── */
 @keyframes blink {
   0%, 100% { opacity: 1; }

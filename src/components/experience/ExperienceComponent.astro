@@ -1,7 +1,7 @@
 ---
 import SectionShell from "@/components/common/astro/SectionShell.astro"
 import { TimelineLine } from "@/components/experience/TimelineLine"
-import { TimelineEntry } from "@/components/experience/TimelineEntry"
+import { TimelineList } from "@/components/experience/TimelineList"
 import experienceJson from "@/assets/experience.json"
 ---
 
@@ -17,11 +17,7 @@ import experienceJson from "@/assets/experience.json"
     <!-- Dynamic: animated vertical line -->
     <TimelineLine client:load />
 
-    <!-- Dynamic: each timeline entry slides in via its own island -->
-    <div class="space-y-10">
-      {experienceJson.map((item, i) => (
-        <TimelineEntry client:load item={item} index={i} />
-      ))}
-    </div>
+    <!-- Dynamic: one island renders the whole ordered timeline -->
+    <TimelineList client:load items={experienceJson} />
   </div>
 </SectionShell>

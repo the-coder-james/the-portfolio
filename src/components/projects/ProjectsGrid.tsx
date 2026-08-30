@@ -17,7 +17,7 @@ interface Project {
   provider: number;
   image: ProjectImage;
   description: string;
-  siteurl: string | false;
+  siteurl: string | boolean;
   "siteurl-reason"?: string;
 }
 

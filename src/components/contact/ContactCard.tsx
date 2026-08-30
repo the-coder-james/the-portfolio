@@ -1,7 +1,3 @@
-import { useEffect, useRef } from "react";
-import { inView } from "motion";
-import { animateEl } from "@/lib/utils";
-
 interface ContactLink {
   url: string;
   name: string;
@@ -11,7 +7,6 @@ interface ContactLink {
 
 interface ContactCardProps {
   contact: ContactLink;
-  index: number;
 }
 
 const ICON_PATHS: Record<string, string> = {
@@ -29,35 +24,25 @@ const ICON_COLORS: Record<string, string> = {
   Globe: "var(--color-accent-3)",
 };
 
-export function ContactCard({ contact, index }: ContactCardProps) {
-  const ref = useRef<HTMLAnchorElement>(null);
+export function ContactCard({ contact }: ContactCardProps) {
   const iconPath = ICON_PATHS[contact.icon] || ICON_PATHS["Globe"];
   const iconColor = ICON_COLORS[contact.icon] || ICON_COLORS["Globe"];
   const displayUrl = contact.url.replace("mailto:", "").replace("https://", "");
 
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    inView(el, () => {
-      animateEl(el as Element, { opacity: [0, 1], x: [-30, 0] }, { delay: 0.05 + index * 0.08, type: "spring", visualDuration: 0.5, bounce: 0.2 });
-    }, { margin: "-60px" });
-  }, [index]);
-
   return (
     <a
-      ref={ref}
       href={contact.url}
       target={contact.icon !== "Mail" ? "_blank" : undefined}
       rel="noopener noreferrer"
       className="contact-card flex items-center gap-3 p-4 rounded-xl"
-      style={{ textDecoration: "none", opacity: 0 }}
+      style={{ textDecoration: "none" }}
     >
       <div
         className="w-8 h-8 rounded-lg flex items-center justify-center"
         style={{ background: "var(--tint-white-04)", color: iconColor }}
       >
         {iconPath && (
-          <svg viewBox="0 0 24 24" fill="currentColor" style={{ width: 15, height: 15 }}>
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" style={{ width: 15, height: 15 }}>
             <path d={iconPath} />
           </svg>
         )}

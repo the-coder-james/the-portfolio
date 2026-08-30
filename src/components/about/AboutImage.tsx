@@ -1,6 +1,6 @@
-import { useEffect, useRef, useState } from "react";
-import { inView } from "motion";
-import { animateEl } from "@/lib/utils";
+import { useRef, useState } from "react";
+import { motion, useInView } from "motion/react";
+import { useReducedMotion } from "@/hooks/useReducedMotion";
 
 interface AboutImageProps {
   name: string;
@@ -10,34 +10,23 @@ interface AboutImageProps {
 
 export function AboutImage({ name, imageUrl, hoverImageUrl }: AboutImageProps) {
   const wrapperRef = useRef<HTMLDivElement>(null);
-  const ringRef = useRef<HTMLDivElement>(null);
-  const portraitRef = useRef<HTMLDivElement>(null);
-  const availableRef = useRef<HTMLDivElement>(null);
-  const yearsRef = useRef<HTMLDivElement>(null);
+  const inView = useInView(wrapperRef, { once: true, margin: "-80px" });
+  const reduced = useReducedMotion();
   const [hovered, setHovered] = useState(false);
 
-  useEffect(() => {
-    const wrapper = wrapperRef.current;
-    if (!wrapper) return;
-
-    inView(wrapper, () => {
-      animateEl(wrapper as Element, { opacity: [0, 1], scale: [0.85, 1] }, { delay: 0.15, type: "spring", visualDuration: 0.6, bounce: 0.25 });
-      animateEl(portraitRef.current! as Element, { rotate: [-12, 0] }, { delay: 0.25, type: "spring", visualDuration: 0.7, bounce: 0.05 });
-      animateEl(availableRef.current! as Element, { opacity: [0, 1], scale: [0, 1] }, { delay: 0.45, type: "spring", visualDuration: 0.4, bounce: 0.1 });
-      animateEl(yearsRef.current! as Element, { opacity: [0, 1], x: [-12, 0] }, { delay: 0.35, type: "spring", visualDuration: 0.5, bounce: 0.2 });
-    }, { margin: "-80px" });
-
-    if (ringRef.current) {
-      // CSS handles the rotation — no JS loop needed
-      ringRef.current.style.animation = "spin 12s linear infinite";
-    }
-  }, []);
+  const reveal = (delay: number, from: Record<string, number>) => ({
+    initial: reduced ? false : { opacity: 0, ...from },
+    animate: inView ? { opacity: 1, scale: 1, x: 0, rotate: 0 } : undefined,
+    transition: { delay, type: "spring" as const, visualDuration: 0.5, bounce: 0.2 },
+  });
 
   return (
-    <div
+    <motion.div
       ref={wrapperRef}
       className="flex justify-center lg:justify-start mb-10"
-      style={{ opacity: 0 }}
+      initial={reduced ? false : { opacity: 0, scale: 0.85 }}
+      animate={inView ? { opacity: 1, scale: 1 } : undefined}
+      transition={{ delay: 0.15, type: "spring", visualDuration: 0.6, bounce: 0.25 }}
     >
       <div className="relative">
         <div
@@ -50,16 +39,21 @@ export function AboutImage({ name, imageUrl, hoverImageUrl }: AboutImageProps) {
           }}
         />
         <div
-          ref={ringRef}
-          className="absolute -inset-2 rounded-full pointer-events-none"
+          className={`absolute -inset-2 rounded-full pointer-events-none${reduced ? "" : " spin-slow"}`}
+          aria-hidden="true"
           style={{ border: "1.5px dashed var(--tint-brand-30)", borderRadius: "9999px" }}
         />
-        <div
-          ref={portraitRef}
+        <motion.div
           className="relative rounded-full overflow-hidden"
           style={{ width: "170px", height: "170px", border: "3px solid var(--tint-brand-60)", boxShadow: "0 0 30px var(--tint-brand-35)" }}
+          initial={reduced ? false : { rotate: -12 }}
+          animate={inView ? { rotate: 0 } : undefined}
+          transition={{ delay: 0.25, type: "spring", visualDuration: 0.7, bounce: 0.05 }}
           onMouseEnter={() => setHovered(true)}
           onMouseLeave={() => setHovered(false)}
+          onFocus={() => setHovered(true)}
+          onBlur={() => setHovered(false)}
+          tabIndex={hoverImageUrl ? 0 : undefined}
         >
           <img
             src={imageUrl}
@@ -71,7 +65,7 @@ export function AboutImage({ name, imageUrl, hoverImageUrl }: AboutImageProps) {
           {hoverImageUrl && (
             <img
               src={hoverImageUrl}
-              alt={`${name} hover photo`}
+              alt=""
               loading="lazy"
               decoding="async"
               className="absolute inset-0 w-full h-full object-cover object-center transition-opacity duration-500"
@@ -79,23 +73,23 @@ export function AboutImage({ name, imageUrl, hoverImageUrl }: AboutImageProps) {
             />
           )}
           <div className="absolute inset-0 pointer-events-none" style={{ background: "linear-gradient(180deg, transparent 60%, var(--scrim-base-35) 100%)" }} />
-        </div>
-        <div
-          ref={availableRef}
+        </motion.div>
+        <motion.div
           className="absolute -bottom-1 -right-1 flex items-center gap-1.5 px-2.5 py-1 rounded-full"
-          style={{ background: "var(--color-surface-code)", border: "1px solid var(--tint-brand-35)", boxShadow: "0 4px 12px var(--shadow-black-40)", opacity: 0 }}
+          style={{ background: "var(--color-surface-code)", border: "1px solid var(--tint-brand-35)", boxShadow: "0 4px 12px var(--shadow-black-40)" }}
+          {...reveal(0.45, { scale: 0 })}
         >
           <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 cursor-blink" />
           <span className="font-mono" style={{ fontSize: "0.6rem", color: "var(--color-success-soft)", whiteSpace: "nowrap" }}>available</span>
-        </div>
-        <div
-          ref={yearsRef}
+        </motion.div>
+        <motion.div
           className="absolute -top-2 -left-4 px-2.5 py-1 rounded-lg font-mono"
-          style={{ background: "var(--tint-brand-15)", border: "1px solid var(--tint-brand-30)", fontSize: "0.6rem", color: "var(--color-brand-300)", whiteSpace: "nowrap", opacity: 0 }}
+          style={{ background: "var(--tint-brand-15)", border: "1px solid var(--tint-brand-30)", fontSize: "0.6rem", color: "var(--color-brand-300)", whiteSpace: "nowrap" }}
+          {...reveal(0.35, { x: -12 })}
         >
           10+ yrs coding
-        </div>
+        </motion.div>
       </div>
-    </div>
+    </motion.div>
   );
 }

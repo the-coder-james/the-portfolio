@@ -1,7 +1,5 @@
-import { useEffect, useRef } from "react";
-import { stagger, inView } from "motion";
-import { animateEl } from "@/lib/utils";
 import { TerminalShell } from "@/components/common/tsx/TerminalShell";
+import { Reveal } from "@/components/common/tsx/Reveal";
 
 interface AboutCodeBlockProps {
   since: number;
@@ -63,30 +61,11 @@ function CodeLine({ line }: { line: CodeLineType }) {
 }
 
 export function AboutCodeBlock({ since, professional }: AboutCodeBlockProps) {
-  const ref = useRef<HTMLDivElement>(null);
   const CODE_BIO = buildCodeBio(since, professional);
 
-  useEffect(() => {
-    const root = ref.current;
-    if (!root) return;
-
-    inView(root, () => {
-      animateEl(root as Element, { opacity: [0, 1], x: [40, 0] }, { delay: 0.2, type: "spring", visualDuration: 0.6, bounce: 0.25 });
-      animateEl(
-        root.querySelectorAll(".code-line"),
-        { opacity: [0, 1], x: [-8, 0] },
-        { delay: stagger(0.04, { startDelay: 0.4 }), type: "spring", visualDuration: 0.35, bounce: 0.3 }
-      );
-      animateEl(
-        root.querySelectorAll(".code-lineno"),
-        { opacity: [0, 1] },
-        { delay: stagger(0.04, { startDelay: 0.4 }), duration: 0.25 }
-      );
-    }, { margin: "-80px" });
-  }, []);
 
   return (
-    <div ref={ref} style={{ opacity: 0 }}>
+    <Reveal x={40} delay={0.2}>
       <TerminalShell
         filename="about.ts"
         headerRight={
@@ -117,17 +96,17 @@ export function AboutCodeBlock({ since, professional }: AboutCodeBlockProps) {
           {CODE_BIO.map((line, i) =>
             line.type === "blank"
               ? <div key={i} style={{ height: "0.9rem" }} />
-              : <span key={i} className="code-lineno" style={{ lineHeight: 1.6, opacity: 0 }}>{i + 1}</span>
+              : <span key={i} className="code-lineno" style={{ lineHeight: 1.6 }}>{i + 1}</span>
           )}
         </div>
         <div className="font-mono flex-1" aria-hidden="true" style={{ fontSize: "0.78rem", lineHeight: 1.6, overflow: "hidden" }}>
           {CODE_BIO.map((line, i) => (
-            <div key={i} className="code-line" style={{ opacity: 0 }}>
+            <div key={i} className="code-line">
               <CodeLine line={line} />
             </div>
           ))}
         </div>
       </TerminalShell>
-    </div>
+    </Reveal>
   );
 }

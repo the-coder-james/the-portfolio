@@ -13,7 +13,5 @@ export default defineConfig({
   vite: {
     plugins: [tailwindcss()]
   },
-  build: {
-    outDir: 'dist' // default, but explicit for clarity
-  }
+  outDir: './dist' // default, but explicit for clarity
 });

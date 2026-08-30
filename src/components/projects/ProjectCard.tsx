@@ -1,6 +1,6 @@
-import { useEffect, useRef, useState } from "react";
-import { inView } from "motion";
-import { animateEl } from "@/lib/utils";
+import { useRef, useState } from "react";
+import { motion, useInView } from "motion/react";
+import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { ExternalLink, ArrowUpRight } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
@@ -20,7 +20,7 @@ interface Project {
   provider: number;
   image: ProjectImage;
   description: string;
-  siteurl: string | false;
+  siteurl: string | boolean;
   "siteurl-reason"?: string;
 }
 
@@ -98,7 +98,8 @@ const CODE_PREVIEWS = [
 
 export function ProjectCard({ project, index, taglist, roles, providers, baseUrl }: ProjectCardProps) {
   const ref = useRef<HTMLDivElement>(null);
-  const scanRef = useRef<HTMLDivElement>(null);
+  const inView = useInView(ref, { once: true, margin: "-60px" });
+  const reduced = useReducedMotion();
   const [hovered, setHovered] = useState(false);
   const accent = ACCENTS[index % ACCENTS.length];
   const lines = CODE_PREVIEWS[index % CODE_PREVIEWS.length];
@@ -106,39 +107,29 @@ export function ProjectCard({ project, index, taglist, roles, providers, baseUrl
   const roleName = roles[String(project.role)]?.name;
   const providerName = providers[String(project.provider)]?.name;
 
-  useEffect(() => {
-    const el = ref.current;
-    const scan = scanRef.current;
-    if (!el) return;
-
-    inView(el, () => {
-      animateEl(
-        el as Element,
-        { opacity: [0, 1], y: [50, 0], rotateX: [10, 0], scale: [0.95, 1] },
-        { delay: index * 0.07, type: "spring", visualDuration: 0.7, bounce: 0.2 }
-      );
-    }, { margin: "-60px" });
-
-    // Scan line: CSS animation — cleaner than a JS loop
-    if (scan) {
-      scan.style.animation = "scanLine 2.2s linear infinite";
-    }
-  }, [index]);
 
   return (
-    <div
+    /*
+      The card reveals its screenshot on hover. It used to be a plain <div>
+      with mouse handlers only, so keyboard users never saw that image — the
+      focus handlers below give them the same reveal.
+    */
+    <motion.div
       ref={ref}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
+      onFocus={() => setHovered(true)}
+      onBlur={() => setHovered(false)}
+      tabIndex={0}
+      initial={reduced ? false : { opacity: 0, y: 50, scale: 0.95 }}
+      animate={inView ? { opacity: 1, y: 0, scale: 1 } : undefined}
+      transition={{ delay: index * 0.07, type: "spring", visualDuration: 0.7, bounce: 0.2 }}
       className="rounded-2xl overflow-hidden flex flex-col"
       style={{
         background: "var(--color-surface-code)",
         border: `1px solid ${hovered ? tint(accent, 31) : "var(--tint-white-07)"}`,
         boxShadow: hovered ? `0 0 30px ${tint(accent, 8)}` : "none",
-        transition: "all 0.3s ease",
-        opacity: 0,
-        transformStyle: "preserve-3d",
-        perspective: "1000px",
+        transition: "border-color 0.3s ease, box-shadow 0.3s ease",
       }}
     >
       <div
@@ -146,8 +137,8 @@ export function ProjectCard({ project, index, taglist, roles, providers, baseUrl
         style={{ background: "var(--color-surface-base)", borderBottom: "1px solid var(--tint-white-05)", minHeight: "180px" }}
       >
         <div
-          ref={scanRef}
-          className="absolute left-0 right-0 pointer-events-none"
+          className={`absolute left-0 right-0 pointer-events-none${reduced ? "" : " scan-line"}`}
+          aria-hidden="true"
           style={{
             height: "2px",
             top: "-10%",
@@ -266,7 +257,7 @@ export function ProjectCard({ project, index, taglist, roles, providers, baseUrl
         </Tooltip>
 
         <div className="flex items-center">
-          {project.siteurl === false ? (
+          {typeof project.siteurl !== "string" || !project.siteurl ? (
             <Tooltip delayDuration={200}>
               <TooltipTrigger asChild>
                 <span
@@ -327,6 +318,6 @@ export function ProjectCard({ project, index, taglist, roles, providers, baseUrl
           )}
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 }

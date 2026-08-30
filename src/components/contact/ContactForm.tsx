@@ -1,6 +1,6 @@
-import { useEffect, useRef, useState } from "react";
-import { inView } from "motion";
-import { animateEl } from "@/lib/utils";
+import { useState } from "react";
+import { motion } from "motion/react";
+import { Reveal } from "@/components/common/tsx/Reveal";
 import { Send } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -16,24 +16,10 @@ const fieldClass =
   "[font-family:'Space_Grotesk',sans-serif] text-[0.88rem]";
 
 export function ContactForm() {
-  const ref = useRef<HTMLDivElement>(null);
-  const successRef = useRef<HTMLDivElement>(null);
   const [form, setForm] = useState({ name: "", email: "", message: "" });
   const [submitted, setSubmitted] = useState(false);
 
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    inView(el, () => {
-      animateEl(el as Element, { opacity: [0, 1], x: [40, 0] }, { delay: 0.15, type: "spring", visualDuration: 0.6, bounce: 0.2 });
-    }, { margin: "-60px" });
-  }, []);
 
-  useEffect(() => {
-    if (submitted && successRef.current) {
-      animateEl(successRef.current as Element, { opacity: [0, 1], scale: [0.85, 1] }, { type: "spring", visualDuration: 0.5, bounce: 0.05 });
-    }
-  }, [submitted]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -41,14 +27,19 @@ export function ContactForm() {
   };
 
   return (
-    <div ref={ref} style={{ opacity: 0 }}>
+    <Reveal x={40} delay={0.15}>
       {submitted ? (
-        <div
-          ref={successRef}
+        /* Announced so screen-reader users learn the message was sent — the
+           panel previously appeared with no live region at all. */
+        <motion.div
+          role="status"
           className="rounded-2xl p-12 text-center"
-          style={{ background: "var(--tint-brand-07)", border: "1px solid var(--tint-brand-25)", boxShadow: "0 0 40px var(--tint-brand-10)", opacity: 0 }}
+          initial={{ opacity: 0, scale: 0.85 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ type: "spring", visualDuration: 0.5, bounce: 0.05 }}
+          style={{ background: "var(--tint-brand-07)", border: "1px solid var(--tint-brand-25)", boxShadow: "0 0 40px var(--tint-brand-10)" }}
         >
-          <div className="text-4xl mb-4">🚀</div>
+          <div className="text-4xl mb-4" aria-hidden="true">🚀</div>
           <h3 style={{ fontSize: "1.4rem", fontWeight: 700, color: "var(--color-ink)", fontFamily: "'Space Grotesk'", marginBottom: "8px" }}>
             Message Sent!
           </h3>
@@ -59,9 +50,9 @@ export function ContactForm() {
             className="mt-6 font-mono rounded-lg px-4 py-3 inline-block"
             style={{ background: "var(--tint-success-08)", border: "1px solid var(--tint-success-20)", fontSize: "0.75rem", color: "var(--color-success)" }}
           >
-            ✓ status: 200 OK — message delivered
+            <span aria-hidden="true">✓</span> status: 200 OK — message delivered
           </div>
-        </div>
+        </motion.div>
       ) : (
         <form
           onSubmit={handleSubmit}
@@ -76,8 +67,9 @@ export function ContactForm() {
           </div>
           <div className="grid sm:grid-cols-2 gap-5">
             <div className="space-y-1.5">
-              <Label className="font-mono text-[0.75rem] text-blue-400">name:</Label>
+              <Label htmlFor="contact-name" className="font-mono text-[0.75rem] text-blue-400">name:</Label>
               <Input
+                id="contact-name"
                 required
                 type="text"
                 placeholder="Your name"
@@ -87,8 +79,9 @@ export function ContactForm() {
               />
             </div>
             <div className="space-y-1.5">
-              <Label className="font-mono text-[0.75rem] text-blue-400">email:</Label>
+              <Label htmlFor="contact-email" className="font-mono text-[0.75rem] text-blue-400">email:</Label>
               <Input
+                id="contact-email"
                 required
                 type="email"
                 placeholder="your@email.com"
@@ -99,8 +92,9 @@ export function ContactForm() {
             </div>
           </div>
           <div className="space-y-1.5">
-            <Label className="font-mono text-[0.75rem] text-blue-400">message:</Label>
+            <Label htmlFor="contact-message" className="font-mono text-[0.75rem] text-blue-400">message:</Label>
             <Textarea
+              id="contact-message"
               required
               rows={6}
               placeholder="Tell me about your project..."
@@ -125,6 +119,6 @@ export function ContactForm() {
           </Button>
         </form>
       )}
-    </div>
+    </Reveal>
   );
 }
