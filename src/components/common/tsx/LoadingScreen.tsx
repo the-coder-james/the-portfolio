@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { animate, createTimeline, stagger } from "animejs";
+import { TrafficLights } from "@/components/common/tsx/TerminalShell";
 
 const BOOT_LINES = [
   { prompt: "$", text: "init portfolio.engine" },
@@ -228,9 +229,7 @@ export function LoadingScreen() {
             className="flex items-center gap-1.5 px-3 py-2"
             style={{ background: "var(--color-surface-code-head)", borderBottom: "1px solid var(--tint-white-05)" }}
           >
-            <div className="w-2.5 h-2.5 rounded-full" style={{ background: "var(--color-chrome-red)" }} />
-            <div className="w-2.5 h-2.5 rounded-full" style={{ background: "var(--color-chrome-yellow)" }} />
-            <div className="w-2.5 h-2.5 rounded-full" style={{ background: "var(--color-chrome-green)" }} />
+            <TrafficLights />
             <span className="ml-2 font-mono" style={{ fontSize: "0.65rem", color: "var(--color-ink-dim)" }}>
               boot.sh
             </span>

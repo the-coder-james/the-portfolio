@@ -1,0 +1,87 @@
+---
+/**
+ * The shared frame for every full-page section: the section element itself,
+ * the top hairline divider (previously copy-pasted into five files), an
+ * optional radial glow, and the eyebrow/headline heading block.
+ *
+ * Content is passed through the default slot. Sections that need extra
+ * decoration behind their content can use the `backdrop` slot.
+ */
+interface Props {
+  id: string;
+  /** Section background; defaults to the base surface. */
+  background?: string;
+  /** Small mono label above the headline. */
+  eyebrow?: string;
+  /** Headline text. */
+  headline?: string;
+  /** Trailing headline words, rendered with the gradient treatment. */
+  headlineAccent?: string;
+  /** Optional supporting line under the headline. */
+  sub?: string;
+  /** Width of the inner container. */
+  maxWidth?: string;
+  /** Opt out of the scroll-stacking behaviour (contact does this). */
+  stack?: boolean;
+  class?: string;
+  headingClass?: string;
+}
+
+const {
+  id,
+  background = "var(--color-surface-base)",
+  eyebrow,
+  headline,
+  headlineAccent,
+  sub,
+  maxWidth = "max-w-7xl",
+  stack = true,
+  class: className = "py-28",
+  headingClass = "mb-16",
+} = Astro.props;
+
+const hasHeading = Boolean(eyebrow || headline);
+---
+
+<section
+  id={id}
+  data-stack-section={stack ? "" : undefined}
+  class:list={[stack ? "sticky top-0" : "relative", className]}
+  style={`background: ${background}`}
+>
+  <!-- Top hairline: shared by every section -->
+  <div
+    class="absolute top-0 left-0 right-0 h-px"
+    aria-hidden="true"
+    style="background: linear-gradient(90deg, transparent, var(--tint-brand-30), transparent)"
+  >
+  </div>
+
+  <slot name="backdrop" />
+
+  <div class:list={[maxWidth, "mx-auto px-6 relative"]}>
+    {hasHeading && (
+      <div class={headingClass}>
+        {eyebrow && (
+          <p class="font-mono mb-2" style="font-size: 0.75rem; color: var(--color-brand)">
+            {eyebrow}
+          </p>
+        )}
+        {headline && (
+          <h2
+            style="font-size: clamp(1.8rem, 4vw, 2.8rem); font-weight: 700; color: var(--color-ink); font-family: 'Space Grotesk', sans-serif; line-height: 1.2"
+          >
+            {headline}{headlineAccent && <> <span class="gradient-text">{headlineAccent}</span></>}
+          </h2>
+        )}
+        {sub && (
+          <p class="mt-3" style="font-size: 0.85rem; color: var(--color-ink-dim)">
+            {sub}
+          </p>
+        )}
+      </div>
+    )}
+
+    <slot />
+  </div>
+</section>

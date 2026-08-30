@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
+import { TrafficLights } from "@/components/common/tsx/TerminalShell";
 
 const fieldClass =
   "bg-[var(--tint-white-03)] border-[var(--tint-white-08)] text-slate-200 " +
@@ -68,11 +69,7 @@ export function ContactForm() {
           style={{ background: "var(--tint-white-02)", border: "1px solid var(--tint-white-07)" }}
         >
           <div className="flex items-center gap-2 mb-2">
-            <div className="flex gap-1.5">
-              <div className="w-2.5 h-2.5 rounded-full" style={{ background: "var(--color-chrome-red)" }} />
-              <div className="w-2.5 h-2.5 rounded-full" style={{ background: "var(--color-chrome-yellow)" }} />
-              <div className="w-2.5 h-2.5 rounded-full" style={{ background: "var(--color-chrome-green)" }} />
-            </div>
+            <TrafficLights />
             <span className="font-mono ml-2" style={{ fontSize: "0.68rem", color: "var(--color-ink-faint)" }}>
               send_message.ts
             </span>
@@ -115,20 +112,12 @@ export function ContactForm() {
           <Button
             type="submit"
             size="lg"
-            className="w-full text-white rounded-xl border-0 gap-2 transition-all duration-200"
+            className="btn-lift w-full text-white rounded-xl border-0 gap-2"
             style={{
               background: "linear-gradient(135deg, var(--color-brand-900), var(--color-brand))",
               boxShadow: "0 4px 20px var(--tint-brand-30)",
               fontFamily: "'Space Grotesk', sans-serif",
               fontWeight: 500,
-            }}
-            onMouseEnter={(e) => {
-              (e.currentTarget as HTMLElement).style.transform = "translateY(-2px)";
-              (e.currentTarget as HTMLElement).style.boxShadow = "0 8px 25px var(--tint-brand-45)";
-            }}
-            onMouseLeave={(e) => {
-              (e.currentTarget as HTMLElement).style.transform = "translateY(0)";
-              (e.currentTarget as HTMLElement).style.boxShadow = "0 4px 20px var(--tint-brand-30)";
             }}
           >
             <Send size={15} />

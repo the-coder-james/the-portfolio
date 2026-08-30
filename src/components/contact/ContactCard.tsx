@@ -49,20 +49,8 @@ export function ContactCard({ contact, index }: ContactCardProps) {
       href={contact.url}
       target={contact.icon !== "Mail" ? "_blank" : undefined}
       rel="noopener noreferrer"
-      className="flex items-center gap-3 p-4 rounded-xl transition-all duration-200"
-      style={{ background: "var(--tint-white-02)", border: "1px solid var(--tint-white-06)", textDecoration: "none", opacity: 0 }}
-      onMouseEnter={(e) => {
-        const el = e.currentTarget as HTMLElement;
-        el.style.background = "var(--tint-brand-07)";
-        el.style.borderColor = "var(--tint-brand-30)";
-        el.style.transform = "translateX(4px)";
-      }}
-      onMouseLeave={(e) => {
-        const el = e.currentTarget as HTMLElement;
-        el.style.background = "var(--tint-white-02)";
-        el.style.borderColor = "var(--tint-white-06)";
-        el.style.transform = "translateX(0)";
-      }}
+      className="contact-card flex items-center gap-3 p-4 rounded-xl"
+      style={{ textDecoration: "none", opacity: 0 }}
     >
       <div
         className="w-8 h-8 rounded-lg flex items-center justify-center"

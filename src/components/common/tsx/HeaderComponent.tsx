@@ -96,13 +96,9 @@ export function HeaderComponent() {
                 key={link.label}
                 ref={(el) => { linkRefs.current[id] = el; }}
                 onClick={() => scrollTo(link.href)}
-                className="relative px-4 py-2 text-sm transition-colors duration-200"
-                style={{
-                  color: isActive ? "var(--color-brand-400)" : "var(--color-ink-dim)",
-                  fontFamily: "'Space Grotesk', sans-serif",
-                }}
-                onMouseEnter={(e) => { if (!isActive) (e.currentTarget as HTMLElement).style.color = "var(--color-ink-muted)"; }}
-                onMouseLeave={(e) => { if (!isActive) (e.currentTarget as HTMLElement).style.color = "var(--color-ink-dim)"; }}
+                aria-current={isActive ? "true" : undefined}
+                className="nav-link relative px-4 py-2 text-sm"
+                style={{ fontFamily: "'Space Grotesk', sans-serif" }}
               >
                 {link.label}
               </button>

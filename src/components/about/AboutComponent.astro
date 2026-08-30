@@ -1,4 +1,5 @@
 ---
+import SectionShell from "@/components/common/astro/SectionShell.astro"
 import { AboutImage } from "@/components/about/AboutImage"
 import { AboutStats } from "@/components/about/AboutStats"
 import { AboutCodeBlock } from "@/components/about/AboutCodeBlock"
@@ -16,39 +17,34 @@ const renderBio = (text: string) =>
     .replace("{{professional}}", String(user.professional))
 ---
 
-<section id="about" data-stack-section class="sticky top-0 py-28 overflow-hidden" style="background: var(--color-surface-base)">
-  <div class="absolute top-0 left-0 right-0 h-px" style="background: linear-gradient(90deg, transparent, var(--tint-brand-30), transparent)"></div>
+<SectionShell
+  id="about"
+  class="py-28 overflow-hidden"
+  eyebrow={about.eyebrow}
+  headline={about.headline}
+  headlineAccent={about.headlineAccent}
+>
 
-  <div class="max-w-7xl mx-auto px-6">
-    <!-- Static: section heading -->
-    <div class="mb-16">
-      <p class="font-mono mb-2" style="font-size: 0.75rem; color: var(--color-brand)">{about.eyebrow}</p>
-      <h2 style="font-size: clamp(1.8rem, 4vw, 2.8rem); font-weight: 700; color: var(--color-ink); font-family: 'Space Grotesk', sans-serif; line-height: 1.2">
-        {about.headline} <span class="gradient-text">{about.headlineAccent}</span>
-      </h2>
-    </div>
+  <div class="grid lg:grid-cols-2 gap-16 items-start">
+    <!-- Left column -->
+    <div>
+      <!-- Dynamic: profile photo with animated ring and badges -->
+      <AboutImage client:load name={name} imageUrl={imageUrl} hoverImageUrl={hoverImageUrl} />
 
-    <div class="grid lg:grid-cols-2 gap-16 items-start">
-      <!-- Left column -->
-      <div>
-        <!-- Dynamic: profile photo with animated ring and badges -->
-        <AboutImage client:load name={name} imageUrl={imageUrl} hoverImageUrl={hoverImageUrl} />
-
-        <!-- Static: bio paragraphs -->
-        <div class="space-y-5 mb-12">
-          {about.bio.map((p) => (
-            <p style="font-size: 1.05rem; color: var(--color-ink-dim); line-height: 1.8; font-family: 'Space Grotesk', sans-serif">
-              {renderBio(p)}
-            </p>
-          ))}
-        </div>
-
-        <!-- Dynamic: stats cards with staggered animation -->
-        <AboutStats client:load stats={about.stats} />
+      <!-- Static: bio paragraphs -->
+      <div class="space-y-5 mb-12">
+        {about.bio.map((p) => (
+          <p style="font-size: 1.05rem; color: var(--color-ink-dim); line-height: 1.8; font-family: 'Space Grotesk', sans-serif">
+            {renderBio(p)}
+          </p>
+        ))}
       </div>
 
-      <!-- Right column: Dynamic code block with per-line animation -->
-      <AboutCodeBlock client:load since={user.since} professional={user.professional} />
+      <!-- Dynamic: stats cards with staggered animation -->
+      <AboutStats client:load stats={about.stats} />
     </div>
+
+    <!-- Right column: Dynamic code block with per-line animation -->
+    <AboutCodeBlock client:load since={user.since} professional={user.professional} />
   </div>
-</section>
+</SectionShell>

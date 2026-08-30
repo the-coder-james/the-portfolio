@@ -60,10 +60,8 @@ function SkillBadge({ skill }: { skill: string }) {
     <div className="skill-tab-badge" style={{ opacity: 0, display: "inline-block" }}>
       <Badge
         variant="outline"
-        className="cursor-default select-none rounded-xl font-mono transition-transform hover:scale-105"
-        style={{ padding: "9px 16px", fontSize: "0.82rem", color: "var(--color-brand-300)", background: "var(--tint-brand-07)", border: "1px solid var(--tint-brand-16)" }}
-        onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = "var(--tint-brand-16)"; (e.currentTarget as HTMLElement).style.borderColor = "var(--tint-brand-42)"; }}
-        onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = "var(--tint-brand-07)"; (e.currentTarget as HTMLElement).style.borderColor = "var(--tint-brand-16)"; }}
+        className="skill-badge-interactive cursor-default select-none rounded-xl font-mono transition-transform hover:scale-105"
+        style={{ padding: "9px 16px", fontSize: "0.82rem", color: "var(--color-brand-300)" }}
       >
         {skill}
       </Badge>

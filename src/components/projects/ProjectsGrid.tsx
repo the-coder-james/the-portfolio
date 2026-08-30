@@ -96,21 +96,12 @@ export function ProjectsGrid({
               resetVisible();
             }}
             placeholder="search projects..."
-            className="w-full pl-10 pr-10 py-2.5 rounded-xl outline-none transition-colors"
+            aria-label="Search projects by title"
+            className="field-interactive w-full pl-10 pr-10 py-2.5 rounded-xl outline-none"
             style={{
-              background: "var(--tint-white-03)",
-              border: "1px solid var(--tint-white-08)",
               color: "var(--color-ink-muted)",
               fontFamily: "'JetBrains Mono', monospace",
               fontSize: "0.82rem",
-            }}
-            onFocus={(e) => {
-              e.currentTarget.style.borderColor = "var(--tint-brand-50)";
-              e.currentTarget.style.background = "var(--tint-brand-05)";
-            }}
-            onBlur={(e) => {
-              e.currentTarget.style.borderColor = "var(--tint-white-08)";
-              e.currentTarget.style.background = "var(--tint-white-03)";
             }}
           />
           {query && (
@@ -121,10 +112,7 @@ export function ProjectsGrid({
                 setQuery("");
                 resetVisible();
               }}
-              className="absolute right-3 top-1/2 -translate-y-1/2 w-6 h-6 rounded-md flex items-center justify-center transition-colors"
-              style={{ color: "var(--color-ink-dim)" }}
-              onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.color = "var(--color-brand-300)")}
-              onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.color = "var(--color-ink-dim)")}
+              className="icon-btn absolute right-3 top-1/2 -translate-y-1/2 w-6 h-6 rounded-md flex items-center justify-center"
             >
               <X size={14} />
             </button>
@@ -202,6 +190,8 @@ export function ProjectsGrid({
 
       <div
         className="font-mono mb-6"
+        role="status"
+        aria-live="polite"
         style={{ fontSize: "0.72rem", color: "var(--color-ink-dim)" }}
       >
         // showing {displayed.length} of {filtered.length}
@@ -244,24 +234,12 @@ export function ProjectsGrid({
           <button
             type="button"
             onClick={() => setVisible((v) => Math.min(v + step, filtered.length))}
-            className="inline-flex items-center gap-2 px-6 py-3 rounded-xl transition-all duration-200 active:scale-95 hover:scale-[1.03]"
+            className="btn-soft inline-flex items-center gap-2 px-6 py-3 rounded-xl transition-all duration-200 active:scale-95 hover:scale-[1.03]"
             style={{
-              background: "var(--tint-brand-08)",
-              border: "1px solid var(--tint-brand-25)",
               color: "var(--color-brand-300)",
               fontFamily: "'Space Grotesk', sans-serif",
               fontSize: "0.9rem",
               fontWeight: 500,
-            }}
-            onMouseEnter={(e) => {
-              const el = e.currentTarget as HTMLElement;
-              el.style.background = "var(--tint-brand-15)";
-              el.style.borderColor = "var(--tint-brand-45)";
-            }}
-            onMouseLeave={(e) => {
-              const el = e.currentTarget as HTMLElement;
-              el.style.background = "var(--tint-brand-08)";
-              el.style.borderColor = "var(--tint-brand-25)";
             }}
           >
             <Plus size={16} />
@@ -287,9 +265,10 @@ function FilterRow({
   children: ReactNode;
 }) {
   return (
-    <div className="flex flex-wrap items-center gap-2">
+    <div className="flex flex-wrap items-center gap-2" role="group" aria-label={label}>
       <span
         className="font-mono"
+        aria-hidden="true"
         style={{
           fontSize: "0.7rem",
           color: "var(--color-ink-dim)",
@@ -316,26 +295,9 @@ function FilterChip({
     <button
       type="button"
       onClick={onClick}
-      className="font-mono rounded-xl transition-colors"
-      style={{
-        padding: "8px 14px",
-        fontSize: "0.75rem",
-        background: active ? "var(--tint-brand-18)" : "var(--tint-white-03)",
-        border: `1px solid ${active ? "var(--tint-brand-50)" : "var(--tint-white-08)"}`,
-        color: active ? "var(--color-brand-300)" : "var(--color-ink-dim)",
-      }}
-      onMouseEnter={(e) => {
-        if (active) return;
-        const el = e.currentTarget as HTMLElement;
-        el.style.color = "var(--color-brand-300)";
-        el.style.borderColor = "var(--tint-brand-30)";
-      }}
-      onMouseLeave={(e) => {
-        if (active) return;
-        const el = e.currentTarget as HTMLElement;
-        el.style.color = "var(--color-ink-dim)";
-        el.style.borderColor = "var(--tint-white-08)";
-      }}
+      aria-pressed={active}
+      className="filter-chip font-mono rounded-xl"
+      style={{ padding: "8px 14px", fontSize: "0.75rem" }}
     >
       {label}
     </button>

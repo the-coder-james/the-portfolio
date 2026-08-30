@@ -4,6 +4,7 @@ import { animateEl } from "@/lib/utils";
 import { ExternalLink, ArrowUpRight } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { TrafficLights } from "@/components/common/tsx/TerminalShell";
 
 interface ProjectImage {
   url: string;
@@ -171,9 +172,7 @@ export function ProjectCard({ project, index, taglist, roles, providers, baseUrl
           />
         </div>
         <div className="relative flex items-center gap-1.5 mb-4" style={{ zIndex: 3 }}>
-          <div className="w-2 h-2 rounded-full" style={{ background: "var(--color-chrome-red)" }} />
-          <div className="w-2 h-2 rounded-full" style={{ background: "var(--color-chrome-yellow)" }} />
-          <div className="w-2 h-2 rounded-full" style={{ background: "var(--color-chrome-green)" }} />
+          <TrafficLights size="sm" />
           <span className="ml-2 font-mono" style={{ fontSize: "0.62rem", color: "var(--color-ink-faint)" }}>
             {project.title.toLowerCase().replace(/ /g, "-")}.ts
           </span>
