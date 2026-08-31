@@ -38,7 +38,6 @@
   --color-card: hsl(222 47% 5%);
   --color-card-foreground: hsl(210 40% 98%);
 
-
   /* ── Site palette ──
      The de-facto palette this site was built with, promoted from ~442
      inline literals to named tokens. Grays that failed WCAG AA have been
@@ -197,47 +196,6 @@
 .font-mono {
   font-family: 'JetBrains Mono', monospace !important;
 }
-
-/* ── Glitch text effect ── */
-.glitch {
-  position: relative;
-  color: #fff;
-}
-.glitch::before,
-.glitch::after {
-  content: attr(data-text);
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-}
-.glitch::before {
-  color: #60a5fa;
-  animation: glitch-before 3.5s infinite;
-  clip-path: polygon(0 0, 100% 0, 100% 35%, 0 35%);
-}
-.glitch::after {
-  color: #1d4ed8;
-  animation: glitch-after 3.5s infinite;
-  clip-path: polygon(0 65%, 100% 65%, 100% 100%, 0 100%);
-}
-
-@keyframes glitch-before {
-  0%, 90%, 100% { transform: translate(0); opacity: 0; }
-  92% { transform: translate(-3px, 1px); opacity: 1; }
-  94% { transform: translate(3px, -1px); opacity: 1; }
-  96% { transform: translate(-2px, 2px); opacity: 1; }
-  98% { transform: translate(2px, -2px); opacity: 1; }
-}
-@keyframes glitch-after {
-  0%, 90%, 100% { transform: translate(0); opacity: 0; }
-  93% { transform: translate(3px, -1px); opacity: 1; }
-  95% { transform: translate(-3px, 1px); opacity: 1; }
-  97% { transform: translate(2px, -2px); opacity: 1; }
-  99% { transform: translate(-2px, 2px); opacity: 1; }
-}
-
 
 /* Fades the hard left/right cut where marquee content enters and exits.
    A static mask beats ScrollFade's scroll listeners here: a marquee always
@@ -449,4 +407,75 @@
 @keyframes pulse {
   0%, 100% { transform: scale(1); opacity: 0.6; }
   50% { transform: scale(2.2); opacity: 0; }
+}
+
+/* Skip link — visible only when focused, so keyboard users can jump past the
+   fixed nav without tabbing through it. */
+.skip-link {
+  position: fixed;
+  top: 0;
+  left: 50%;
+  transform: translate(-50%, -120%);
+  z-index: 10000;
+  padding: 10px 18px;
+  border-radius: 0 0 10px 10px;
+  background: var(--color-brand-900); /* 6.7:1 with white — AA at this size */
+  color: #fff;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 500;
+  text-decoration: none;
+  transition: transform 0.15s ease;
+}
+.skip-link:focus-visible,
+.skip-link:focus {
+  transform: translate(-50%, 0);
+  outline: 2px solid var(--color-brand-300);
+  outline-offset: 2px;
+}
+
+/* ── Reduced motion ──
+   Nothing in this codebase honoured prefers-reduced-motion before this. The
+   JS animations are gated per-component via useReducedMotion; this covers the
+   CSS side, which nothing could reach otherwise.
+
+   The blanket rule neutralises transitions and any animation not named below,
+   including future ones. Infinite decorative loops are then stopped outright:
+   a shortened infinite animation still loops forever, so `animation: none` is
+   the only thing that actually stops them. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  /* Purely decorative infinite loops — removed rather than shortened. */
+  .cursor-blink,
+  .float-anim,
+  .scan-line,
+  .spin-slow,
+  .terminal-float,
+  .pulse-ring {
+    animation: none !important;
+  }
+
+  /* The blink cursor and pulse ring read as artefacts when frozen mid-cycle,
+     so settle them in their visible resting state. */
+  .cursor-blink {
+    opacity: 1;
+  }
+  .pulse-ring {
+    opacity: 0;
+  }
+
+  /* The marquee is translated by JS; without motion it should sit at rest and
+     let its content wrap instead of running off the edge. */
+  .edge-fade-x {
+    -webkit-mask-image: none;
+    mask-image: none;
+  }
 }

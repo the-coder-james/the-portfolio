@@ -16,11 +16,13 @@ import FooterComponent from "@/components/footer/FooterComponent.astro"
 <Layout>
   <HeaderComponent client:load />
   <ScrollStack client:load />
-  <MainvisualComponent />
-  <AboutComponent />
-  <SkillsComponent />
-  <ProjectsComponent />
-  <ExperienceComponent />
-  <ContactComponent />
+  <main id="main">
+    <MainvisualComponent />
+    <AboutComponent />
+    <SkillsComponent />
+    <ProjectsComponent />
+    <ExperienceComponent />
+    <ContactComponent />
+  </main>
   <FooterComponent />
 </Layout>

@@ -89,7 +89,7 @@ export function SkillsTabs({ techstack, extraSkills }: SkillsTabsProps) {
               className="gap-1.5 rounded-lg transition-all duration-200 data-[state=active]:shadow-none"
               style={{ fontFamily: "'Space Grotesk', sans-serif", fontSize: "0.85rem" }}
             >
-              <span>{cat.icon}</span>
+              <span aria-hidden="true">{cat.icon}</span>
               {cat.label}
             </TabsTrigger>
           ))}

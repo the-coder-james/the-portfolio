@@ -109,7 +109,7 @@ const socials = contactJson
                 style="background: var(--tint-white-04); border: 1px solid var(--tint-white-08); color: var(--color-ink-dim)"
               >
                 {pathD && (
-                  <svg viewBox="0 0 24 24" fill="currentColor" style="width: 16px; height: 16px">
+                  <svg viewBox="0 0 24 24" fill="currentColor" style="width: 16px; height: 16px" aria-hidden="true">
                     <path d={pathD} />
                   </svg>
                 )}
@@ -135,7 +135,7 @@ const socials = contactJson
     <!-- Static: scroll hint -->
     <div class="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1 hero-scroll-hint" style="color: var(--color-ink-faint)">
       <span style="font-size: 0.65rem; font-family: 'JetBrains Mono'">scroll</span>
-      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
         <line x1="12" y1="5" x2="12" y2="19"></line>
         <polyline points="19 12 12 19 5 12"></polyline>
       </svg>

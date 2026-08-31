@@ -40,8 +40,12 @@ export function LoadingScreen() {
         "-=200"
       );
 
+    // A looping opacity flicker is a photosensitivity concern, so it only runs
+    // when the user has not asked for reduced motion.
+    const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
     // Logo flicker loop while loading
-    const flicker = animate(logoRef.current!, {
+    const flicker = prefersReduced ? null : animate(logoRef.current!, {
       opacity: [
         { to: 1, duration: 80 },
         { to: 0.55, duration: 60 },
@@ -132,7 +136,7 @@ export function LoadingScreen() {
       done = true;
       cancelAnimationFrame(raf);
       window.clearInterval(scanInterval);
-      flicker.pause();
+      flicker?.pause();
 
       // Exit timeline: snap to 100 → logo pulse → fade overlay
       const tl = createTimeline({
@@ -177,10 +181,15 @@ export function LoadingScreen() {
       window.addEventListener("load", onLoad, { once: true });
     }
 
+    // Last-resort unmount. Without this, an error anywhere in the animation
+    // path leaves a full-screen overlay covering the site permanently.
+    const failsafe = window.setTimeout(() => setHidden(true), 6000);
+
     return () => {
       cancelAnimationFrame(raf);
       window.clearInterval(scanInterval);
-      flicker.pause();
+      window.clearTimeout(failsafe);
+      flicker?.pause();
       window.removeEventListener("load", onLoad);
     };
   }, []);
@@ -190,6 +199,10 @@ export function LoadingScreen() {
   return (
     <div
       ref={rootRef}
+      role="status"
+      aria-live="polite"
+      aria-busy="true"
+      aria-label="Loading site"
       className="fixed inset-0 flex items-center justify-center"
       style={{
         zIndex: 9999,
