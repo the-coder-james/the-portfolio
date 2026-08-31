@@ -5,6 +5,7 @@ import { TerminalCard } from "@/components/mainvisual/TerminalCard"
 import contactJson from "@/assets/contact.json"
 import dataJson from "@/assets/data.json"
 
+const baseUrl = import.meta.env.BASE_URL
 const { user, mainvisual } = dataJson
 const name = user.nameDisplay
 
@@ -21,15 +22,19 @@ const socials = contactJson
 ---
 
 <section id="hero" data-stack-section class="sticky top-0 min-h-screen flex items-center overflow-hidden" style="background: var(--color-surface-base)">
-  <!-- Dynamic: particle canvas -->
+  <!-- Static mesh backdrop. Carries most of the visual weight that the
+       particle canvas used to draw every frame. -->
+  <div
+    class="absolute inset-0 pointer-events-none bg-cover bg-center"
+    aria-hidden="true"
+    style={`background-image: url('${baseUrl}bg/hero-mesh.svg'); z-index: 0`}
+  ></div>
+
+  <!-- Dynamic: drifting particles layered over the mesh -->
   <ParticleCanvas client:load />
 
   <!-- Static overlays -->
-  <div class="absolute inset-0 dot-grid opacity-30" style="z-index: 0"></div>
-  <div
-    class="absolute inset-0 pointer-events-none"
-    style="background: radial-gradient(ellipse 60% 50% at 50% 50%, var(--tint-brand-07) 0%, transparent 70%); z-index: 0"
-  ></div>
+  <div class="absolute inset-0 dot-grid opacity-30" aria-hidden="true" style="z-index: 0"></div>
 
   <!-- Static floating code snippets (lg+) -->
   {mainvisual.floaters.map((f) => (

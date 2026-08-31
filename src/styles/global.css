@@ -189,8 +189,8 @@
 
 /* ── CSS Variables ── */
 :root {
-  --blue-glow: 0 0 20px rgba(59,130,246,0.4);
-  --blue-glow-lg: 0 0 40px rgba(59,130,246,0.3);
+  --blue-glow: 0 0 20px var(--tint-brand-40);
+  --blue-glow-lg: 0 0 40px var(--tint-brand-30);
 }
 
 /* ── Font overrides ── */
@@ -394,7 +394,7 @@
 
 /* ── Dot grid background ── */
 .dot-grid {
-  background-image: radial-gradient(circle, rgba(59,130,246,0.15) 1px, transparent 1px);
+  background-image: radial-gradient(circle, var(--tint-brand-15) 1px, transparent 1px);
   background-size: 28px 28px;
 }
 
@@ -403,8 +403,8 @@
   transition: box-shadow 0.3s ease, border-color 0.3s ease;
 }
 .card-glow:hover {
-  box-shadow: 0 0 24px rgba(59,130,246,0.25);
-  border-color: rgba(59,130,246,0.6) !important;
+  box-shadow: 0 0 24px var(--tint-brand-25);
+  border-color: var(--tint-brand-60) !important;
 }
 
 /* ── Gradient text ── */

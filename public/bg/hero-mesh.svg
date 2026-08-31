@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid slice" width="1440" height="900">
+  <defs>
+    <radialGradient id="g1" cx="18%" cy="22%" r="55%">
+      <stop offset="0%" stop-color="#3b82f6" stop-opacity="0.20"/>
+      <stop offset="100%" stop-color="#3b82f6" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="g2" cx="82%" cy="72%" r="52%">
+      <stop offset="0%" stop-color="#1d4ed8" stop-opacity="0.22"/>
+      <stop offset="100%" stop-color="#1d4ed8" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="g3" cx="62%" cy="12%" r="40%">
+      <stop offset="0%" stop-color="#60a5fa" stop-opacity="0.12"/>
+      <stop offset="100%" stop-color="#60a5fa" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="edge" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#030712" stop-opacity="0"/>
+      <stop offset="100%" stop-color="#030712" stop-opacity="0.85"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="1440" height="900" fill="#030712"/>
+  <rect width="1440" height="900" fill="url(#g1)"/>
+  <rect width="1440" height="900" fill="url(#g2)"/>
+  <rect width="1440" height="900" fill="url(#g3)"/>
+
+  <!-- Organic blobs, low opacity so the foreground stays legible -->
+  <g fill="none" stroke="#3b82f6" stroke-opacity="0.10" stroke-width="1">
+    <path d="M-40 250 C 220 160, 400 340, 660 250 S 1100 120, 1480 240"/>
+    <path d="M-40 400 C 240 320, 420 500, 700 410 S 1140 290, 1480 400"/>
+    <path d="M-40 560 C 260 480, 440 660, 720 570 S 1160 450, 1480 560"/>
+  </g>
+
+  <g fill="#60a5fa" fill-opacity="0.045">
+    <ellipse cx="240" cy="200" rx="300" ry="190"/>
+    <ellipse cx="1180" cy="700" rx="320" ry="200"/>
+  </g>
+
+  <rect width="1440" height="900" fill="url(#edge)"/>
+</svg>
