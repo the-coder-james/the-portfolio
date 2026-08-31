@@ -8,7 +8,8 @@
     "nvmuse": "source ~/.nvm/nvm.sh && nvm use",
     "preview": "astro preview",
     "shadcn": "npx shadcn@latest",
-    "astro": "astro"
+    "astro": "astro",
+    "images": "node scripts/optimize-images.mjs"
   },
   "dependencies": {
     "@astrojs/react": "^4.3.1",

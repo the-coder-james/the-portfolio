@@ -1,6 +1,7 @@
 import { useRef, useState } from "react";
 import { motion } from "motion/react";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
+import { OptimizedImage } from "@/components/common/tsx/OptimizedImage";
 import { useRevealed } from "@/hooks/useRevealed";
 import { ExternalLink, ArrowUpRight } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
@@ -103,7 +104,6 @@ export function ProjectCard({ project, index, taglist, roles, providers, baseUrl
   const [hovered, setHovered] = useState(false);
   const accent = ACCENTS[index % ACCENTS.length];
   const lines = CODE_PREVIEWS[index % CODE_PREVIEWS.length];
-  const imageSrc = `${baseUrl}${project.image.url}`;
   const roleName = roles[String(project.role)]?.name;
   const providerName = providers[String(project.provider)]?.name;
 
@@ -150,11 +150,10 @@ export function ProjectCard({ project, index, taglist, roles, providers, baseUrl
           className="absolute inset-0 pointer-events-none overflow-hidden"
           style={{ zIndex: 1, opacity: hovered ? 1 : 0, transition: "opacity 0.3s" }}
         >
-          <img
-            src={imageSrc}
+          <OptimizedImage
+            src={project.image.url}
             alt={project.image.alt}
-            loading="lazy"
-            decoding="async"
+            baseUrl={baseUrl}
             className="w-full h-full object-cover"
           />
           <div

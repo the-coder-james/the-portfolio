@@ -2,14 +2,16 @@ import { useState } from "react";
 import { motion } from "motion/react";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { useRevealed } from "@/hooks/useRevealed";
+import { OptimizedImage } from "@/components/common/tsx/OptimizedImage";
 
 interface AboutImageProps {
   name: string;
-  imageUrl: string;
-  hoverImageUrl?: string;
+  imagePath: string;
+  hoverImagePath?: string;
+  baseUrl: string;
 }
 
-export function AboutImage({ name, imageUrl, hoverImageUrl }: AboutImageProps) {
+export function AboutImage({ name, imagePath, hoverImagePath, baseUrl }: AboutImageProps) {
   const { ref: wrapperRef, revealed } = useRevealed<HTMLDivElement>("-80px");
   const reduced = useReducedMotion();
   const [hovered, setHovered] = useState(false);
@@ -53,21 +55,26 @@ export function AboutImage({ name, imageUrl, hoverImageUrl }: AboutImageProps) {
           onMouseLeave={() => setHovered(false)}
           onFocus={() => setHovered(true)}
           onBlur={() => setHovered(false)}
-          tabIndex={hoverImageUrl ? 0 : undefined}
+          tabIndex={hoverImagePath ? 0 : undefined}
         >
-          <img
-            src={imageUrl}
+          <OptimizedImage
+            src={imagePath}
             alt={`${name} photo`}
-            decoding="async"
+            baseUrl={baseUrl}
+            widths={[200, 400]}
+            sizes="170px"
+            loading="eager"
+            fetchPriority="high"
             className="absolute inset-0 w-full h-full object-cover object-center transition-opacity duration-500"
-            style={{ opacity: hovered && hoverImageUrl ? 0 : 1 }}
+            style={{ opacity: hovered && hoverImagePath ? 0 : 1 }}
           />
-          {hoverImageUrl && (
-            <img
-              src={hoverImageUrl}
+          {hoverImagePath && (
+            <OptimizedImage
+              src={hoverImagePath}
               alt=""
-              loading="lazy"
-              decoding="async"
+              baseUrl={baseUrl}
+              widths={[200, 400]}
+              sizes="170px"
               className="absolute inset-0 w-full h-full object-cover object-center transition-opacity duration-500"
               style={{ opacity: hovered ? 1 : 0 }}
             />
