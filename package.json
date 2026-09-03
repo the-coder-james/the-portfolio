@@ -9,7 +9,8 @@
     "preview": "astro preview",
     "shadcn": "npx shadcn@latest",
     "astro": "astro",
-    "images": "node scripts/optimize-images.mjs"
+    "images": "node scripts/optimize-images.mjs",
+    "inspect": "node scripts/inspect-layout.mjs"
   },
   "dependencies": {
     "@astrojs/react": "^4.3.1",

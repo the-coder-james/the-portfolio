@@ -59,6 +59,9 @@ export function ScrollStack() {
 
       const veil = document.createElement("div");
       veil.setAttribute("aria-hidden", "true");
+      // Tagged so tooling can identify it unambiguously; several sections have
+      // other absolutely-positioned decorative children.
+      veil.setAttribute("data-stack-veil", "");
       veil.style.cssText =
         "position:absolute;inset:0;pointer-events:none;opacity:0;z-index:60;" +
         "background:var(--color-surface-deep);border-radius:inherit;";
@@ -101,16 +104,19 @@ export function ScrollStack() {
           continue;
         }
 
-        // Progress of this card being covered. The spacer is the card plus one
-        // viewport of runway, and the runway only begins once the card itself
-        // has scrolled past — so measure from the end of the card, not from the
-        // top of the spacer. (Measuring from the spacer top counted the card's
-        // own height as consumed runway, which pinned progress at 1 from the
-        // very first frame.)
-        const spacerRect = spacers[i].getBoundingClientRect();
-        const scrolledPast = -spacerRect.top;
-        const runwayUsed = scrolledPast - (el.offsetHeight - viewportHeight);
-        const progress = Math.min(1, Math.max(0, runwayUsed / viewportHeight));
+        // Progress of this card being covered.
+        //
+        // Measured from the next card rather than from this one's spacer. A
+        // card should only recede while the card above it is actually crossing
+        // the viewport, and that is exactly what this measures: 0 when the next
+        // card is still a full viewport below, 1 once it has reached the top.
+        //
+        // Deriving it from this card's own spacer instead made the recede start
+        // as soon as the card was pinned, which for a card shorter than the
+        // viewport (the hero, 873px in 900px) meant it began fading within the
+        // first 100px of scroll while it was still the only thing on screen.
+        const nextTop = sections[i + 1].getBoundingClientRect().top;
+        const progress = Math.min(1, Math.max(0, 1 - nextTop / viewportHeight));
 
         el.style.transform = `scale(${1 - progress * SCALE_STEP})`;
         veils[i].style.opacity = `${progress * VEIL_MAX}`;
