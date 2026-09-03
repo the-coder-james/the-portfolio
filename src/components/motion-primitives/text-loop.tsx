@@ -50,6 +50,13 @@ export function TextLoop({
 
   return (
     <div className={cn('relative inline-block whitespace-nowrap', className)}>
+      {/* Reserves layout space: the animated items are absolutely positioned so
+          the outgoing and incoming strings never share a line. */}
+      <span aria-hidden='true' className='invisible block'>
+        {items.reduce((a, b) =>
+          String(a).length >= String(b).length ? a : b
+        )}
+      </span>
       <AnimatePresence mode={mode} initial={false}>
         <motion.div
           key={currentIndex}
@@ -58,6 +65,7 @@ export function TextLoop({
           exit='exit'
           transition={transition}
           variants={variants || motionVariants}
+          style={{ position: 'absolute', inset: 0 }}
         >
           {items[currentIndex]}
         </motion.div>

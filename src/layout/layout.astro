@@ -20,6 +20,13 @@ const { title } = Astro.props;
   </head>
   <body style="background-color: var(--color-surface-base); min-height: 100vh; overflow-x: hidden;">
     <div id="preboot-veil"></div>
+    {/* Fixed page backdrop. Stays put while the content scrolls over it. */}
+    <div
+      class="site-backdrop"
+      aria-hidden="true"
+      style={`background-image: url('${import.meta.env.BASE_URL}bg/hero-mesh.svg')`}
+    >
+    </div>
     <a href="#main" class="skip-link">Skip to content</a>
     <LoadingScreen client:load />
     <slot />

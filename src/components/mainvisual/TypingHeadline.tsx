@@ -70,7 +70,7 @@ export function TypingHeadline({ name, sequences, headlinePrefix, rolePrefix }: 
             {/* TextLoop only forwards className, so style and aria-hidden
                 live on a wrapper rather than being silently dropped. */}
             <span aria-hidden="true" style={roleStyle}>
-              <TextLoop className="gradient-text" interval={3}>
+              <TextLoop className="gradient-text" interval={3} mode="wait" transition={{ duration: 0.22 }}>
                 {sequences.map((role) => (
                   <span key={role}>{role}</span>
                 ))}

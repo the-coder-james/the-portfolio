@@ -21,14 +21,9 @@ const socials = contactJson
   .map((c) => ({ label: c.name, href: c.url, iconKey: c.name }))
 ---
 
-<section id="hero" data-stack-section class="stack-card min-h-screen flex items-center overflow-hidden" style="background: var(--color-surface-base)">
-  <!-- Static mesh backdrop. Carries most of the visual weight that the
-       particle canvas used to draw every frame. -->
-  <div
-    class="absolute inset-0 pointer-events-none bg-cover bg-center"
-    aria-hidden="true"
-    style={`background-image: url('${baseUrl}bg/hero-mesh.svg'); z-index: 0`}
-  ></div>
+<section id="hero" class="page-section min-h-screen flex items-center overflow-hidden" style="background: transparent">
+  <!-- The mesh backdrop is a fixed page-level layer (see .site-backdrop), so
+       the hero is transparent and it shows through. -->
 
   <!-- Dynamic: drifting particles layered over the mesh -->
   <ParticleCanvas client:load />

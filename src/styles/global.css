@@ -458,17 +458,24 @@
   outline-offset: 2px;
 }
 
-/* Stacked section cards. Each one slides up over the previous and settles on
-   the pile, so it needs an opaque background of its own (the card beneath is
-   still in the document, directly behind it) and a shadow to read as a
-   separate surface arriving on top. */
-.stack-card {
-  /* No position here on purpose. ScrollStack wraps each card in a spacer and
-     makes it sticky at runtime; declaring sticky in CSS made every card pin at
-     once, stacking them all at the same offset before the script ran. */
-  border-top-left-radius: 18px;
-  border-top-right-radius: 18px;
-  box-shadow: 0 -24px 60px var(--shadow-black-50);
+/* Fixed page backdrop — the hero mesh, pinned behind everything. Content
+   scrolls over it, so it reads as depth rather than a panel that moves. */
+.site-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-color: var(--color-surface-base);
+  background-size: cover;
+  background-position: center;
+}
+
+/* Sections sit above the fixed backdrop. The hero is transparent so the
+   backdrop shows through it; every following section carries its own opaque
+   background and simply scrolls over it. */
+.page-section {
+  position: relative;
+  z-index: 1;
 }
 
 /* ── Reduced motion ──
@@ -507,13 +514,6 @@
   }
   .pulse-ring {
     opacity: 0;
-  }
-
-  /* Sections must not pin under reduced motion — ScrollStack bails early, so
-     the sticky positioning from the class has to be undone here too. */
-  .stack-card {
-    position: static;
-    box-shadow: none;
   }
 
   /* The marquee is translated by JS; without motion it should sit at rest and

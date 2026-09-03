@@ -21,8 +21,8 @@ interface Props {
   sub?: string;
   /** Width of the inner container. */
   maxWidth?: string;
-  /** Opt out of the scroll-stacking behaviour (contact does this). */
-  stack?: boolean;
+  /** Whether the section fills the viewport height. */
+  fullHeight?: boolean;
   class?: string;
   headingClass?: string;
 }
@@ -35,7 +35,7 @@ const {
   headlineAccent,
   sub,
   maxWidth = "max-w-7xl",
-  stack = true,
+  fullHeight = true,
   class: className = "py-28",
   headingClass = "mb-16",
 } = Astro.props;
@@ -45,8 +45,7 @@ const hasHeading = Boolean(eyebrow || headline);
 
 <section
   id={id}
-  data-stack-section={stack ? "" : undefined}
-  class:list={[stack ? "stack-card min-h-screen flex flex-col justify-center" : "relative", className]}
+  class:list={["page-section", fullHeight ? "min-h-screen flex flex-col justify-center" : "", className]}
   style={`background: ${background}`}
 >
   <!-- Top hairline: shared by every section -->
