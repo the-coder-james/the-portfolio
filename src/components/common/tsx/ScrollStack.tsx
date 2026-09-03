@@ -1,154 +1,140 @@
 import { useEffect } from "react";
 
 /**
- * Drives the "stacking cards" scroll effect for sections marked
- * [data-stack-section]. A naive `position: sticky` stack only ever shows a
- * section's first viewport-height of content while pinned — anything taller
- * gets skipped past in the instant before the next section covers it.
+ * Turns the [data-stack-section] sections into a FILO card stack: each section
+ * slides up over the one before it and settles on the pile, which stays pinned
+ * underneath and recedes slightly.
  *
- * Instead, each stacked section is pinned inside a spacer sized to its own
- * natural content height, clipped to one viewport, and its content is
- * translated upward in sync with scroll so all of it is revealed before the
- * cover/fade transition (confined to the final viewport-height of the
- * spacer) begins.
+ * The previous implementation pinned every section at 100vh with
+ * `overflow: hidden` and wrote `el.scrollTop` on each frame to reveal content
+ * taller than the viewport. That is what made it feel rough — scrollTop is a
+ * scroll position, so browsers snap it to whole pixels and never interpolate
+ * it, and each write also invalidated layout. Nothing here writes scroll
+ * positions or heights during scroll: sections are their natural height, the
+ * page scrolls normally through them, and `position: sticky` does the pinning.
+ * The only per-frame work is a transform and an opacity on the covered cards,
+ * both of which stay on the compositor.
  */
+
+const STACK_TOP = 0;      // where a card comes to rest
+const SCALE_STEP = 0.03;  // how much each covered card shrinks
+const VEIL_MAX = 0.45;    // how far a covered card darkens
+
 export function ScrollStack() {
   useEffect(() => {
-    // Pinning clips every section to one viewport and animates scale/opacity as
-    // they cover each other. Under reduced motion, leave the document in normal
-    // flow instead — the sections simply stack and scroll.
+    // Under reduced motion the sections are left in normal document flow.
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
     const sections = Array.from(
       document.querySelectorAll<HTMLElement>("[data-stack-section]")
     );
-    if (sections.length === 0) return;
+    if (sections.length < 2) return;
 
-    const spacers: HTMLElement[] = [];
     const veils: HTMLElement[] = [];
     const originalStyles: { el: HTMLElement; cssText: string }[] = [];
-
-    // Reserve the content's own height (for the reveal scroll) plus one
-    // extra viewport-height as dedicated runway for the cover transition,
-    // so the fade-out never overlaps content still being revealed. Content
-    // can grow after mount (e.g. a "see more" button) or the viewport can
-    // resize, so this is recomputed rather than measured once.
-    const sizeSpacer = (el: HTMLElement, spacer: HTMLElement) => {
-      const contentHeight = el.scrollHeight;
-      const viewportHeight = window.innerHeight;
-      spacer.style.height = `${Math.max(contentHeight, viewportHeight) + viewportHeight}px`;
-    };
 
     sections.forEach((el, i) => {
       originalStyles.push({ el, cssText: el.style.cssText });
 
-      const spacer = document.createElement("div");
-      spacer.setAttribute("data-stack-spacer", "");
-      spacer.style.position = "relative";
+      // Position, height and radius come from the .stack-card class in CSS so
+      // the layout is correct before JS runs. Only the stacking order and the
+      // transform hint are set here.
+      el.style.zIndex = `${i + 1}`;
+      el.style.transformOrigin = "center top";
+      el.style.willChange = "transform";
 
-      el.parentElement?.insertBefore(spacer, el);
-      spacer.appendChild(el);
+      // A sticky element taller than the viewport pins whichever edge its
+      // offset names. With `top: 0` a tall section would pin its top edge and
+      // its lower content would never scroll into view. Sticking such sections
+      // to the bottom instead lets them scroll through normally and only pin
+      // once their end is reached.
+      applyStickyEdge(el);
 
-      el.style.position = "sticky";
-      el.style.top = "0";
-      el.style.height = "100vh";
-      el.style.overflow = "hidden";
-      el.style.zIndex = `${i}`;
-
-      // Darkening layer used instead of fading the section itself, so text and
-      // borders keep their contrast for as long as they are legible. Fixed
-      // rather than absolute: the section is scrolled internally via scrollTop,
-      // so an absolute child would scroll away with the content. A pinned
-      // section always fills the viewport, so fixed covers exactly it.
+      // Darkening layer for cards that have been covered. Absolute here (not
+      // fixed, as before) because these sections are no longer internally
+      // scrolled — it simply covers the card it belongs to.
       const veil = document.createElement("div");
       veil.setAttribute("aria-hidden", "true");
       veil.style.cssText =
-        "position:fixed;inset:0;pointer-events:none;opacity:0;" +
-        "background:var(--color-surface-base);z-index:50;";
+        "position:absolute;inset:0;pointer-events:none;opacity:0;z-index:60;" +
+        "background:var(--color-surface-deep);border-radius:inherit;" +
+        "transition:opacity 120ms linear;";
       el.appendChild(veil);
       veils.push(veil);
-
-      sizeSpacer(el, spacer);
-      spacers.push(spacer);
     });
 
-    // `el` itself is clamped to 100vh with overflow hidden, so its own box
-    // never resizes when inner content grows (e.g. a "see more" button) —
-    // ResizeObserver on `el` would never fire. Watch the DOM subtree instead.
+    // Chosen per section and re-evaluated on resize, since a section can cross
+    // the viewport-height threshold when the window changes.
+    function applyStickyEdge(el: HTMLElement) {
+      const overflows = el.offsetHeight > window.innerHeight;
+      if (overflows) {
+        el.style.top = "auto";
+        el.style.bottom = `${STACK_TOP}px`;
+      } else {
+        el.style.top = `${STACK_TOP}px`;
+        el.style.bottom = "auto";
+      }
+    }
+
     let frame = 0;
     let queued = false;
 
-    // The old version ran update() on every frame for the life of the page,
-    // reading layout for each section whether or not anything had moved. Drive
-    // it from scroll instead, coalescing to at most one update per frame.
-    // `update` is a function declaration below, so it is hoisted.
     const requestUpdate = () => {
       if (queued) return;
       queued = true;
       frame = requestAnimationFrame(update);
     };
 
-    const mutationObserver = new MutationObserver(() => {
-      sections.forEach((el, i) => sizeSpacer(el, spacers[i]));
-      requestUpdate();
-    });
-    sections.forEach((el) =>
-      mutationObserver.observe(el, { childList: true, subtree: true })
-    );
-
-    const handleResize = () => {
-      sections.forEach((el, i) => sizeSpacer(el, spacers[i]));
-      requestUpdate();
-    };
-    window.addEventListener("resize", handleResize);
-
     function update() {
       queued = false;
       const viewportHeight = window.innerHeight;
 
-      sections.forEach((el, i) => {
-        const contentHeight = el.scrollHeight;
-        const spacerRect = spacers[i].getBoundingClientRect();
-        const scrolledPast = -spacerRect.top;
-
-        const revealDistance = Math.max(0, contentHeight - viewportHeight);
-        const revealProgress = revealDistance === 0
-          ? 0
-          : Math.min(1, Math.max(0, scrolledPast / revealDistance));
-        el.scrollTop = revealProgress * revealDistance;
-
-        const isLast = i === sections.length - 1;
-        if (!isLast) {
-          const spacerHeight = spacerRect.height;
-          const remaining = spacerHeight - scrolledPast - viewportHeight;
-          const transitionProgress = Math.min(1, Math.max(0, 1 - remaining / viewportHeight));
-
-          // Recede with scale only. This used to also drop opacity to 0.65,
-          // which dimmed text and card borders while they were still being
-          // read — the depth cue cost real contrast. A dark overlay above the
-          // content gives the same sense of falling back without touching the
-          // opacity of the content itself.
-          el.style.transform = `scale(${1 - transitionProgress * 0.06})`;
-          const veil = veils[i];
-          if (veil) veil.style.opacity = `${transitionProgress * 0.55}`;
+      for (let i = 0; i < sections.length; i++) {
+        const el = sections[i];
+        const next = sections[i + 1];
+        if (!next) {
+          // The last card is never covered.
+          el.style.transform = "";
+          veils[i].style.opacity = "0";
+          continue;
         }
-      });
+
+        // How far the next card has travelled across this one: 0 when it is
+        // still a full viewport below, 1 once it has fully covered this card.
+        const nextTop = next.getBoundingClientRect().top;
+        const progress = Math.min(1, Math.max(0, 1 - (nextTop - STACK_TOP) / viewportHeight));
+
+        // Cards deeper in the pile recede a little further, so the stack reads
+        // as depth rather than a single swap.
+        el.style.transform = `scale(${1 - progress * SCALE_STEP})`;
+        veils[i].style.opacity = `${progress * VEIL_MAX}`;
+      }
     }
+
+    const handleResize = () => {
+      sections.forEach(applyStickyEdge);
+      requestUpdate();
+    };
+
+    // A section can cross the viewport-height threshold when its content grows
+    // (the projects grid has a "see more" button), so the sticky edge has to be
+    // re-evaluated rather than decided once at mount.
+    const resizeObserver = new ResizeObserver(() => {
+      sections.forEach(applyStickyEdge);
+      requestUpdate();
+    });
+    sections.forEach((el) => resizeObserver.observe(el));
 
     update();
     window.addEventListener("scroll", requestUpdate, { passive: true });
+    window.addEventListener("resize", handleResize);
 
     return () => {
       cancelAnimationFrame(frame);
-      mutationObserver.disconnect();
+      resizeObserver.disconnect();
       window.removeEventListener("scroll", requestUpdate);
       window.removeEventListener("resize", handleResize);
       veils.forEach((veil) => veil.remove());
-      spacers.forEach((spacer) => {
-        const el = spacer.firstElementChild;
-        if (el) spacer.parentElement?.insertBefore(el, spacer);
-        spacer.remove();
-      });
       originalStyles.forEach(({ el, cssText }) => {
         el.style.cssText = cssText;
       });

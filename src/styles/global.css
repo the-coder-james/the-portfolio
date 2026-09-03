@@ -458,6 +458,21 @@
   outline-offset: 2px;
 }
 
+/* Stacked section cards. Each one slides up over the previous and settles on
+   the pile, so it needs an opaque background of its own (the card beneath is
+   still in the document, directly behind it) and a shadow to read as a
+   separate surface arriving on top. */
+.stack-card {
+  /* Default offset so the stack works before the script runs. ScrollStack
+     overrides this per section: sections taller than the viewport stick to the
+     bottom instead, otherwise their lower content could never scroll into
+     view. */
+  top: 0;
+  border-top-left-radius: 18px;
+  border-top-right-radius: 18px;
+  box-shadow: 0 -24px 60px var(--shadow-black-50);
+}
+
 /* ── Reduced motion ──
    Nothing in this codebase honoured prefers-reduced-motion before this. The
    JS animations are gated per-component via useReducedMotion; this covers the
@@ -494,6 +509,13 @@
   }
   .pulse-ring {
     opacity: 0;
+  }
+
+  /* Sections must not pin under reduced motion — ScrollStack bails early, so
+     the sticky positioning from the class has to be undone here too. */
+  .stack-card {
+    position: static;
+    box-shadow: none;
   }
 
   /* The marquee is translated by JS; without motion it should sit at rest and
