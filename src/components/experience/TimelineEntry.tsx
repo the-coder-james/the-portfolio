@@ -1,7 +1,9 @@
-import { useEffect, useRef } from "react";
-import { inView } from "motion";
-import { animateEl } from "@/lib/utils";
+import { useRef } from "react";
+import { motion } from "motion/react";
 import { Badge } from "@/components/ui/badge";
+import { useReducedMotion } from "@/hooks/useReducedMotion";
+import { WindowCard } from "@/components/common/tsx/WindowCard";
+import { useRevealed } from "@/hooks/useRevealed";
 
 interface TimelineItem {
   year: string;
@@ -19,73 +21,54 @@ interface TimelineEntryProps {
 }
 
 export function TimelineEntry({ item, index }: TimelineEntryProps) {
-  const ref = useRef<HTMLDivElement>(null);
-  const dotRef = useRef<HTMLDivElement>(null);
-  const pulseRef = useRef<HTMLDivElement>(null);
+  const { ref, revealed } = useRevealed<HTMLLIElement>("-60px");
+  const reduced = useReducedMotion();
   const isEven = index % 2 === 0;
-
-  useEffect(() => {
-    const el = ref.current;
-    const dot = dotRef.current;
-    if (!el) return;
-
-    inView(el, () => {
-      animateEl(
-        el as Element,
-        { opacity: [0, 1], x: [isEven ? -50 : 50, 0], filter: ["blur(6px)", "blur(0px)"] },
-        { delay: 0.05 + index * 0.06, type: "spring", visualDuration: 0.6, bounce: 0.2 }
-      );
-      if (dot) {
-        animateEl(dot as Element, { scale: [0, 1.4, 1], opacity: [0, 1] }, { delay: 0.2 + index * 0.06, type: "spring", visualDuration: 0.4, bounce: 0.05 });
-      }
-      if (pulseRef.current && item.type === "present") {
-        pulseRef.current.style.animation = "pulse 2s ease-in-out infinite";
-      }
-    }, { margin: "-60px" });
-  }, [index, isEven, item.type]);
+  const isPresent = item.type === "present";
 
   return (
-    <div
+    <motion.li
       ref={ref}
       className={`relative flex items-start gap-6 md:gap-0 ${isEven ? "md:flex-row" : "md:flex-row-reverse"}`}
-      style={{ opacity: 0 }}
+      initial={reduced ? false : { opacity: 0, x: isEven ? -50 : 50, filter: "blur(6px)" }}
+      animate={revealed ? { opacity: 1, x: 0, filter: "blur(0px)" } : undefined}
+      transition={{ delay: 0.05 + index * 0.06, type: "spring", visualDuration: 0.6, bounce: 0.2 }}
     >
       <div className={`md:w-[45%] pl-14 md:pl-0 ${isEven ? "md:pr-10 md:text-right" : "md:pl-10 md:text-left"}`}>
-        <div
-          className="card-glow rounded-2xl p-5 text-left"
-          style={{
-            background: item.type === "present" ? "rgba(59,130,246,0.07)" : "rgba(255,255,255,0.02)",
-            border: item.type === "present" ? "1px solid rgba(59,130,246,0.3)" : "1px solid rgba(255,255,255,0.06)",
-          }}
+        <WindowCard
+          title={`${item.year}-${item.title.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`}
+          raised={isPresent}
+          className="text-left"
+          style={isPresent ? { borderColor: "var(--color-brand)" } : undefined}
         >
           <div className="flex items-center gap-2 mb-3 flex-wrap">
             <Badge
               variant="outline"
               className="font-mono rounded"
-              style={{ fontSize: "0.6rem", color: "#60a5fa", background: "rgba(59,130,246,0.12)", border: "1px solid rgba(59,130,246,0.2)" }}
+              style={{ fontSize: "0.6rem", color: "var(--color-brand-400)", background: "var(--tint-brand-12)", border: "1px solid var(--tint-brand-20)" }}
             >
               {item.hash}
             </Badge>
-            <span style={{ fontSize: "0.75rem", color: "#3b82f6", fontFamily: "'JetBrains Mono'", fontWeight: 600 }}>
+            <span style={{ fontSize: "0.75rem", color: "var(--color-brand)", fontFamily: "'JetBrains Mono'", fontWeight: 600 }}>
               {item.year}
             </span>
             {item.type === "present" && (
               <Badge
                 className="gap-1 rounded-full"
-                style={{ fontSize: "0.6rem", color: "#4ade80", background: "rgba(74,222,128,0.1)", border: "1px solid rgba(74,222,128,0.2)" }}
+                style={{ fontSize: "0.6rem", color: "var(--color-success)", background: "var(--tint-success-10)", border: "1px solid var(--tint-success-20)" }}
               >
                 <span className="w-1 h-1 rounded-full bg-green-400 cursor-blink" />
                 Live
               </Badge>
             )}
           </div>
-          <h3 style={{ fontSize: "1rem", fontWeight: 700, color: "#f1f5f9", fontFamily: "'Space Grotesk', sans-serif", marginBottom: "2px" }}>
+          <h3 style={{ fontSize: "1rem", fontWeight: 700, color: "var(--color-ink)", fontFamily: "'Space Grotesk', sans-serif", marginBottom: "2px" }}>
             {item.title}
           </h3>
-          <p style={{ fontSize: "0.78rem", color: "#3b82f6", fontFamily: "'Space Grotesk', sans-serif", marginBottom: "10px" }}>
+          <p style={{ fontSize: "0.78rem", color: "var(--color-brand)", fontFamily: "'Space Grotesk', sans-serif", marginBottom: "10px" }}>
             {item.company}
           </p>
-          <p style={{ fontSize: "0.82rem", color: "#64748b", lineHeight: 1.7, fontFamily: "'Space Grotesk', sans-serif", marginBottom: "12px" }}>
+          <p style={{ fontSize: "0.82rem", color: "var(--color-ink-dim)", lineHeight: 1.7, fontFamily: "'Space Grotesk', sans-serif", marginBottom: "12px" }}>
             {item.description}
           </p>
           <div className="flex flex-wrap gap-1.5">
@@ -94,36 +77,38 @@ export function TimelineEntry({ item, index }: TimelineEntryProps) {
                 key={tag}
                 variant="outline"
                 className="font-mono rounded"
-                style={{ fontSize: "0.6rem", color: "#60a5fa", background: "rgba(59,130,246,0.07)", border: "1px solid rgba(59,130,246,0.12)" }}
+                style={{ fontSize: "0.6rem", color: "var(--color-brand-400)", background: "var(--tint-brand-07)", border: "1px solid var(--tint-brand-12)" }}
               >
                 {tag}
               </Badge>
             ))}
           </div>
-        </div>
+        </WindowCard>
       </div>
 
-      <div className="absolute left-6 md:left-1/2 md:-translate-x-1/2 top-6">
-        <div
-          ref={dotRef}
+      <div className="absolute left-6 md:left-1/2 md:-translate-x-1/2 top-6" aria-hidden="true">
+        <motion.div
           className="w-3 h-3 rounded-full relative"
+          initial={reduced ? false : { scale: 0, opacity: 0 }}
+          animate={revealed ? { scale: [0, 1.4, 1], opacity: 1 } : undefined}
+          transition={{ delay: 0.2 + index * 0.06, type: "spring", visualDuration: 0.4, bounce: 0.05 }}
           style={{
-            background: item.type === "present" ? "#4ade80" : "#3b82f6",
-            boxShadow: item.type === "present" ? "0 0 12px rgba(74,222,128,0.6)" : "0 0 12px rgba(59,130,246,0.5)",
-            opacity: 0,
+            background: isPresent ? "var(--color-success)" : "var(--color-brand)",
+            boxShadow: isPresent ? "0 0 12px var(--tint-success-60)" : "0 0 12px var(--tint-brand-50)",
           }}
         >
-          {item.type === "present" && (
+          {/* The "currently here" pulse loops forever, so it is suppressed
+              under reduced motion rather than left running. */}
+          {isPresent && !reduced && (
             <div
-              ref={pulseRef}
-              className="absolute inset-0 rounded-full"
-              style={{ background: "rgba(74,222,128,0.3)" }}
+              className="absolute inset-0 rounded-full pulse-ring"
+              style={{ background: "var(--tint-success-30)" }}
             />
           )}
-        </div>
+        </motion.div>
       </div>
 
       <div className="hidden md:block md:w-[45%]" />
-    </div>
+    </motion.li>
   );
 }

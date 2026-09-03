@@ -1,6 +1,10 @@
-import { useEffect, useRef } from "react";
-import { stagger, inView } from "motion";
-import { animateEl } from "@/lib/utils";
+import { useEffect, useRef, useState } from "react";
+
+import { SlidingNumber } from "@/components/motion-primitives/sliding-number";
+import { RevealGroup } from "@/components/common/tsx/RevealGroup";
+import { WindowCard } from "@/components/common/tsx/WindowCard";
+import { useReducedMotion } from "@/hooks/useReducedMotion";
+import { useRevealed } from "@/hooks/useRevealed";
 
 interface Stat {
   label: string;
@@ -20,62 +24,70 @@ function parseNumeric(v: string): { num: number; suffix: string } | null {
   return { num, suffix: m[2] || "" };
 }
 
-export function AboutStats({ stats }: AboutStatsProps) {
-  const ref = useRef<HTMLDivElement>(null);
+/**
+ * Counts up to a stat's numeric value once the group scrolls into view.
+ *
+ * Replaces a hand-rolled rAF loop that wrote to `textContent` on every frame
+ * with no live region — screen readers had no stable value to announce. The
+ * accessible value now comes from a single visually-hidden node, so the
+ * animation is presentational only.
+ */
+function StatValue({ value, start }: { value: string; start: boolean }) {
+  const parsed = parseNumeric(value);
+  const reduced = useReducedMotion();
+  const [current, setCurrent] = useState(0);
 
   useEffect(() => {
-    const root = ref.current;
-    if (!root) return;
+    if (!parsed) return;
+    if (!start || reduced) {
+      setCurrent(parsed.num);
+      return;
+    }
+    setCurrent(parsed.num);
+  }, [start, reduced, parsed?.num]);
 
-    inView(root, () => {
-      animateEl(
-        root.querySelectorAll<Element>(".stat-card"),
-        { opacity: [0, 1], y: [30, 0], scale: [0.9, 1] },
-        { delay: stagger(0.1, { startDelay: 0.1 }), type: "spring", visualDuration: 0.5, bounce: 0.2 }
-      );
+  // Non-numeric stats (or reduced motion) render as plain text.
+  if (!parsed || reduced) {
+    return <span>{value}</span>;
+  }
 
-      // Count-up for numeric stats
-      root.querySelectorAll<HTMLElement>(".stat-value").forEach((el) => {
-        const original = el.dataset.value || el.textContent || "";
-        const parsed = parseNumeric(original);
-        if (!parsed) return;
-        let start: number | null = null;
-        const duration = 1400;
-        const tick = (ts: number) => {
-          if (!start) start = ts;
-          const progress = Math.min((ts - start) / duration, 1);
-          const eased = 1 - Math.pow(1 - progress, 3);
-          const val = eased * parsed.num;
-          const fixed = parsed.num % 1 !== 0 ? val.toFixed(1) : Math.floor(val).toString();
-          el.textContent = fixed + parsed.suffix;
-          if (progress < 1) requestAnimationFrame(tick);
-        };
-        setTimeout(() => requestAnimationFrame(tick), 300);
-      });
-    }, { margin: "-80px" });
-  }, [stats]);
+  const isWhole = parsed.num % 1 === 0;
 
   return (
-    <div ref={ref} className="grid grid-cols-2 gap-4">
-      {stats.map((stat) => (
-        <div
-          key={stat.label}
-          className="stat-card card-glow rounded-xl p-5"
-          style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.06)", opacity: 0 }}
-        >
-          <div className="text-2xl mb-2">{stat.icon}</div>
-          <div
-            className="stat-value gradient-text"
-            data-value={stat.value}
-            style={{ fontSize: "1.8rem", fontWeight: 700, lineHeight: 1, fontFamily: "'Space Grotesk', sans-serif" }}
+    <>
+      <span aria-hidden="true" className="inline-flex items-center">
+        {isWhole ? <SlidingNumber value={current} /> : <span>{current.toFixed(1)}</span>}
+        {parsed.suffix}
+      </span>
+      <span className="sr-only">{value}</span>
+    </>
+  );
+}
+
+export function AboutStats({ stats }: AboutStatsProps) {
+  const { ref, revealed } = useRevealed<HTMLDivElement>("-80px");
+
+  return (
+    <div ref={ref}>
+      <RevealGroup className="grid grid-cols-2 gap-4" preset="scale" margin="-80px">
+        {stats.map((stat) => (
+          <WindowCard
+            key={stat.label}
+            title={`${stat.label.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`}
           >
-            {stat.value}
-          </div>
-          <div style={{ fontSize: "0.78rem", color: "#475569", marginTop: "4px", fontFamily: "'Space Grotesk', sans-serif" }}>
-            {stat.label}
-          </div>
-        </div>
-      ))}
+            <div className="text-2xl mb-2" aria-hidden="true">{stat.icon}</div>
+            <div
+              className="gradient-text"
+              style={{ fontSize: "1.8rem", fontWeight: 700, lineHeight: 1, fontFamily: "'Space Grotesk', sans-serif" }}
+            >
+              <StatValue value={stat.value} start={revealed} />
+            </div>
+            <div style={{ fontSize: "0.78rem", color: "var(--color-ink-dim)", marginTop: "4px", fontFamily: "'Space Grotesk', sans-serif" }}>
+              {stat.label}
+            </div>
+          </WindowCard>
+        ))}
+      </RevealGroup>
     </div>
   );
 }

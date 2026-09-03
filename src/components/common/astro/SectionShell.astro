@@ -1,0 +1,77 @@
+---
+import { SectionHeading } from "@/components/common/tsx/SectionHeading"
+
+/**
+ * The shared frame for every full-page section: the section element itself,
+ * the top hairline divider (previously copy-pasted into five files), an
+ * optional radial glow, and the eyebrow/headline heading block.
+ *
+ * Content is passed through the default slot. Sections that need extra
+ * decoration behind their content can use the `backdrop` slot.
+ */
+interface Props {
+  id: string;
+  /** Section background; defaults to the base surface. */
+  background?: string;
+  /** Small mono label above the headline. */
+  eyebrow?: string;
+  /** Headline text. */
+  headline?: string;
+  /** Trailing headline words, rendered with the gradient treatment. */
+  headlineAccent?: string;
+  /** Optional supporting line under the headline. */
+  sub?: string;
+  /** Width of the inner container. */
+  maxWidth?: string;
+  /** Whether the section fills the viewport height. */
+  fullHeight?: boolean;
+  class?: string;
+  headingClass?: string;
+}
+
+const {
+  id,
+  background = "var(--color-surface-base)",
+  eyebrow,
+  headline,
+  headlineAccent,
+  sub,
+  maxWidth = "max-w-7xl",
+  fullHeight = true,
+  class: className = "py-28",
+  headingClass = "mb-16",
+} = Astro.props;
+
+const hasHeading = Boolean(eyebrow || headline);
+---
+
+<section
+  id={id}
+  class:list={["page-section", fullHeight ? "min-h-screen flex flex-col justify-center" : "", className]}
+  style={`background: ${background}; --seam-color: ${background}`}
+>
+  <!-- Seam rule, above the blend gradients (z-index 2) so it stays crisp -->
+  <div
+    class="absolute top-0 left-0 right-0 h-px"
+    aria-hidden="true"
+    style="z-index: 3; background: linear-gradient(90deg, transparent, var(--tint-brand-30) 50%, transparent)"
+  >
+  </div>
+
+  <slot name="backdrop" />
+
+  <div class:list={[maxWidth, "mx-auto px-6 relative"]}>
+    {hasHeading && (
+      <SectionHeading
+        client:visible
+        eyebrow={eyebrow}
+        headline={headline}
+        headlineAccent={headlineAccent}
+        sub={sub}
+        className={headingClass}
+      />
+    )}
+
+    <slot />
+  </div>
+</section>

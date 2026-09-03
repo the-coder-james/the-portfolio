@@ -1,52 +1,207 @@
 @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap');
 
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+@import "tw-animate-css";
 
-@layer base {
-  :root {
-    --background: 222 47% 4%;
-    --foreground: 210 40% 98%;
-    --card: 222 47% 5%;
-    --card-foreground: 210 40% 98%;
-    --popover: 222 47% 5%;
-    --popover-foreground: 210 40% 98%;
-    --primary: 217 91% 60%;
-    --primary-foreground: 222 47% 4%;
-    --secondary: 217 33% 17%;
-    --secondary-foreground: 210 40% 98%;
-    --muted: 217 33% 17%;
-    --muted-foreground: 215 20% 55%;
-    --accent: 217 33% 17%;
-    --accent-foreground: 210 40% 98%;
-    --destructive: 0 84% 60%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 217 33% 17%;
-    --input: 217 33% 17%;
-    --ring: 217 91% 60%;
-    --radius: 0.5rem;
-  }
+/* v3 used `darkMode: ["class"]`. In v4 that is declared in CSS. */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* ── Design tokens ──
+   Ported from tailwind.config.mjs. In v4 the theme lives here; each
+   --color-* key generates the matching bg-/text-/border-* utilities. */
+@theme {
+  --color-border: hsl(217 33% 17%);
+  --color-input: hsl(217 33% 17%);
+  --color-ring: hsl(217 91% 60%);
+
+  --color-background: hsl(222 47% 4%);
+  --color-foreground: hsl(210 40% 98%);
+
+  --color-primary: hsl(217 91% 60%);
+  --color-primary-foreground: hsl(222 47% 4%);
+
+  --color-secondary: hsl(217 33% 17%);
+  --color-secondary-foreground: hsl(210 40% 98%);
+
+  --color-destructive: hsl(0 84% 60%);
+  --color-destructive-foreground: hsl(210 40% 98%);
+
+  --color-muted: hsl(217 33% 17%);
+  --color-muted-foreground: hsl(215 20% 55%);
+
+  --color-accent: hsl(217 33% 17%);
+  --color-accent-foreground: hsl(210 40% 98%);
+
+  --color-popover: hsl(222 47% 5%);
+  --color-popover-foreground: hsl(210 40% 98%);
+
+  --color-card: hsl(222 47% 5%);
+  --color-card-foreground: hsl(210 40% 98%);
+
+  /* ── Site palette ──
+     The de-facto palette this site was built with, promoted from ~442
+     inline literals to named tokens. Grays that failed WCAG AA have been
+     raised on the slate ramp — same muted character, readable contrast. */
+
+  /* Surfaces */
+  --color-surface-base: #030712;      /* hero, projects, contact */
+  --color-surface-alt: #040b1a;       /* skills, experience */
+  --color-surface-deep: #020509;      /* footer */
+  --color-surface-code: #0d1117;      /* terminal/editor body */
+  --color-surface-code-head: #161b22; /* terminal/editor header */
+
+  /* Brand blues */
+  --color-brand-900: #1d4ed8;
+  --color-brand-700: #2563eb;
+  --color-brand: #3b82f6;
+  --color-brand-400: #60a5fa;
+  --color-brand-300: #93c5fd;
+
+  /* Text ramp — every value meets AA on the surfaces above */
+  --color-ink: #f1f5f9;               /* headings */
+  --color-ink-muted: #e2e8f0;         /* body on dark surfaces */
+  --color-ink-dim: #94a3b8;           /* secondary text (7.9:1) */
+  --color-ink-faint: #64748b;         /* decorative/large only (4.2:1) */
+
+  /* Status */
+  --color-success: #4ade80;
+  --color-success-strong: #22c55e;
+  --color-success-soft: #6ee7b7;
+  --color-danger: #dc2626;
+
+  /* Syntax highlighting — replaces 3 duplicated token maps (~130 literals) */
+  --color-syn-keyword: #c084fc;
+  --color-syn-ident: #60a5fa;
+  --color-syn-fn: #fcd34d;
+  --color-syn-string: #86efac;
+  --color-syn-number: #a5b4fc;
+  --color-syn-punct: #94a3b8;
+  --color-syn-plain: #e2e8f0;
+  --color-syn-comment: #94a3b8;
+  --color-syn-attr: #93c5fd;
+  --color-syn-tag: #f9a8d4;
+  --color-syn-violet: #c4b5fd;
+
+  /* Card surfaces.
+     Cards used to be white at 2-6% alpha over a near-black page, which put
+     their edge at ~1.03:1 against the background — WCAG asks 3:1 for UI
+     boundaries, so they were effectively invisible. A fill alone cannot fix
+     that on this palette (even a much lighter card only reaches ~1.2:1), so
+     the border carries the separation. */
+  --color-card-surface: #111827;
+  --color-card-surface-raised: #161f33;
+  --color-card-border: #506282;        /* 3.2:1 on both surfaces — WCAG 1.4.11 */
+  --color-card-border-strong: #64748b; /* 4.2:1 — hover/focus */
+  --color-card-titlebar: #1b2437;
+
+  /* Editor chrome */
+  --color-chrome-red: #ff5f57;
+  --color-chrome-yellow: #febc2e;
+  --color-chrome-green: #28c840;
+  --color-chrome-line: #64748b;       /* line numbers (was #2d3748, 1.4:1) */
+
+  /* Project card accents */
+  --color-accent-1: #3b82f6;
+  --color-accent-2: #818cf8;
+  --color-accent-3: #34d399;
+  --color-accent-4: #f59e0b;
+  --color-accent-5: #ec4899;
+  --color-accent-6: #60a5fa;
+
+  --radius: 0.5rem;
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+
+  /* container: center + 2rem padding + 1400px 2xl cap (was theme.container) */
+  --breakpoint-2xl: 1400px;
+}
+
+/* v3's `container` config has no direct v4 equivalent; express it as a utility. */
+@utility container {
+  margin-inline: auto;
+  padding-inline: 2rem;
 }
 
 @layer base {
-  * {
-    @apply border-border;
+  /* v4 defaults border-color to currentColor; v3 defaulted to gray-200.
+     Preserve the v3 behaviour this codebase was written against. */
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--color-border);
   }
+
   body {
-    @apply bg-background text-foreground;
+    background-color: var(--color-background);
+    color: var(--color-foreground);
     font-family: 'Space Grotesk', sans-serif;
     background-color: #030712;
   }
+
   html {
     scroll-behavior: smooth;
   }
 }
 
+/* ── Alpha helpers ──
+   Derived from the tokens above via color-mix, replacing ~156 hand-written
+   rgba() literals. Naming: --tint-<base>-<alpha*100>. */
+:root {
+  --tint-brand-03: color-mix(in srgb, var(--color-brand) 3%, transparent);
+  --tint-brand-04: color-mix(in srgb, var(--color-brand) 4%, transparent);
+  --tint-brand-05: color-mix(in srgb, var(--color-brand) 5%, transparent);
+  --tint-brand-06: color-mix(in srgb, var(--color-brand) 6%, transparent);
+  --tint-brand-07: color-mix(in srgb, var(--color-brand) 7%, transparent);
+  --tint-brand-08: color-mix(in srgb, var(--color-brand) 8%, transparent);
+  --tint-brand-10: color-mix(in srgb, var(--color-brand) 10%, transparent);
+  --tint-brand-12: color-mix(in srgb, var(--color-brand) 12%, transparent);
+  --tint-brand-15: color-mix(in srgb, var(--color-brand) 15%, transparent);
+  --tint-brand-16: color-mix(in srgb, var(--color-brand) 16%, transparent);
+  --tint-brand-18: color-mix(in srgb, var(--color-brand) 18%, transparent);
+  --tint-brand-20: color-mix(in srgb, var(--color-brand) 20%, transparent);
+  --tint-brand-25: color-mix(in srgb, var(--color-brand) 25%, transparent);
+  --tint-brand-30: color-mix(in srgb, var(--color-brand) 30%, transparent);
+  --tint-brand-35: color-mix(in srgb, var(--color-brand) 35%, transparent);
+  --tint-brand-40: color-mix(in srgb, var(--color-brand) 40%, transparent);
+  --tint-brand-42: color-mix(in srgb, var(--color-brand) 42%, transparent);
+  --tint-brand-45: color-mix(in srgb, var(--color-brand) 45%, transparent);
+  --tint-brand-50: color-mix(in srgb, var(--color-brand) 50%, transparent);
+  --tint-brand-60: color-mix(in srgb, var(--color-brand) 60%, transparent);
+
+  --tint-white-02: rgb(255 255 255 / 0.02);
+  --tint-white-03: rgb(255 255 255 / 0.03);
+  --tint-white-04: rgb(255 255 255 / 0.04);
+  --tint-white-05: rgb(255 255 255 / 0.05);
+  --tint-white-06: rgb(255 255 255 / 0.06);
+  --tint-white-07: rgb(255 255 255 / 0.07);
+  --tint-white-08: rgb(255 255 255 / 0.08);
+  --tint-white-15: rgb(255 255 255 / 0.15);
+
+  --tint-success-08: color-mix(in srgb, var(--color-success) 8%, transparent);
+  --tint-success-10: color-mix(in srgb, var(--color-success) 10%, transparent);
+  --tint-success-20: color-mix(in srgb, var(--color-success) 20%, transparent);
+  --tint-success-30: color-mix(in srgb, var(--color-success) 30%, transparent);
+  --tint-success-60: color-mix(in srgb, var(--color-success) 60%, transparent);
+
+  --scrim-soft: rgb(10 15 26 / 0.35);
+  --scrim-strong: rgb(10 15 26 / 0.7);
+  --scrim-base-35: rgb(3 7 18 / 0.35);
+  --scrim-base-90: rgb(3 7 18 / 0.9);
+  --scrim-base-98: rgb(3 7 18 / 0.98);
+  --tint-violet-07: rgb(139 92 246 / 0.07);
+  --tint-violet-20: rgb(139 92 246 / 0.2);
+
+  --shadow-black-40: rgb(0 0 0 / 0.4);
+  --shadow-black-50: rgb(0 0 0 / 0.5);
+}
+
 /* ── CSS Variables ── */
 :root {
-  --blue-glow: 0 0 20px rgba(59,130,246,0.4);
-  --blue-glow-lg: 0 0 40px rgba(59,130,246,0.3);
+  --blue-glow: 0 0 20px var(--tint-brand-40);
+  --blue-glow-lg: 0 0 40px var(--tint-brand-30);
 }
 
 /* ── Font overrides ── */
@@ -54,44 +209,143 @@
   font-family: 'JetBrains Mono', monospace !important;
 }
 
-/* ── Glitch text effect ── */
-.glitch {
-  position: relative;
-  color: #fff;
-}
-.glitch::before,
-.glitch::after {
-  content: attr(data-text);
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-}
-.glitch::before {
-  color: #60a5fa;
-  animation: glitch-before 3.5s infinite;
-  clip-path: polygon(0 0, 100% 0, 100% 35%, 0 35%);
-}
-.glitch::after {
-  color: #1d4ed8;
-  animation: glitch-after 3.5s infinite;
-  clip-path: polygon(0 65%, 100% 65%, 100% 100%, 0 100%);
+/* Fades the hard left/right cut where marquee content enters and exits.
+   A static mask beats ScrollFade's scroll listeners here: a marquee always
+   overflows both edges, so the fades are never conditional. */
+.edge-fade-x {
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
 }
 
-@keyframes glitch-before {
-  0%, 90%, 100% { transform: translate(0); opacity: 0; }
-  92% { transform: translate(-3px, 1px); opacity: 1; }
-  94% { transform: translate(3px, -1px); opacity: 1; }
-  96% { transform: translate(-2px, 2px); opacity: 1; }
-  98% { transform: translate(2px, -2px); opacity: 1; }
+/* ── Interaction states ──
+   These replace imperative `e.currentTarget.style.X = ...` handlers. Doing it
+   in CSS means keyboard users get the same affordance as mouse users, which
+   the JS versions never provided (they only listened for mouse events). */
+
+/* Text/search field */
+.field-interactive {
+  background: var(--tint-white-03);
+  border: 1px solid var(--tint-white-08);
+  transition: border-color 0.2s ease, background 0.2s ease;
 }
-@keyframes glitch-after {
-  0%, 90%, 100% { transform: translate(0); opacity: 0; }
-  93% { transform: translate(3px, -1px); opacity: 1; }
-  95% { transform: translate(-3px, 1px); opacity: 1; }
-  97% { transform: translate(2px, -2px); opacity: 1; }
-  99% { transform: translate(-2px, 2px); opacity: 1; }
+.field-interactive:hover {
+  border-color: var(--tint-brand-30);
+}
+.field-interactive:focus-visible,
+.field-interactive:focus {
+  outline: none;
+  border-color: var(--tint-brand-50);
+  background: var(--tint-brand-05);
+}
+
+/* Icon button that tints on interaction */
+.icon-btn {
+  color: var(--color-ink-dim);
+  transition: color 0.2s ease;
+}
+.icon-btn:hover,
+.icon-btn:focus-visible {
+  color: var(--color-brand-300);
+}
+
+/* Filter chip — `aria-pressed` drives the active look, so state is exposed
+   to assistive tech instead of living only in a JS variable. */
+.filter-chip {
+  color: var(--color-ink-dim);
+  border: 1px solid var(--tint-white-08);
+  background: var(--tint-white-03);
+  transition: color 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+}
+.filter-chip:hover,
+.filter-chip:focus-visible {
+  color: var(--color-brand-300);
+  border-color: var(--tint-brand-30);
+}
+.filter-chip[aria-pressed="true"] {
+  color: var(--color-brand-300);
+  border-color: var(--tint-brand-50);
+  background: var(--tint-brand-15);
+}
+
+/* Skill badge */
+.skill-badge-interactive {
+  background: var(--tint-brand-07);
+  border: 1px solid var(--tint-brand-16);
+  transition: background 0.2s ease, border-color 0.2s ease;
+}
+.skill-badge-interactive:hover,
+.skill-badge-interactive:focus-visible {
+  background: var(--tint-brand-16);
+  border-color: var(--tint-brand-42);
+}
+
+/* Nav link */
+.nav-link {
+  color: var(--color-ink-dim);
+  transition: color 0.2s ease;
+}
+.nav-link:hover,
+.nav-link:focus-visible {
+  color: var(--color-ink-muted);
+}
+.nav-link[aria-current="true"] {
+  color: var(--color-brand-400);
+}
+
+/* Primary submit button */
+.btn-lift {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.btn-lift:hover,
+.btn-lift:focus-visible {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px var(--tint-brand-45);
+}
+
+/* "See more" button */
+.btn-soft {
+  background: var(--tint-brand-08);
+  border: 1px solid var(--tint-brand-25);
+  transition: background 0.2s ease, border-color 0.2s ease;
+}
+.btn-soft:hover,
+.btn-soft:focus-visible {
+  background: var(--tint-brand-15);
+  border-color: var(--tint-brand-45);
+}
+
+/* Contact link card */
+.contact-card {
+  background: var(--tint-white-02);
+  border: 1px solid var(--tint-white-06);
+  transition: background 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+}
+.contact-card:hover,
+.contact-card:focus-visible {
+  background: var(--tint-brand-08);
+  border-color: var(--tint-brand-25);
+  transform: translateX(4px);
+}
+
+/* Project card scan sweep. Was el.style.animation. */
+.scan-line {
+  animation: scanLine 2.2s linear infinite;
+}
+
+/* Rotating dashed ring on the portrait. Was el.style.animation. */
+.spin-slow {
+  animation: spin 12s linear infinite;
+}
+
+/* Hero terminal idle float. Was assigned via el.style.animation. */
+.terminal-float {
+  animation: terminalFloat 4s ease-in-out infinite;
+}
+
+/* Timeline "present" marker. Was assigned via el.style.animation, which
+   nothing could gate; as a class it is suppressed with the rest below. */
+.pulse-ring {
+  animation: pulse 2s ease-in-out infinite;
 }
 
 /* ── Cursor blink ── */
@@ -110,7 +364,7 @@
 
 /* ── Dot grid background ── */
 .dot-grid {
-  background-image: radial-gradient(circle, rgba(59,130,246,0.15) 1px, transparent 1px);
+  background-image: radial-gradient(circle, var(--tint-brand-15) 1px, transparent 1px);
   background-size: 28px 28px;
 }
 
@@ -118,9 +372,21 @@
 .card-glow {
   transition: box-shadow 0.3s ease, border-color 0.3s ease;
 }
-.card-glow:hover {
-  box-shadow: 0 0 24px rgba(59,130,246,0.25);
-  border-color: rgba(59,130,246,0.6) !important;
+.card-glow:hover,
+.card-glow:focus-within {
+  box-shadow: 0 0 24px var(--tint-brand-25);
+  border-color: var(--color-card-border-strong) !important;
+}
+
+/* Window-chrome cards. The border is the card's edge against a near-black
+   page, so it strengthens rather than disappears on interaction. */
+.window-card {
+  transition: border-color 0.25s ease, box-shadow 0.25s ease, transform 0.25s ease;
+}
+.window-card:hover,
+.window-card:focus-within {
+  border-color: var(--color-card-border-strong);
+  box-shadow: 0 0 0 1px var(--tint-brand-15), 0 12px 32px var(--shadow-black-40);
 }
 
 /* ── Gradient text ── */
@@ -165,4 +431,128 @@
 @keyframes pulse {
   0%, 100% { transform: scale(1); opacity: 0.6; }
   50% { transform: scale(2.2); opacity: 0; }
+}
+
+/* Skip link — visible only when focused, so keyboard users can jump past the
+   fixed nav without tabbing through it. */
+.skip-link {
+  position: fixed;
+  top: 0;
+  left: 50%;
+  transform: translate(-50%, -120%);
+  z-index: 10000;
+  padding: 10px 18px;
+  border-radius: 0 0 10px 10px;
+  background: var(--color-brand-900); /* 6.7:1 with white — AA at this size */
+  color: #fff;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 500;
+  text-decoration: none;
+  transition: transform 0.15s ease;
+}
+.skip-link:focus-visible,
+.skip-link:focus {
+  transform: translate(-50%, 0);
+  outline: 2px solid var(--color-brand-300);
+  outline-offset: 2px;
+}
+
+/* Fixed page backdrop — the hero mesh, pinned behind everything. Content
+   scrolls over it, so it reads as depth rather than a panel that moves. */
+.site-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-color: var(--color-surface-base);
+  background-size: cover;
+  background-position: center;
+}
+
+/* Sections sit above the fixed backdrop. The hero is transparent so the
+   backdrop shows through it; every following section carries its own opaque
+   background and simply scrolls over it. */
+.page-section {
+  position: relative;
+  z-index: 1;
+}
+
+/* ── Section seams ──
+   Sections alternate between two near-black surfaces, and butting them
+   together produced a visible hard edge at every boundary. These blend the
+   join: a soft gradient on each side of the seam plus a thin brand rule, so
+   the page reads as continuous rather than as stacked slabs.
+
+   The gradients are drawn from the section's own background colour to
+   transparent, so each one fades into whatever sits behind it. */
+.page-section::before,
+.page-section::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 96px;
+  pointer-events: none;
+  z-index: 2;
+}
+.page-section::before {
+  top: 0;
+  background: linear-gradient(to bottom, var(--seam-color, transparent), transparent);
+}
+.page-section::after {
+  bottom: 0;
+  background: linear-gradient(to top, var(--seam-color, transparent), transparent);
+}
+
+/* The hero is transparent over the fixed backdrop, so it needs no seam. */
+#hero.page-section::before,
+#hero.page-section::after {
+  display: none;
+}
+
+/* ── Reduced motion ──
+   Nothing in this codebase honoured prefers-reduced-motion before this. The
+   JS animations are gated per-component via useReducedMotion; this covers the
+   CSS side, which nothing could reach otherwise.
+
+   The blanket rule neutralises transitions and any animation not named below,
+   including future ones. Infinite decorative loops are then stopped outright:
+   a shortened infinite animation still loops forever, so `animation: none` is
+   the only thing that actually stops them. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  /* Purely decorative infinite loops — removed rather than shortened. */
+  .cursor-blink,
+  .float-anim,
+  .scan-line,
+  .spin-slow,
+  .terminal-float,
+  .pulse-ring {
+    animation: none !important;
+  }
+
+  /* The blink cursor and pulse ring read as artefacts when frozen mid-cycle,
+     so settle them in their visible resting state. */
+  .cursor-blink {
+    opacity: 1;
+  }
+  .pulse-ring {
+    opacity: 0;
+  }
+
+  /* The marquee is translated by JS; without motion it should sit at rest and
+     let its content wrap instead of running off the edge. */
+  .edge-fade-x {
+    -webkit-mask-image: none;
+    mask-image: none;
+  }
 }

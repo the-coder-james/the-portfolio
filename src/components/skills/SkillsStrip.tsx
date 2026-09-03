@@ -1,7 +1,6 @@
-import { useEffect, useRef } from "react";
-import { stagger, inView } from "motion";
-import { animateEl } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
+import { InfiniteSlider } from "@/components/motion-primitives/infinite-slider";
+import { useReducedMotion } from "@/hooks/useReducedMotion";
 
 interface TechTool {
   icon: string;
@@ -45,45 +44,42 @@ function buildAllSkills(techstack: TechStack[], extra: ExtraSkills) {
 }
 
 export function SkillsStrip({ techstack, extraSkills }: SkillsStripProps) {
-  const containerRef = useRef<HTMLDivElement>(null);
   const allSkills = buildAllSkills(techstack, extraSkills);
+  const reduced = useReducedMotion();
 
-  useEffect(() => {
-    const container = containerRef.current;
-    if (!container) return;
-
-    inView(container, () => {
-      animateEl(container as Element, { opacity: [0, 1], y: [20, 0] }, { type: "spring", visualDuration: 0.5, bounce: 0.3 });
-      animateEl(
-        container.querySelectorAll<Element>(".skill-badge"),
-        { opacity: [0, 1], scale: [0.5, 1], y: [12, 0], rotate: [-8, 0] },
-        { delay: stagger(0.035, { from: "center" }), type: "spring", visualDuration: 0.4, bounce: 0.05 }
-      );
-    }, { margin: "-60px" });
-  }, []);
+  const badges = allSkills.map((tech) => (
+    <Badge
+      key={tech}
+      variant="outline"
+      className="skill-badge-interactive font-mono rounded-xl cursor-default whitespace-nowrap"
+      style={{ padding: "5px 11px", fontSize: "0.7rem", color: "var(--color-brand-300)" }}
+    >
+      {tech}
+    </Badge>
+  ));
 
   return (
     <div
-      ref={containerRef}
       className="overflow-hidden rounded-xl py-5 px-6"
-      style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.05)", opacity: 0 }}
+      style={{ background: "var(--color-card-surface)", border: "1px solid var(--color-card-border)" }}
     >
-      <p className="font-mono mb-4" style={{ fontSize: "0.65rem", color: "#1e3a5f", textAlign: "center" }}>
+      <p className="font-mono mb-4" style={{ fontSize: "0.65rem", color: "var(--color-brand-300)", textAlign: "center" }}>
         // technologies I work with
       </p>
-      <div className="flex flex-wrap gap-2 justify-center">
-        {allSkills.map((tech) => (
-          <div key={tech} className="skill-badge" style={{ opacity: 0 }}>
-            <Badge
-              variant="outline"
-              className="font-mono rounded-xl cursor-default"
-              style={{ padding: "5px 11px", fontSize: "0.7rem", color: "#93c5fd", background: "rgba(59,130,246,0.07)", border: "1px solid rgba(59,130,246,0.16)" }}
-            >
-              {tech}
-            </Badge>
-          </div>
-        ))}
-      </div>
+
+      {/*
+        Reduced motion gets the plain wrapped row this used to be; everyone
+        else gets a marquee that slows on hover so labels stay readable.
+      */}
+      {reduced ? (
+        <div className="flex flex-wrap gap-2 justify-center">{badges}</div>
+      ) : (
+        <div className="edge-fade-x">
+          <InfiniteSlider gap={8} speed={30} speedOnHover={8}>
+            {badges}
+          </InfiniteSlider>
+        </div>
+      )}
     </div>
   );
 }

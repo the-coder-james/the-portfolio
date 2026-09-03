@@ -1,6 +1,6 @@
-import { useEffect, useRef } from "react";
-import { stagger } from "motion";
-import { animateEl } from "@/lib/utils";
+import { motion } from "motion/react";
+import { TerminalShell } from "@/components/common/tsx/TerminalShell";
+import { useReducedMotion } from "@/hooks/useReducedMotion";
 
 interface TerminalCardProps {
   name: string;
@@ -10,136 +10,105 @@ interface TerminalCardProps {
 }
 
 export function TerminalCard({ name, since, professional, stackLabels }: TerminalCardProps) {
-  const rootRef = useRef<HTMLDivElement>(null);
+  const reduced = useReducedMotion();
 
   const stackContent = stackLabels.flatMap((label, i) => {
-    const items = [<span key={`s${i}`} style={{ color: "#f9a8d4" }}>"{label}"</span>];
-    if (i < stackLabels.length - 1) items.push(<span key={`c${i}`} style={{ color: "#94a3b8" }}>, </span>);
+    const items = [<span key={`s${i}`} style={{ color: "var(--color-syn-tag)" }}>"{label}"</span>];
+    if (i < stackLabels.length - 1) items.push(<span key={`c${i}`} style={{ color: "var(--color-ink-dim)" }}>, </span>);
     return items;
   });
 
   const terminalLines = [
-    <><span style={{ color: "#60a5fa" }}>const</span> <span style={{ color: "#93c5fd" }}>developer</span> <span style={{ color: "#e2e8f0" }}>=</span> <span style={{ color: "#86efac" }}>{`{`}</span></>,
-    <>&nbsp;&nbsp;<span style={{ color: "#fcd34d" }}>name</span><span style={{ color: "#e2e8f0" }}>:</span> <span style={{ color: "#f9a8d4" }}>"{name}"</span><span style={{ color: "#94a3b8" }}>,</span></>,
-    <>&nbsp;&nbsp;<span style={{ color: "#fcd34d" }}>since</span><span style={{ color: "#e2e8f0" }}>:</span> <span style={{ color: "#a5b4fc" }}>{since}</span><span style={{ color: "#94a3b8" }}>,</span></>,
-    <>&nbsp;&nbsp;<span style={{ color: "#fcd34d" }}>professional</span><span style={{ color: "#e2e8f0" }}>:</span> <span style={{ color: "#a5b4fc" }}>{professional}</span><span style={{ color: "#94a3b8" }}>,</span></>,
-    <>&nbsp;&nbsp;<span style={{ color: "#fcd34d" }}>stack</span><span style={{ color: "#e2e8f0" }}>:</span> <span style={{ color: "#86efac" }}>[</span>{stackContent}<span style={{ color: "#86efac" }}>]</span><span style={{ color: "#94a3b8" }}>,</span></>,
-    <>&nbsp;&nbsp;<span style={{ color: "#fcd34d" }}>available</span><span style={{ color: "#e2e8f0" }}>:</span> <span style={{ color: "#86efac" }}>true</span></>,
-    <><span style={{ color: "#86efac" }}>{`}`}</span><span style={{ color: "#94a3b8" }}>;</span></>,
+    <><span style={{ color: "var(--color-brand-400)" }}>const</span> <span style={{ color: "var(--color-brand-300)" }}>developer</span> <span style={{ color: "var(--color-ink-muted)" }}>=</span> <span style={{ color: "var(--color-syn-string)" }}>{`{`}</span></>,
+    <>&nbsp;&nbsp;<span style={{ color: "var(--color-syn-fn)" }}>name</span><span style={{ color: "var(--color-ink-muted)" }}>:</span> <span style={{ color: "var(--color-syn-tag)" }}>"{name}"</span><span style={{ color: "var(--color-ink-dim)" }}>,</span></>,
+    <>&nbsp;&nbsp;<span style={{ color: "var(--color-syn-fn)" }}>since</span><span style={{ color: "var(--color-ink-muted)" }}>:</span> <span style={{ color: "var(--color-syn-number)" }}>{since}</span><span style={{ color: "var(--color-ink-dim)" }}>,</span></>,
+    <>&nbsp;&nbsp;<span style={{ color: "var(--color-syn-fn)" }}>professional</span><span style={{ color: "var(--color-ink-muted)" }}>:</span> <span style={{ color: "var(--color-syn-number)" }}>{professional}</span><span style={{ color: "var(--color-ink-dim)" }}>,</span></>,
+    <>&nbsp;&nbsp;<span style={{ color: "var(--color-syn-fn)" }}>stack</span><span style={{ color: "var(--color-ink-muted)" }}>:</span> <span style={{ color: "var(--color-syn-string)" }}>[</span>{stackContent}<span style={{ color: "var(--color-syn-string)" }}>]</span><span style={{ color: "var(--color-ink-dim)" }}>,</span></>,
+    <>&nbsp;&nbsp;<span style={{ color: "var(--color-syn-fn)" }}>available</span><span style={{ color: "var(--color-ink-muted)" }}>:</span> <span style={{ color: "var(--color-syn-string)" }}>true</span></>,
+    <><span style={{ color: "var(--color-syn-string)" }}>{`}`}</span><span style={{ color: "var(--color-ink-dim)" }}>;</span></>,
   ];
 
-  useEffect(() => {
-    const root = rootRef.current;
-    if (!root) return;
 
-    // Card entrance with spring
-    animateEl(
-      root as Element,
-      { x: [60, 0], opacity: [0, 1], scale: [0.96, 1] },
-      { delay: 0.4, type: "spring", visualDuration: 0.8, bounce: 0.25 }
-    );
-
-    // Traffic light dots pop in
-    animateEl(
-      root.querySelectorAll<Element>(".tc-dot"),
-      { scale: [0, 1], opacity: [0, 0.8] },
-      { delay: stagger(0.08, { startDelay: 0.55 }), type: "spring", visualDuration: 0.4, bounce: 0.1 }
-    );
-
-    // Code lines blur-slide in
-    animateEl(
-      root.querySelectorAll<Element>(".tc-line"),
-      { x: [-12, 0], opacity: [0, 1], filter: ["blur(4px)", "blur(0px)"] },
-      { delay: stagger(0.1, { startDelay: 0.7 }), type: "spring", visualDuration: 0.4, bounce: 0.3 }
-    );
-
-    // Line numbers fade in sync
-    animateEl(
-      root.querySelectorAll<Element>(".tc-lineno"),
-      { opacity: [0, 1] },
-      { delay: stagger(0.1, { startDelay: 0.7 }), duration: 0.25 }
-    );
-
-    // Output lines slide up
-    animateEl(
-      root.querySelectorAll<Element>(".tc-output"),
-      { y: [8, 0], opacity: [0, 1] },
-      { delay: stagger(0.12, { startDelay: 1.4 }), type: "spring", visualDuration: 0.5, bounce: 0.2 }
-    );
-
-    // Gentle float idle loop via CSS (avoids JS loop overhead)
-    root.style.animation = "terminalFloat 4s ease-in-out infinite";
-  }, []);
+  // One declarative timeline replaces five hand-tuned animateEl calls with
+  // manually-offset startDelays.
+  const line = (i: number) => ({
+    initial: reduced ? false : { opacity: 0, x: -8 },
+    animate: { opacity: 1, x: 0 },
+    transition: { delay: 0.7 + i * 0.1, type: "spring" as const, visualDuration: 0.35, bounce: 0.3 },
+  });
 
   return (
-    <div ref={rootRef} className="hidden lg:block" style={{ opacity: 0 }}>
-      <div
-        className="rounded-2xl overflow-hidden"
+    <motion.div
+      className={`hidden lg:block ${reduced ? "" : "terminal-float"}`}
+      initial={reduced ? false : { opacity: 0, y: 20, scale: 0.97 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      transition={{ type: "spring", visualDuration: 0.55, bounce: 0.2 }}
+    >
+      <TerminalShell
+        filename="developer.config.ts"
         style={{
-          background: "#0d1117",
-          border: "1px solid rgba(59,130,246,0.2)",
-          boxShadow: "0 0 50px rgba(59,130,246,0.1), 0 30px 60px rgba(0,0,0,0.5)",
+          border: "1px solid var(--tint-brand-20)",
+          boxShadow: "0 0 50px var(--tint-brand-10), 0 30px 60px var(--shadow-black-50)",
         }}
+        bodyClassName="px-6 py-6 font-mono"
+        bodyStyle={{ fontSize: "0.82rem", lineHeight: 1.8 }}
+        footer={
+          <>
+            <div className="flex items-center gap-2">
+              <span className="w-2 h-2 rounded-full bg-blue-500" aria-hidden="true" />
+              <span style={{ fontSize: "0.65rem", color: "var(--color-ink-dim)", fontFamily: "'JetBrains Mono'" }}>TypeScript</span>
+            </div>
+            <span style={{ fontSize: "0.65rem", color: "var(--color-ink-dim)", fontFamily: "'JetBrains Mono'" }}>UTF-8</span>
+          </>
+        }
       >
-        <div
-          className="flex items-center gap-2 px-4 py-3"
-          style={{ background: "#161b22", borderBottom: "1px solid rgba(255,255,255,0.06)" }}
-        >
-          <div className="tc-dot w-3 h-3 rounded-full bg-red-500 opacity-80" />
-          <div className="tc-dot w-3 h-3 rounded-full bg-yellow-500 opacity-80" />
-          <div className="tc-dot w-3 h-3 rounded-full bg-green-500 opacity-80" />
-          <span className="ml-2 font-mono" style={{ fontSize: "0.72rem", color: "#4b5563" }}>
-            developer.config.ts
-          </span>
-        </div>
-
-        <div className="px-6 py-6 font-mono" style={{ fontSize: "0.82rem", lineHeight: 1.8 }}>
+        {/* Decorative sample config: hidden so screen readers don't read it out. */}
+        <div aria-hidden="true">
           <div className="flex gap-4">
             <div
               className="flex flex-col"
-              style={{ color: "#374151", userSelect: "none", minWidth: "20px", textAlign: "right" }}
+              style={{ color: "var(--color-ink-faint)", userSelect: "none", minWidth: "20px", textAlign: "right" }}
             >
               {terminalLines.map((_, i) => (
-                <span key={i} className="tc-lineno" style={{ lineHeight: 1.8, opacity: 0 }}>{i + 1}</span>
+                <motion.span key={i} style={{ lineHeight: 1.8 }} {...line(i)}>{i + 1}</motion.span>
               ))}
             </div>
             <div className="flex-1">
               {terminalLines.map((content, i) => (
-                <div key={i} className="tc-line" style={{ lineHeight: 1.8, opacity: 0 }}>
+                <motion.div key={i} style={{ lineHeight: 1.8 }} {...line(i)}>
                   {content}
-                </div>
+                </motion.div>
               ))}
             </div>
           </div>
 
-          <div className="tc-output mt-4 flex items-center gap-2" style={{ opacity: 0 }}>
-            <span style={{ color: "#22c55e" }}>❯</span>
-            <span style={{ color: "#60a5fa" }}>node</span>
-            <span style={{ color: "#e2e8f0" }}> developer.config.ts</span>
-          </div>
-          <div className="tc-output" style={{ color: "#4ade80", marginLeft: "18px", opacity: 0 }}>
+          <motion.div
+            className="mt-4 flex items-center gap-2"
+            initial={reduced ? false : { opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 1.4, type: "spring", visualDuration: 0.5, bounce: 0.2 }}
+          >
+            <span style={{ color: "var(--color-success-strong)" }}>❯</span>
+            <span style={{ color: "var(--color-brand-400)" }}>node</span>
+            <span style={{ color: "var(--color-ink-muted)" }}> developer.config.ts</span>
+          </motion.div>
+          <motion.div
+            style={{ color: "var(--color-success)", marginLeft: "18px" }}
+            initial={reduced ? false : { opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 1.52, type: "spring", visualDuration: 0.5, bounce: 0.2 }}
+          >
             ✓ Ready to build something awesome!
-          </div>
+          </motion.div>
           <div className="flex items-center gap-2 mt-1">
-            <span style={{ color: "#22c55e" }}>❯</span>
+            <span style={{ color: "var(--color-success-strong)" }}>❯</span>
             <span
               className="cursor-blink inline-block w-2 h-4 bg-blue-400"
               style={{ marginTop: "2px" }}
             />
           </div>
         </div>
-
-        <div
-          className="flex items-center justify-between px-4 py-2"
-          style={{ background: "#161b22", borderTop: "1px solid rgba(255,255,255,0.05)" }}
-        >
-          <div className="flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-blue-500" />
-            <span style={{ fontSize: "0.65rem", color: "#4b5563", fontFamily: "'JetBrains Mono'" }}>TypeScript</span>
-          </div>
-          <span style={{ fontSize: "0.65rem", color: "#4b5563", fontFamily: "'JetBrains Mono'" }}>UTF-8</span>
-        </div>
-      </div>
-    </div>
+      </TerminalShell>
+    </motion.div>
   );
 }

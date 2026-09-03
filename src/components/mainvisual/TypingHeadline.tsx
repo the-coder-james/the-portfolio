@@ -1,6 +1,6 @@
-import { useState, useEffect, useRef } from "react";
-import { stagger } from "motion";
-import { animateEl } from "@/lib/utils";
+import { TextEffect } from "@/components/motion-primitives/text-effect";
+import { TextLoop } from "@/components/motion-primitives/text-loop";
+import { useReducedMotion } from "@/hooks/useReducedMotion";
 
 interface TypingHeadlineProps {
   name: string;
@@ -9,108 +9,81 @@ interface TypingHeadlineProps {
   rolePrefix: string;
 }
 
-function useTypingEffect(sequences: string[]) {
-  const [text, setText] = useState("");
-  const [seqIndex, setSeqIndex] = useState(0);
-  const [charIndex, setCharIndex] = useState(0);
-  const [deleting, setDeleting] = useState(false);
-  const [paused, setPaused] = useState(false);
-
-  useEffect(() => {
-    if (paused) return;
-    const current = sequences[seqIndex];
-    if (!deleting && charIndex < current.length) {
-      const t = setTimeout(() => { setText(current.slice(0, charIndex + 1)); setCharIndex((c) => c + 1); }, 65);
-      return () => clearTimeout(t);
-    } else if (!deleting && charIndex === current.length) {
-      setPaused(true);
-      const t = setTimeout(() => { setPaused(false); setDeleting(true); }, 2000);
-      return () => clearTimeout(t);
-    } else if (deleting && charIndex > 0) {
-      const t = setTimeout(() => { setText(current.slice(0, charIndex - 1)); setCharIndex((c) => c - 1); }, 35);
-      return () => clearTimeout(t);
-    } else if (deleting && charIndex === 0) {
-      setDeleting(false);
-      setSeqIndex((s) => (s + 1) % sequences.length);
-    }
-  }, [charIndex, deleting, paused, sequences, seqIndex]);
-
-  return text;
-}
-
 export function TypingHeadline({ name, sequences, headlinePrefix, rolePrefix }: TypingHeadlineProps) {
-  const typedText = useTypingEffect(sequences);
-  const headlineRef = useRef<HTMLHeadingElement>(null);
-  const roleRef = useRef<HTMLDivElement>(null);
+  const reduced = useReducedMotion();
+  const headline = `${headlinePrefix} ${name}`;
 
-  useEffect(() => {
-    const h = headlineRef.current;
-    if (!h) return;
-    const fullText = `${headlinePrefix} ${name}`;
-    h.innerHTML = fullText
-      .split("")
-      .map((ch) =>
-        ch === " "
-          ? `<span class="ah-char" style="display:inline-block;width:0.25em;">&nbsp;</span>`
-          : `<span class="ah-char" style="display:inline-block;will-change:transform,opacity,filter;">${ch}</span>`
-      )
-      .join("");
+  const headingStyle = {
+    fontSize: "clamp(2.8rem, 7vw, 5.5rem)",
+    fontWeight: 700,
+    lineHeight: 1.1,
+    color: "var(--color-ink)",
+    letterSpacing: "-0.02em",
+    fontFamily: "'Space Grotesk', sans-serif",
+  } as const;
 
-    animateEl(
-      ".ah-char",
-      { opacity: [0, 1], y: [40, 0], filter: ["blur(8px)", "blur(0px)"], rotateX: [-90, 0] },
-      { delay: stagger(0.035, { startDelay: 0.3 }), type: "spring", visualDuration: 0.6, bounce: 0.2 }
-    );
-  }, [name, headlinePrefix]);
-
-  useEffect(() => {
-    if (!roleRef.current) return;
-    animateEl(
-      roleRef.current,
-      { opacity: [0, 1], y: [12, 0] },
-      { delay: 0.9, type: "spring", visualDuration: 0.5, bounce: 0.3 }
-    );
-  }, []);
+  const roleStyle = {
+    fontSize: "clamp(1.1rem, 2.5vw, 1.6rem)",
+    fontWeight: 600,
+    fontFamily: "'Space Grotesk', sans-serif",
+  } as const;
 
   return (
     <>
       <div className="mb-2">
-        <h1
-          ref={headlineRef}
-          className="glitch"
-          data-text={`${headlinePrefix} ${name}`}
-          style={{
-            fontSize: "clamp(2.8rem, 7vw, 5.5rem)",
-            fontWeight: 700,
-            lineHeight: 1.1,
-            color: "#ffffff",
-            letterSpacing: "-0.02em",
-            fontFamily: "'Space Grotesk', sans-serif",
-            perspective: "800px",
-          }}
-        >
-          {headlinePrefix} {name}
-        </h1>
+        {/*
+          The heading previously animated by overwriting innerHTML with one
+          <span> per character, which destroyed React's children and left the
+          accessible name as a pile of single letters. TextEffect animates
+          per-character segments while the <h1> keeps its real text content.
+        */}
+        {reduced ? (
+          <h1 style={headingStyle}>{headline}</h1>
+        ) : (
+          <TextEffect
+            as="h1"
+            per="char"
+            preset="blur"
+            delay={0.3}
+            style={headingStyle}
+          >
+            {headline}
+          </TextEffect>
+        )}
       </div>
 
-      <div
-        ref={roleRef}
-        className="flex items-center gap-2 mb-6"
-        style={{ height: "2.5rem", opacity: 0 }}
-      >
-        <span style={{ fontSize: "clamp(1.1rem, 2.5vw, 1.6rem)", color: "#94a3b8", fontFamily: "'Space Grotesk', sans-serif" }}>
+      <div className="flex items-center gap-2 mb-6" style={{ height: "2.5rem" }}>
+        <span style={{ fontSize: "clamp(1.1rem, 2.5vw, 1.6rem)", color: "var(--color-ink-dim)", fontFamily: "'Space Grotesk', sans-serif" }}>
           {rolePrefix}{" "}
         </span>
-        <span
-          className="gradient-text"
-          style={{ fontSize: "clamp(1.1rem, 2.5vw, 1.6rem)", fontWeight: 600, fontFamily: "'Space Grotesk', sans-serif" }}
-        >
-          {typedText}
-        </span>
-        <span
-          className="cursor-blink inline-block w-0.5 h-7 bg-blue-400"
-          style={{ marginLeft: "2px" }}
-        />
+        {/*
+          The roles used to cycle through a per-character typewriter with no
+          live region, so the role was never stably announced. TextLoop swaps
+          whole strings, and the list is exposed once to assistive tech below.
+        */}
+        {reduced ? (
+          <span className="gradient-text" style={roleStyle}>
+            {sequences[0]}
+          </span>
+        ) : (
+          <>
+            {/* TextLoop only forwards className, so style and aria-hidden
+                live on a wrapper rather than being silently dropped. */}
+            <span aria-hidden="true" style={roleStyle}>
+              <TextLoop className="gradient-text" interval={3} mode="wait" transition={{ duration: 0.22 }}>
+                {sequences.map((role) => (
+                  <span key={role}>{role}</span>
+                ))}
+              </TextLoop>
+            </span>
+            <span className="sr-only">{sequences.join(", ")}</span>
+            <span
+              className="cursor-blink inline-block w-0.5 h-7 bg-blue-400"
+              style={{ marginLeft: "2px" }}
+              aria-hidden="true"
+            />
+          </>
+        )}
       </div>
     </>
   );

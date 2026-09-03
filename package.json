@@ -8,11 +8,12 @@
     "nvmuse": "source ~/.nvm/nvm.sh && nvm use",
     "preview": "astro preview",
     "shadcn": "npx shadcn@latest",
-    "astro": "astro"
+    "astro": "astro",
+    "images": "node scripts/optimize-images.mjs",
+    "inspect": "node scripts/inspect-layout.mjs"
   },
   "dependencies": {
     "@astrojs/react": "^4.3.1",
-    "@astrojs/tailwind": "^6.0.2",
     "@babel/runtime": "^7.28.4",
     "@radix-ui/react-aspect-ratio": "^1.1.7",
     "@radix-ui/react-dialog": "^1.1.15",
@@ -21,31 +22,31 @@
     "@radix-ui/react-scroll-area": "^1.2.10",
     "@radix-ui/react-select": "^2.2.6",
     "@radix-ui/react-slot": "^1.2.3",
+    "@tailwindcss/vite": "^4.3.3",
     "@types/react": "^19.1.13",
     "@types/react-dom": "^19.1.9",
     "animejs": "^4.4.1",
     "astro": "^5.13.8",
-    "autoprefixer": "^10.4.16",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "lucide-react": "^0.544.0",
     "motion": "^12.42.0",
-    "postcss": "^8.5.6",
     "radix-ui": "^1.4.3",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
     "react-image": "^4.1.0",
+    "react-use-measure": "^2.1.7",
     "tailwind-merge": "^3.3.1",
     "tailwind-variants": "^3.1.1",
-    "tailwindcss": "^3.4.0",
-    "tailwindcss-animate": "^1.0.7"
+    "tailwindcss": "^4.3.3"
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.9",
     "@babel/plugin-transform-runtime": "^7.28.3",
     "@types/node": "^24.5.2",
+    "playwright": "^1.62.1",
     "react-icons": "^5.5.0",
-    "tw-animate-css": "^1.3.8",
+    "tw-animate-css": "^1.4.0",
     "typescript": "^5.9.3"
   }
 }

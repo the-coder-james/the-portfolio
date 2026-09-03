@@ -1,7 +1,3 @@
-import { useEffect, useRef } from "react";
-import { inView } from "motion";
-import { animateEl } from "@/lib/utils";
-
 interface ContactLink {
   url: string;
   name: string;
@@ -11,7 +7,6 @@ interface ContactLink {
 
 interface ContactCardProps {
   contact: ContactLink;
-  index: number;
 }
 
 const ICON_PATHS: Record<string, string> = {
@@ -22,63 +17,41 @@ const ICON_PATHS: Record<string, string> = {
 };
 
 const ICON_COLORS: Record<string, string> = {
-  Github: "#e2e8f0",
-  Linkedin: "#60a5fa",
-  Mail: "#818cf8",
-  Website: "#34d399",
-  Globe: "#34d399",
+  Github: "var(--color-ink-muted)",
+  Linkedin: "var(--color-brand-400)",
+  Mail: "var(--color-accent-2)",
+  Website: "var(--color-accent-3)",
+  Globe: "var(--color-accent-3)",
 };
 
-export function ContactCard({ contact, index }: ContactCardProps) {
-  const ref = useRef<HTMLAnchorElement>(null);
+export function ContactCard({ contact }: ContactCardProps) {
   const iconPath = ICON_PATHS[contact.icon] || ICON_PATHS["Globe"];
   const iconColor = ICON_COLORS[contact.icon] || ICON_COLORS["Globe"];
   const displayUrl = contact.url.replace("mailto:", "").replace("https://", "");
 
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    inView(el, () => {
-      animateEl(el as Element, { opacity: [0, 1], x: [-30, 0] }, { delay: 0.05 + index * 0.08, type: "spring", visualDuration: 0.5, bounce: 0.2 });
-    }, { margin: "-60px" });
-  }, [index]);
-
   return (
     <a
-      ref={ref}
       href={contact.url}
       target={contact.icon !== "Mail" ? "_blank" : undefined}
       rel="noopener noreferrer"
-      className="flex items-center gap-3 p-4 rounded-xl transition-all duration-200"
-      style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.06)", textDecoration: "none", opacity: 0 }}
-      onMouseEnter={(e) => {
-        const el = e.currentTarget as HTMLElement;
-        el.style.background = "rgba(59,130,246,0.07)";
-        el.style.borderColor = "rgba(59,130,246,0.3)";
-        el.style.transform = "translateX(4px)";
-      }}
-      onMouseLeave={(e) => {
-        const el = e.currentTarget as HTMLElement;
-        el.style.background = "rgba(255,255,255,0.02)";
-        el.style.borderColor = "rgba(255,255,255,0.06)";
-        el.style.transform = "translateX(0)";
-      }}
+      className="contact-card flex items-center gap-3 p-4 rounded-xl"
+      style={{ textDecoration: "none" }}
     >
       <div
         className="w-8 h-8 rounded-lg flex items-center justify-center"
-        style={{ background: "rgba(255,255,255,0.04)", color: iconColor }}
+        style={{ background: "var(--tint-white-04)", color: iconColor }}
       >
         {iconPath && (
-          <svg viewBox="0 0 24 24" fill="currentColor" style={{ width: 15, height: 15 }}>
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" style={{ width: 15, height: 15 }}>
             <path d={iconPath} />
           </svg>
         )}
       </div>
       <div>
-        <div style={{ fontSize: "0.82rem", color: "#e2e8f0", fontFamily: "'Space Grotesk'", fontWeight: 500 }}>
+        <div style={{ fontSize: "0.82rem", color: "var(--color-ink-muted)", fontFamily: "'Space Grotesk'", fontWeight: 500 }}>
           {contact.name}
         </div>
-        <div style={{ fontSize: "0.72rem", color: "#475569", fontFamily: "'JetBrains Mono'" }}>
+        <div style={{ fontSize: "0.72rem", color: "var(--color-ink-dim)", fontFamily: "'JetBrains Mono'" }}>
           {displayUrl}
         </div>
       </div>

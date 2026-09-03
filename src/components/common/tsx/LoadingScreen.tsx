@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { animate, createTimeline, stagger } from "animejs";
+import { TrafficLights } from "@/components/common/tsx/TerminalShell";
 
 const BOOT_LINES = [
   { prompt: "$", text: "init portfolio.engine" },
@@ -39,8 +40,12 @@ export function LoadingScreen() {
         "-=200"
       );
 
+    // A looping opacity flicker is a photosensitivity concern, so it only runs
+    // when the user has not asked for reduced motion.
+    const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
     // Logo flicker loop while loading
-    const flicker = animate(logoRef.current!, {
+    const flicker = prefersReduced ? null : animate(logoRef.current!, {
       opacity: [
         { to: 1, duration: 80 },
         { to: 0.55, duration: 60 },
@@ -53,11 +58,17 @@ export function LoadingScreen() {
       ease: "linear",
     });
 
-    // Real progress: track image loads + document.readyState.
-    // Display value is eased toward the real target so the bar always feels alive.
+    // Progress. This used to weight the bar 80% on <img> load events, polling
+    // the DOM every 250ms to catch images React mounted after this effect ran.
+    // That stopped making sense once the images were optimised: they are lazy
+    // now, so the ones below the fold never load during the splash at all, and
+    // the ~350KB that does load finishes almost immediately. The bar would sit
+    // at 80% waiting on images that were never going to fire.
+    //
+    // What the splash actually waits for is hydration, so track that instead:
+    // document readiness, then the first paint after the islands mount.
     const display = { v: 0 };
     let target = 0;
-    let pageLoaded = false;
     let done = false;
 
     const setTarget = (n: number) => { target = Math.max(target, Math.min(99, n)); };
@@ -67,71 +78,33 @@ export function LoadingScreen() {
       if (percentRef.current) percentRef.current.textContent = `${Math.floor(display.v).toString().padStart(2, "0")}%`;
     };
 
-    // Drive the display value smoothly toward `target` every frame.
     let raf = 0;
     const tick = () => {
-      // ease-out lerp; faster when far from target
       const diff = target - display.v;
       display.v += diff * 0.08;
-      // small idle creep so the bar moves even before any image fires
-      if (target < 15 && display.v < 12) display.v += 0.12;
+      // Idle creep so the bar keeps moving between real milestones.
+      if (display.v < target - 0.2 || target < 90) display.v += 0.08;
+      if (display.v > target) display.v = target;
       renderBar();
       if (!done) raf = requestAnimationFrame(tick);
     };
     raf = requestAnimationFrame(tick);
 
-    // Count <img> elements as they load. We re-query periodically since React
-    // hydrates and mounts images after this effect runs.
-    let totalImgs = 0;
-    let loadedImgs = 0;
-    const tracked = new WeakSet<HTMLImageElement>();
+    // Milestones, in the order they actually occur.
+    setTarget(20);
 
-    const recomputeTarget = () => {
-      // 0–80% from images, +15% when DOMContentLoaded, +5% when load fires
-      const imgPct = totalImgs > 0 ? (loadedImgs / totalImgs) * 80 : 0;
-      const domPct = document.readyState !== "loading" ? 15 : 0;
-      const loadPct = pageLoaded ? 5 : 0;
-      setTarget(imgPct + domPct + loadPct);
-    };
-
-    const trackImage = (img: HTMLImageElement) => {
-      if (tracked.has(img)) return;
-      tracked.add(img);
-      totalImgs += 1;
-      const onDone = () => {
-        loadedImgs += 1;
-        recomputeTarget();
-      };
-      if (img.complete && img.naturalWidth > 0) {
-        onDone();
-      } else {
-        img.addEventListener("load", onDone, { once: true });
-        img.addEventListener("error", onDone, { once: true });
-      }
-    };
-
-    const scanImages = () => {
-      document.querySelectorAll<HTMLImageElement>("img").forEach(trackImage);
-      recomputeTarget();
-    };
-
-    // Initial scan + retry as React mounts more
-    scanImages();
-    const scanInterval = window.setInterval(scanImages, 250);
-
-    const onDomReady = () => recomputeTarget();
+    const onDomReady = () => setTarget(55);
     if (document.readyState === "loading") {
       document.addEventListener("DOMContentLoaded", onDomReady, { once: true });
     } else {
-      recomputeTarget();
+      onDomReady();
     }
 
     const finish = () => {
       if (done) return;
       done = true;
       cancelAnimationFrame(raf);
-      window.clearInterval(scanInterval);
-      flicker.pause();
+      flicker?.pause();
 
       // Exit timeline: snap to 100 → logo pulse → fade overlay
       const tl = createTimeline({
@@ -164,10 +137,15 @@ export function LoadingScreen() {
     };
 
     const onLoad = () => {
-      pageLoaded = true;
-      recomputeTarget();
-      // Brief beat so the user sees the bar fill, then exit
-      window.setTimeout(finish, 250);
+      setTarget(85);
+      // Wait for the frame after hydration so the page behind the overlay is
+      // painted before it fades, then give the bar a beat to read as complete.
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          setTarget(99);
+          window.setTimeout(finish, 200);
+        });
+      });
     };
 
     if (document.readyState === "complete") {
@@ -176,11 +154,16 @@ export function LoadingScreen() {
       window.addEventListener("load", onLoad, { once: true });
     }
 
+    // Last-resort unmount. Without this, an error anywhere in the animation
+    // path leaves a full-screen overlay covering the site permanently.
+    const failsafe = window.setTimeout(() => setHidden(true), 6000);
+
     return () => {
       cancelAnimationFrame(raf);
-      window.clearInterval(scanInterval);
-      flicker.pause();
+      window.clearTimeout(failsafe);
+      flicker?.pause();
       window.removeEventListener("load", onLoad);
+      document.removeEventListener("DOMContentLoaded", onDomReady);
     };
   }, []);
 
@@ -189,12 +172,16 @@ export function LoadingScreen() {
   return (
     <div
       ref={rootRef}
+      role="status"
+      aria-live="polite"
+      aria-busy="true"
+      aria-label="Loading site"
       className="fixed inset-0 flex items-center justify-center"
       style={{
         zIndex: 9999,
-        background: "#030712",
+        background: "var(--color-surface-base)",
         backgroundImage:
-          "radial-gradient(ellipse at center, rgba(59,130,246,0.08) 0%, transparent 60%), linear-gradient(rgba(59,130,246,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(59,130,246,0.04) 1px, transparent 1px)",
+          "radial-gradient(ellipse at center, var(--tint-brand-08) 0%, transparent 60%), linear-gradient(var(--tint-brand-04) 1px, transparent 1px), linear-gradient(90deg, var(--tint-brand-04) 1px, transparent 1px)",
         backgroundSize: "auto, 40px 40px, 40px 40px",
       }}
     >
@@ -206,40 +193,38 @@ export function LoadingScreen() {
             fontSize: "2.4rem",
             fontWeight: 700,
             letterSpacing: "-0.02em",
-            color: "#f1f5f9",
-            textShadow: "0 0 20px rgba(59,130,246,0.4)",
+            color: "var(--color-ink)",
+            textShadow: "0 0 20px var(--tint-brand-40)",
             opacity: 0,
           }}
         >
-          <span style={{ color: "#60a5fa" }}>&lt;</span>
+          <span style={{ color: "var(--color-brand-400)" }}>&lt;</span>
           james
-          <span style={{ color: "#60a5fa" }}>/&gt;</span>
+          <span style={{ color: "var(--color-brand-400)" }}>/&gt;</span>
         </div>
 
         <div
           className="rounded-xl overflow-hidden mb-6"
           style={{
-            background: "#0d1117",
-            border: "1px solid rgba(59,130,246,0.18)",
-            boxShadow: "0 0 40px rgba(59,130,246,0.08)",
+            background: "var(--color-surface-code)",
+            border: "1px solid var(--tint-brand-18)",
+            boxShadow: "0 0 40px var(--tint-brand-08)",
           }}
         >
           <div
             className="flex items-center gap-1.5 px-3 py-2"
-            style={{ background: "#161b22", borderBottom: "1px solid rgba(255,255,255,0.05)" }}
+            style={{ background: "var(--color-surface-code-head)", borderBottom: "1px solid var(--tint-white-05)" }}
           >
-            <div className="w-2.5 h-2.5 rounded-full" style={{ background: "#ff5f57" }} />
-            <div className="w-2.5 h-2.5 rounded-full" style={{ background: "#febc2e" }} />
-            <div className="w-2.5 h-2.5 rounded-full" style={{ background: "#28c840" }} />
-            <span className="ml-2 font-mono" style={{ fontSize: "0.65rem", color: "#4b5563" }}>
+            <TrafficLights />
+            <span className="ml-2 font-mono" style={{ fontSize: "0.65rem", color: "var(--color-ink-dim)" }}>
               boot.sh
             </span>
           </div>
           <div className="px-5 py-4 font-mono" style={{ fontSize: "0.78rem", lineHeight: 1.9 }}>
             {BOOT_LINES.map((l, i) => (
               <div key={i} className="boot-line" style={{ opacity: 0 }}>
-                <span style={{ color: l.prompt === "✓" ? "#4ade80" : "#22c55e" }}>{l.prompt}</span>
-                <span style={{ color: l.prompt === "✓" ? "#4ade80" : "#94a3b8", marginLeft: "8px" }}>
+                <span style={{ color: l.prompt === "✓" ? "var(--color-success)" : "var(--color-success-strong)" }}>{l.prompt}</span>
+                <span style={{ color: l.prompt === "✓" ? "var(--color-success)" : "var(--color-ink-dim)", marginLeft: "8px" }}>
                   {l.text}
                 </span>
               </div>
@@ -247,23 +232,23 @@ export function LoadingScreen() {
           </div>
         </div>
 
-        <div className="flex items-center gap-3 font-mono" style={{ fontSize: "0.7rem", color: "#475569" }}>
+        <div className="flex items-center gap-3 font-mono" style={{ fontSize: "0.7rem", color: "var(--color-ink-dim)" }}>
           <span>loading</span>
           <div
             className="flex-1 h-1 rounded-full overflow-hidden"
-            style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(59,130,246,0.12)" }}
+            style={{ background: "var(--tint-white-05)", border: "1px solid var(--tint-brand-12)" }}
           >
             <div
               ref={barRef}
               className="h-full"
               style={{
                 width: "0%",
-                background: "linear-gradient(90deg, #1d4ed8, #3b82f6, #60a5fa)",
-                boxShadow: "0 0 12px rgba(59,130,246,0.6)",
+                background: "linear-gradient(90deg, var(--color-brand-900), var(--color-brand), var(--color-brand-400))",
+                boxShadow: "0 0 12px var(--tint-brand-60)",
               }}
             />
           </div>
-          <span ref={percentRef} style={{ color: "#60a5fa", minWidth: "30px", textAlign: "right" }}>
+          <span ref={percentRef} style={{ color: "var(--color-brand-400)", minWidth: "30px", textAlign: "right" }}>
             00%
           </span>
         </div>

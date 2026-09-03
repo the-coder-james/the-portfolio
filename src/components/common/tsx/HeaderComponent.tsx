@@ -63,9 +63,9 @@ export function HeaderComponent() {
       ref={navRef}
       className="fixed top-0 left-0 right-0 z-[60] transition-all duration-300"
       style={{
-        background: scrolled ? "rgba(3,7,18,0.9)" : "transparent",
+        background: scrolled ? "var(--scrim-base-90)" : "transparent",
         backdropFilter: scrolled ? "blur(16px)" : "none",
-        borderBottom: scrolled ? "1px solid rgba(59,130,246,0.12)" : "none",
+        borderBottom: scrolled ? "1px solid var(--tint-brand-12)" : "none",
         opacity: 0,
       }}
     >
@@ -96,13 +96,9 @@ export function HeaderComponent() {
                 key={link.label}
                 ref={(el) => { linkRefs.current[id] = el; }}
                 onClick={() => scrollTo(link.href)}
-                className="relative px-4 py-2 text-sm transition-colors duration-200"
-                style={{
-                  color: isActive ? "#60a5fa" : "#94a3b8",
-                  fontFamily: "'Space Grotesk', sans-serif",
-                }}
-                onMouseEnter={(e) => { if (!isActive) (e.currentTarget as HTMLElement).style.color = "#e2e8f0"; }}
-                onMouseLeave={(e) => { if (!isActive) (e.currentTarget as HTMLElement).style.color = "#94a3b8"; }}
+                aria-current={isActive ? "true" : undefined}
+                className="nav-link relative px-4 py-2 text-sm"
+                style={{ fontFamily: "'Space Grotesk', sans-serif" }}
               >
                 {link.label}
               </button>
@@ -112,13 +108,13 @@ export function HeaderComponent() {
 
         <div className="flex items-center gap-3">
           <Sheet>
-            <SheetTrigger className="md:hidden inline-flex w-9 h-9 items-center justify-center rounded-md text-white hover:bg-[rgba(255,255,255,0.06)] transition-colors">
+            <SheetTrigger className="md:hidden inline-flex w-9 h-9 items-center justify-center rounded-md text-white hover:bg-[var(--tint-white-06)] transition-colors">
               <Menu size={22} />
             </SheetTrigger>
             <SheetContent
               side="right"
-              className="w-[280px] border-l-[rgba(59,130,246,0.15)] flex flex-col gap-0 pt-16"
-              style={{ background: "rgba(3,7,18,0.98)", backdropFilter: "blur(20px)" }}
+              className="w-[280px] border-l-[var(--tint-brand-15)] flex flex-col gap-0 pt-16"
+              style={{ background: "var(--scrim-base-98)", backdropFilter: "blur(20px)" }}
             >
               <div className="flex items-center gap-2 mb-8 px-2">
                 <div className="w-7 h-7 rounded-lg bg-blue-600 flex items-center justify-center">
@@ -137,8 +133,8 @@ export function HeaderComponent() {
                       onClick={() => scrollTo(link.href)}
                       className="text-left px-4 py-3 rounded-lg text-sm transition-colors"
                       style={{
-                        color: isActive ? "#60a5fa" : "#94a3b8",
-                        background: isActive ? "rgba(59,130,246,0.1)" : "transparent",
+                        color: isActive ? "var(--color-brand-400)" : "var(--color-ink-dim)",
+                        background: isActive ? "var(--tint-brand-10)" : "transparent",
                         fontFamily: "'Space Grotesk', sans-serif",
                       }}
                     >
@@ -150,7 +146,7 @@ export function HeaderComponent() {
               </nav>
               <SheetClose
                 onClick={() => scrollTo("#contact")}
-                className="m-4 inline-flex items-center justify-center rounded-xl px-4 py-2 text-sm text-white border border-[rgba(59,130,246,0.4)] bg-[rgba(59,130,246,0.2)] hover:bg-[rgba(59,130,246,0.35)] transition-colors"
+                className="m-4 inline-flex items-center justify-center rounded-xl px-4 py-2 text-sm text-white border border-[var(--tint-brand-40)] bg-[var(--tint-brand-20)] hover:bg-[var(--tint-brand-35)] transition-colors"
                 style={{ fontFamily: "'Space Grotesk', sans-serif" }}
               >
                 Hire Me
