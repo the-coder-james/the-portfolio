@@ -1,28 +1,35 @@
 import { useEffect } from "react";
 
 /**
- * Turns the [data-stack-section] sections into a FILO card stack: each section
- * slides up over the one before it and settles on the pile, which stays pinned
- * underneath and recedes slightly.
+ * Turns the [data-stack-section] sections into a FILO card stack: each card
+ * scrolls up over the pile, comes to rest at the top, and stays there while the
+ * next one slides over it.
  *
- * The previous implementation pinned every section at 100vh with
- * `overflow: hidden` and wrote `el.scrollTop` on each frame to reveal content
- * taller than the viewport. That is what made it feel rough — scrollTop is a
- * scroll position, so browsers snap it to whole pixels and never interpolate
- * it, and each write also invalidated layout. Nothing here writes scroll
- * positions or heights during scroll: sections are their natural height, the
- * page scrolls normally through them, and `position: sticky` does the pinning.
- * The only per-frame work is a transform and an opacity on the covered cards,
- * both of which stay on the compositor.
+ * Two earlier approaches failed, and both failure modes are worth recording:
+ *
+ *  - Pinning every section at 100vh and writing `el.scrollTop` each frame to
+ *    reveal tall content. scrollTop is a scroll position, so browsers snap it
+ *    to whole pixels and never interpolate it — that was the jitter.
+ *
+ *  - Making every section `position: sticky` directly. With no scroll distance
+ *    between them they all pinned at once and rendered on top of each other at
+ *    the same offset, and a tall section stuck to `bottom: 0` pinned the moment
+ *    it entered the viewport instead of scrolling through.
+ *
+ * What works is the standard pattern: each card is wrapped in a plain-flow
+ * spacer that supplies the scroll distance, and the card sticks to the top of
+ * its own spacer. Because the spacers are in normal flow, the cards are laid
+ * out one after another and each pins only once its own spacer reaches the top.
+ * Nothing writes scroll positions or heights during scroll; the per-frame work
+ * is one transform and one opacity, both compositor-friendly.
  */
 
-const STACK_TOP = 0;      // where a card comes to rest
-const SCALE_STEP = 0.03;  // how much each covered card shrinks
-const VEIL_MAX = 0.45;    // how far a covered card darkens
+const SCALE_STEP = 0.04;  // how far a covered card recedes
+const VEIL_MAX = 0.5;     // how far a covered card darkens
 
 export function ScrollStack() {
   useEffect(() => {
-    // Under reduced motion the sections are left in normal document flow.
+    // Under reduced motion the sections stay in normal document flow.
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
     const sections = Array.from(
@@ -30,51 +37,48 @@ export function ScrollStack() {
     );
     if (sections.length < 2) return;
 
+    const spacers: HTMLElement[] = [];
     const veils: HTMLElement[] = [];
     const originalStyles: { el: HTMLElement; cssText: string }[] = [];
 
     sections.forEach((el, i) => {
       originalStyles.push({ el, cssText: el.style.cssText });
 
-      // Position, height and radius come from the .stack-card class in CSS so
-      // the layout is correct before JS runs. Only the stacking order and the
-      // transform hint are set here.
+      const spacer = document.createElement("div");
+      spacer.setAttribute("data-stack-spacer", "");
+      spacer.style.position = "relative";
+      el.parentElement?.insertBefore(spacer, el);
+      spacer.appendChild(el);
+      spacers.push(spacer);
+
+      el.style.position = "sticky";
+      el.style.top = "0";
       el.style.zIndex = `${i + 1}`;
       el.style.transformOrigin = "center top";
       el.style.willChange = "transform";
 
-      // A sticky element taller than the viewport pins whichever edge its
-      // offset names. With `top: 0` a tall section would pin its top edge and
-      // its lower content would never scroll into view. Sticking such sections
-      // to the bottom instead lets them scroll through normally and only pin
-      // once their end is reached.
-      applyStickyEdge(el);
-
-      // Darkening layer for cards that have been covered. Absolute here (not
-      // fixed, as before) because these sections are no longer internally
-      // scrolled — it simply covers the card it belongs to.
       const veil = document.createElement("div");
       veil.setAttribute("aria-hidden", "true");
       veil.style.cssText =
         "position:absolute;inset:0;pointer-events:none;opacity:0;z-index:60;" +
-        "background:var(--color-surface-deep);border-radius:inherit;" +
-        "transition:opacity 120ms linear;";
+        "background:var(--color-surface-deep);border-radius:inherit;";
       el.appendChild(veil);
       veils.push(veil);
     });
 
-    // Chosen per section and re-evaluated on resize, since a section can cross
-    // the viewport-height threshold when the window changes.
-    function applyStickyEdge(el: HTMLElement) {
-      const overflows = el.offsetHeight > window.innerHeight;
-      if (overflows) {
-        el.style.top = "auto";
-        el.style.bottom = `${STACK_TOP}px`;
-      } else {
-        el.style.top = `${STACK_TOP}px`;
-        el.style.bottom = "auto";
-      }
-    }
+    /**
+     * The spacer is the card's own height plus one viewport of runway. That
+     * runway is the distance over which the card sits pinned at the top while
+     * the next one travels up and covers it — without it, a card would be
+     * replaced the instant it finished scrolling.
+     */
+    const sizeSpacers = () => {
+      sections.forEach((el, i) => {
+        // The last card needs no cover runway; nothing follows it.
+        const runway = i === sections.length - 1 ? 0 : window.innerHeight;
+        spacers[i].style.height = `${el.offsetHeight + runway}px`;
+      });
+    };
 
     let frame = 0;
     let queued = false;
@@ -91,40 +95,39 @@ export function ScrollStack() {
 
       for (let i = 0; i < sections.length; i++) {
         const el = sections[i];
-        const next = sections[i + 1];
-        if (!next) {
-          // The last card is never covered.
+        if (i === sections.length - 1) {
           el.style.transform = "";
           veils[i].style.opacity = "0";
           continue;
         }
 
-        // How far the next card has travelled across this one: 0 when it is
-        // still a full viewport below, 1 once it has fully covered this card.
-        const nextTop = next.getBoundingClientRect().top;
-        const progress = Math.min(1, Math.max(0, 1 - (nextTop - STACK_TOP) / viewportHeight));
+        // Progress of this card being covered. The spacer is the card plus one
+        // viewport of runway, and the runway only begins once the card itself
+        // has scrolled past — so measure from the end of the card, not from the
+        // top of the spacer. (Measuring from the spacer top counted the card's
+        // own height as consumed runway, which pinned progress at 1 from the
+        // very first frame.)
+        const spacerRect = spacers[i].getBoundingClientRect();
+        const scrolledPast = -spacerRect.top;
+        const runwayUsed = scrolledPast - (el.offsetHeight - viewportHeight);
+        const progress = Math.min(1, Math.max(0, runwayUsed / viewportHeight));
 
-        // Cards deeper in the pile recede a little further, so the stack reads
-        // as depth rather than a single swap.
         el.style.transform = `scale(${1 - progress * SCALE_STEP})`;
         veils[i].style.opacity = `${progress * VEIL_MAX}`;
       }
     }
 
     const handleResize = () => {
-      sections.forEach(applyStickyEdge);
+      sizeSpacers();
       requestUpdate();
     };
 
-    // A section can cross the viewport-height threshold when its content grows
-    // (the projects grid has a "see more" button), so the sticky edge has to be
-    // re-evaluated rather than decided once at mount.
-    const resizeObserver = new ResizeObserver(() => {
-      sections.forEach(applyStickyEdge);
-      requestUpdate();
-    });
+    // Card height changes when content grows (the projects "see more" button),
+    // which changes how much runway its spacer needs.
+    const resizeObserver = new ResizeObserver(handleResize);
     sections.forEach((el) => resizeObserver.observe(el));
 
+    sizeSpacers();
     update();
     window.addEventListener("scroll", requestUpdate, { passive: true });
     window.addEventListener("resize", handleResize);
@@ -135,6 +138,11 @@ export function ScrollStack() {
       window.removeEventListener("scroll", requestUpdate);
       window.removeEventListener("resize", handleResize);
       veils.forEach((veil) => veil.remove());
+      spacers.forEach((spacer) => {
+        const el = spacer.firstElementChild;
+        if (el) spacer.parentElement?.insertBefore(el, spacer);
+        spacer.remove();
+      });
       originalStyles.forEach(({ el, cssText }) => {
         el.style.cssText = cssText;
       });

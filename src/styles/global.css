@@ -463,11 +463,9 @@
    still in the document, directly behind it) and a shadow to read as a
    separate surface arriving on top. */
 .stack-card {
-  /* Default offset so the stack works before the script runs. ScrollStack
-     overrides this per section: sections taller than the viewport stick to the
-     bottom instead, otherwise their lower content could never scroll into
-     view. */
-  top: 0;
+  /* No position here on purpose. ScrollStack wraps each card in a spacer and
+     makes it sticky at runtime; declaring sticky in CSS made every card pin at
+     once, stacking them all at the same offset before the script ran. */
   border-top-left-radius: 18px;
   border-top-right-radius: 18px;
   box-shadow: 0 -24px 60px var(--shadow-black-50);
