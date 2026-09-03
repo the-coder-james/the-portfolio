@@ -58,11 +58,17 @@ export function LoadingScreen() {
       ease: "linear",
     });
 
-    // Real progress: track image loads + document.readyState.
-    // Display value is eased toward the real target so the bar always feels alive.
+    // Progress. This used to weight the bar 80% on <img> load events, polling
+    // the DOM every 250ms to catch images React mounted after this effect ran.
+    // That stopped making sense once the images were optimised: they are lazy
+    // now, so the ones below the fold never load during the splash at all, and
+    // the ~350KB that does load finishes almost immediately. The bar would sit
+    // at 80% waiting on images that were never going to fire.
+    //
+    // What the splash actually waits for is hydration, so track that instead:
+    // document readiness, then the first paint after the islands mount.
     const display = { v: 0 };
     let target = 0;
-    let pageLoaded = false;
     let done = false;
 
     const setTarget = (n: number) => { target = Math.max(target, Math.min(99, n)); };
@@ -72,70 +78,32 @@ export function LoadingScreen() {
       if (percentRef.current) percentRef.current.textContent = `${Math.floor(display.v).toString().padStart(2, "0")}%`;
     };
 
-    // Drive the display value smoothly toward `target` every frame.
     let raf = 0;
     const tick = () => {
-      // ease-out lerp; faster when far from target
       const diff = target - display.v;
       display.v += diff * 0.08;
-      // small idle creep so the bar moves even before any image fires
-      if (target < 15 && display.v < 12) display.v += 0.12;
+      // Idle creep so the bar keeps moving between real milestones.
+      if (display.v < target - 0.2 || target < 90) display.v += 0.08;
+      if (display.v > target) display.v = target;
       renderBar();
       if (!done) raf = requestAnimationFrame(tick);
     };
     raf = requestAnimationFrame(tick);
 
-    // Count <img> elements as they load. We re-query periodically since React
-    // hydrates and mounts images after this effect runs.
-    let totalImgs = 0;
-    let loadedImgs = 0;
-    const tracked = new WeakSet<HTMLImageElement>();
+    // Milestones, in the order they actually occur.
+    setTarget(20);
 
-    const recomputeTarget = () => {
-      // 0–80% from images, +15% when DOMContentLoaded, +5% when load fires
-      const imgPct = totalImgs > 0 ? (loadedImgs / totalImgs) * 80 : 0;
-      const domPct = document.readyState !== "loading" ? 15 : 0;
-      const loadPct = pageLoaded ? 5 : 0;
-      setTarget(imgPct + domPct + loadPct);
-    };
-
-    const trackImage = (img: HTMLImageElement) => {
-      if (tracked.has(img)) return;
-      tracked.add(img);
-      totalImgs += 1;
-      const onDone = () => {
-        loadedImgs += 1;
-        recomputeTarget();
-      };
-      if (img.complete && img.naturalWidth > 0) {
-        onDone();
-      } else {
-        img.addEventListener("load", onDone, { once: true });
-        img.addEventListener("error", onDone, { once: true });
-      }
-    };
-
-    const scanImages = () => {
-      document.querySelectorAll<HTMLImageElement>("img").forEach(trackImage);
-      recomputeTarget();
-    };
-
-    // Initial scan + retry as React mounts more
-    scanImages();
-    const scanInterval = window.setInterval(scanImages, 250);
-
-    const onDomReady = () => recomputeTarget();
+    const onDomReady = () => setTarget(55);
     if (document.readyState === "loading") {
       document.addEventListener("DOMContentLoaded", onDomReady, { once: true });
     } else {
-      recomputeTarget();
+      onDomReady();
     }
 
     const finish = () => {
       if (done) return;
       done = true;
       cancelAnimationFrame(raf);
-      window.clearInterval(scanInterval);
       flicker?.pause();
 
       // Exit timeline: snap to 100 → logo pulse → fade overlay
@@ -169,10 +137,15 @@ export function LoadingScreen() {
     };
 
     const onLoad = () => {
-      pageLoaded = true;
-      recomputeTarget();
-      // Brief beat so the user sees the bar fill, then exit
-      window.setTimeout(finish, 250);
+      setTarget(85);
+      // Wait for the frame after hydration so the page behind the overlay is
+      // painted before it fades, then give the bar a beat to read as complete.
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          setTarget(99);
+          window.setTimeout(finish, 200);
+        });
+      });
     };
 
     if (document.readyState === "complete") {
@@ -187,10 +160,10 @@ export function LoadingScreen() {
 
     return () => {
       cancelAnimationFrame(raf);
-      window.clearInterval(scanInterval);
       window.clearTimeout(failsafe);
       flicker?.pause();
       window.removeEventListener("load", onLoad);
+      document.removeEventListener("DOMContentLoaded", onDomReady);
     };
   }, []);
 

@@ -14,6 +14,11 @@ import { useEffect } from "react";
  */
 export function ScrollStack() {
   useEffect(() => {
+    // Pinning clips every section to one viewport and animates scale/opacity as
+    // they cover each other. Under reduced motion, leave the document in normal
+    // flow instead — the sections simply stack and scroll.
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
     const sections = Array.from(
       document.querySelectorAll<HTMLElement>("[data-stack-section]")
     );
@@ -56,8 +61,22 @@ export function ScrollStack() {
     // `el` itself is clamped to 100vh with overflow hidden, so its own box
     // never resizes when inner content grows (e.g. a "see more" button) —
     // ResizeObserver on `el` would never fire. Watch the DOM subtree instead.
+    let frame = 0;
+    let queued = false;
+
+    // The old version ran update() on every frame for the life of the page,
+    // reading layout for each section whether or not anything had moved. Drive
+    // it from scroll instead, coalescing to at most one update per frame.
+    // `update` is a function declaration below, so it is hoisted.
+    const requestUpdate = () => {
+      if (queued) return;
+      queued = true;
+      frame = requestAnimationFrame(update);
+    };
+
     const mutationObserver = new MutationObserver(() => {
       sections.forEach((el, i) => sizeSpacer(el, spacers[i]));
+      requestUpdate();
     });
     sections.forEach((el) =>
       mutationObserver.observe(el, { childList: true, subtree: true })
@@ -65,12 +84,12 @@ export function ScrollStack() {
 
     const handleResize = () => {
       sections.forEach((el, i) => sizeSpacer(el, spacers[i]));
+      requestUpdate();
     };
     window.addEventListener("resize", handleResize);
 
-    let frame = 0;
-
-    const update = () => {
+    function update() {
+      queued = false;
       const viewportHeight = window.innerHeight;
 
       sections.forEach((el, i) => {
@@ -93,15 +112,15 @@ export function ScrollStack() {
           el.style.opacity = `${1 - transitionProgress * 0.35}`;
         }
       });
+    }
 
-      frame = requestAnimationFrame(update);
-    };
-
-    frame = requestAnimationFrame(update);
+    update();
+    window.addEventListener("scroll", requestUpdate, { passive: true });
 
     return () => {
       cancelAnimationFrame(frame);
       mutationObserver.disconnect();
+      window.removeEventListener("scroll", requestUpdate);
       window.removeEventListener("resize", handleResize);
       spacers.forEach((spacer) => {
         const el = spacer.firstElementChild;
