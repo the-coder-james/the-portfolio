@@ -82,6 +82,18 @@
   --color-syn-tag: #f9a8d4;
   --color-syn-violet: #c4b5fd;
 
+  /* Card surfaces.
+     Cards used to be white at 2-6% alpha over a near-black page, which put
+     their edge at ~1.03:1 against the background — WCAG asks 3:1 for UI
+     boundaries, so they were effectively invisible. A fill alone cannot fix
+     that on this palette (even a much lighter card only reaches ~1.2:1), so
+     the border carries the separation. */
+  --color-card-surface: #111827;
+  --color-card-surface-raised: #161f33;
+  --color-card-border: #506282;        /* 3.2:1 on both surfaces — WCAG 1.4.11 */
+  --color-card-border-strong: #64748b; /* 4.2:1 — hover/focus */
+  --color-card-titlebar: #1b2437;
+
   /* Editor chrome */
   --color-chrome-red: #ff5f57;
   --color-chrome-yellow: #febc2e;
@@ -360,9 +372,21 @@
 .card-glow {
   transition: box-shadow 0.3s ease, border-color 0.3s ease;
 }
-.card-glow:hover {
+.card-glow:hover,
+.card-glow:focus-within {
   box-shadow: 0 0 24px var(--tint-brand-25);
-  border-color: var(--tint-brand-60) !important;
+  border-color: var(--color-card-border-strong) !important;
+}
+
+/* Window-chrome cards. The border is the card's edge against a near-black
+   page, so it strengthens rather than disappears on interaction. */
+.window-card {
+  transition: border-color 0.25s ease, box-shadow 0.25s ease, transform 0.25s ease;
+}
+.window-card:hover,
+.window-card:focus-within {
+  border-color: var(--color-card-border-strong);
+  box-shadow: 0 0 0 1px var(--tint-brand-15), 0 12px 32px var(--shadow-black-40);
 }
 
 /* ── Gradient text ── */

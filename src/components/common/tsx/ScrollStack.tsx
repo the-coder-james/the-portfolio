@@ -25,6 +25,7 @@ export function ScrollStack() {
     if (sections.length === 0) return;
 
     const spacers: HTMLElement[] = [];
+    const veils: HTMLElement[] = [];
     const originalStyles: { el: HTMLElement; cssText: string }[] = [];
 
     // Reserve the content's own height (for the reveal scroll) plus one
@@ -53,6 +54,19 @@ export function ScrollStack() {
       el.style.height = "100vh";
       el.style.overflow = "hidden";
       el.style.zIndex = `${i}`;
+
+      // Darkening layer used instead of fading the section itself, so text and
+      // borders keep their contrast for as long as they are legible. Fixed
+      // rather than absolute: the section is scrolled internally via scrollTop,
+      // so an absolute child would scroll away with the content. A pinned
+      // section always fills the viewport, so fixed covers exactly it.
+      const veil = document.createElement("div");
+      veil.setAttribute("aria-hidden", "true");
+      veil.style.cssText =
+        "position:fixed;inset:0;pointer-events:none;opacity:0;" +
+        "background:var(--color-surface-base);z-index:50;";
+      el.appendChild(veil);
+      veils.push(veil);
 
       sizeSpacer(el, spacer);
       spacers.push(spacer);
@@ -108,8 +122,15 @@ export function ScrollStack() {
           const spacerHeight = spacerRect.height;
           const remaining = spacerHeight - scrolledPast - viewportHeight;
           const transitionProgress = Math.min(1, Math.max(0, 1 - remaining / viewportHeight));
-          el.style.transform = `scale(${1 - transitionProgress * 0.08})`;
-          el.style.opacity = `${1 - transitionProgress * 0.35}`;
+
+          // Recede with scale only. This used to also drop opacity to 0.65,
+          // which dimmed text and card borders while they were still being
+          // read — the depth cue cost real contrast. A dark overlay above the
+          // content gives the same sense of falling back without touching the
+          // opacity of the content itself.
+          el.style.transform = `scale(${1 - transitionProgress * 0.06})`;
+          const veil = veils[i];
+          if (veil) veil.style.opacity = `${transitionProgress * 0.55}`;
         }
       });
     }
@@ -122,6 +143,7 @@ export function ScrollStack() {
       mutationObserver.disconnect();
       window.removeEventListener("scroll", requestUpdate);
       window.removeEventListener("resize", handleResize);
+      veils.forEach((veil) => veil.remove());
       spacers.forEach((spacer) => {
         const el = spacer.firstElementChild;
         if (el) spacer.parentElement?.insertBefore(el, spacer);

@@ -202,8 +202,8 @@ export function ProjectsGrid({
         <div
           className="rounded-2xl py-16 text-center"
           style={{
-            background: "var(--tint-white-02)",
-            border: "1px solid var(--tint-white-06)",
+            background: "var(--color-card-surface)",
+            border: "1px solid var(--color-card-border)",
             color: "var(--color-ink-dim)",
             fontFamily: "'Space Grotesk', sans-serif",
           }}

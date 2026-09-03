@@ -1,4 +1,5 @@
 import { RevealGroup } from "@/components/common/tsx/RevealGroup";
+import { WindowCard } from "@/components/common/tsx/WindowCard";
 
 interface MindsetCard {
   icon: string;
@@ -14,10 +15,10 @@ export function SkillsMindset({ cards }: SkillsMindsetProps) {
   return (
     <RevealGroup className="flex flex-col gap-4" preset="slide">
       {cards.map((card) => (
-        <div
+        <WindowCard
           key={card.title}
-          className="card-glow flex items-start gap-4 p-5 rounded-xl"
-          style={{ background: "var(--tint-white-02)", border: "1px solid var(--tint-white-06)" }}
+          title={`${card.title.toLowerCase().replace(/\s+/g, "-")}.md`}
+          bodyClassName="flex items-start gap-4 p-5"
         >
           <div
             className="w-10 h-10 rounded-lg flex items-center justify-center shrink-0"
@@ -34,7 +35,7 @@ export function SkillsMindset({ cards }: SkillsMindsetProps) {
               {card.desc}
             </div>
           </div>
-        </div>
+        </WindowCard>
       ))}
     </RevealGroup>
   );

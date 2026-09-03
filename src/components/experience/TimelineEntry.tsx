@@ -2,6 +2,7 @@ import { useRef } from "react";
 import { motion } from "motion/react";
 import { Badge } from "@/components/ui/badge";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
+import { WindowCard } from "@/components/common/tsx/WindowCard";
 import { useRevealed } from "@/hooks/useRevealed";
 
 interface TimelineItem {
@@ -34,12 +35,11 @@ export function TimelineEntry({ item, index }: TimelineEntryProps) {
       transition={{ delay: 0.05 + index * 0.06, type: "spring", visualDuration: 0.6, bounce: 0.2 }}
     >
       <div className={`md:w-[45%] pl-14 md:pl-0 ${isEven ? "md:pr-10 md:text-right" : "md:pl-10 md:text-left"}`}>
-        <div
-          className="card-glow rounded-2xl p-5 text-left"
-          style={{
-            background: item.type === "present" ? "var(--tint-brand-07)" : "var(--tint-white-02)",
-            border: item.type === "present" ? "1px solid var(--tint-brand-30)" : "1px solid var(--tint-white-06)",
-          }}
+        <WindowCard
+          title={`${item.year}-${item.title.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`}
+          raised={isPresent}
+          className="text-left"
+          style={isPresent ? { borderColor: "var(--color-brand)" } : undefined}
         >
           <div className="flex items-center gap-2 mb-3 flex-wrap">
             <Badge
@@ -83,7 +83,7 @@ export function TimelineEntry({ item, index }: TimelineEntryProps) {
               </Badge>
             ))}
           </div>
-        </div>
+        </WindowCard>
       </div>
 
       <div className="absolute left-6 md:left-1/2 md:-translate-x-1/2 top-6" aria-hidden="true">

@@ -57,7 +57,7 @@ export function ContactForm() {
         <form
           onSubmit={handleSubmit}
           className="rounded-2xl p-8 space-y-5"
-          style={{ background: "var(--tint-white-02)", border: "1px solid var(--tint-white-07)" }}
+          style={{ background: "var(--color-card-surface)", border: "1px solid var(--color-card-border)" }}
         >
           <div className="flex items-center gap-2 mb-2">
             <TrafficLights />

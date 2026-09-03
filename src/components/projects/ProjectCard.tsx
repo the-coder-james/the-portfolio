@@ -124,14 +124,32 @@ export function ProjectCard({ project, index, taglist, roles, providers, baseUrl
       initial={reduced ? false : { opacity: 0, y: 50, scale: 0.95 }}
       animate={revealed ? { opacity: 1, y: 0, scale: 1 } : undefined}
       transition={{ delay: index * 0.07, type: "spring", visualDuration: 0.7, bounce: 0.2 }}
-      className="rounded-2xl overflow-hidden flex flex-col"
+      className="rounded-xl overflow-hidden flex flex-col"
       style={{
-        background: "var(--color-surface-code)",
-        border: `1px solid ${hovered ? tint(accent, 31) : "var(--tint-white-07)"}`,
-        boxShadow: hovered ? `0 0 30px ${tint(accent, 8)}` : "none",
+        background: "var(--color-card-surface)",
+        border: `1px solid ${hovered ? tint(accent, 55) : "var(--color-card-border)"}`,
+        boxShadow: hovered ? `0 0 30px ${tint(accent, 12)}, 0 12px 32px var(--shadow-black-40)` : "none",
         transition: "border-color 0.3s ease, box-shadow 0.3s ease",
       }}
     >
+      {/* Window titlebar. The controls are decorative — not buttons, no
+          behaviour — so the whole bar is hidden from assistive tech. */}
+      <div
+        className="flex items-center gap-2 px-3 py-2 shrink-0"
+        style={{
+          background: "var(--color-card-titlebar)",
+          borderBottom: "1px solid var(--color-card-border)",
+        }}
+      >
+        <TrafficLights size="sm" />
+        <span
+          className="font-mono flex-1 text-center truncate"
+          style={{ fontSize: "0.62rem", color: "var(--color-ink-dim)" }}
+        >
+          {project.title.toLowerCase().replace(/ /g, "-")}.ts
+        </span>
+        <span className="w-[38px] shrink-0" aria-hidden="true" />
+      </div>
       <div
         className="p-5 relative overflow-hidden"
         style={{ background: "var(--color-surface-base)", borderBottom: "1px solid var(--tint-white-05)", minHeight: "180px" }}
@@ -160,12 +178,6 @@ export function ProjectCard({ project, index, taglist, roles, providers, baseUrl
             className="absolute inset-0"
             style={{ background: `linear-gradient(180deg, var(--scrim-soft) 0%, var(--scrim-strong) 100%)` }}
           />
-        </div>
-        <div className="relative flex items-center gap-1.5 mb-4" style={{ zIndex: 3 }}>
-          <TrafficLights size="sm" />
-          <span className="ml-2 font-mono" style={{ fontSize: "0.62rem", color: "var(--color-ink-faint)" }}>
-            {project.title.toLowerCase().replace(/ /g, "-")}.ts
-          </span>
         </div>
         <div className="font-mono flex gap-3" style={{ fontSize: "0.72rem" }}>
           <div className="flex flex-col" style={{ color: "var(--color-chrome-line)", minWidth: "16px", textAlign: "right" }}>

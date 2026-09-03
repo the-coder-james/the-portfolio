@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 
 import { SlidingNumber } from "@/components/motion-primitives/sliding-number";
 import { RevealGroup } from "@/components/common/tsx/RevealGroup";
+import { WindowCard } from "@/components/common/tsx/WindowCard";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { useRevealed } from "@/hooks/useRevealed";
 
@@ -70,10 +71,9 @@ export function AboutStats({ stats }: AboutStatsProps) {
     <div ref={ref}>
       <RevealGroup className="grid grid-cols-2 gap-4" preset="scale" margin="-80px">
         {stats.map((stat) => (
-          <div
+          <WindowCard
             key={stat.label}
-            className="card-glow rounded-xl p-5"
-            style={{ background: "var(--tint-white-02)", border: "1px solid var(--tint-white-06)" }}
+            title={`${stat.label.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`}
           >
             <div className="text-2xl mb-2" aria-hidden="true">{stat.icon}</div>
             <div
@@ -85,7 +85,7 @@ export function AboutStats({ stats }: AboutStatsProps) {
             <div style={{ fontSize: "0.78rem", color: "var(--color-ink-dim)", marginTop: "4px", fontFamily: "'Space Grotesk', sans-serif" }}>
               {stat.label}
             </div>
-          </div>
+          </WindowCard>
         ))}
       </RevealGroup>
     </div>
