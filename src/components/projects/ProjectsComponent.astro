@@ -1,5 +1,6 @@
 ---
 import SectionShell from "@/components/common/astro/SectionShell.astro"
+import { SectionHeading } from "@/components/common/tsx/SectionHeading"
 import { ProjectsGrid } from "@/components/projects/ProjectsGrid"
 import projectlistJson from "@/assets/projectlist.json"
 import taglistJson from "@/assets/taglist.json"
@@ -19,14 +20,14 @@ const baseUrl = import.meta.env.BASE_URL
   >
   </div>
 
-  <!-- Heading pairs with a count, so it opts out of the shared heading block -->
+  <!-- Heading pairs with a project count set beside it -->
   <div class="flex flex-col sm:flex-row sm:items-end justify-between mb-16 gap-6">
-    <div>
-      <p class="font-mono mb-2" style="font-size: 0.75rem; color: var(--color-brand)">03. featured_work.tsx</p>
-      <h2 style="font-size: clamp(1.8rem, 4vw, 2.8rem); font-weight: 700; color: var(--color-ink); font-family: 'Space Grotesk', sans-serif; line-height: 1.2">
-        Things I've <span class="gradient-text">Built</span>
-      </h2>
-    </div>
+    <SectionHeading
+      client:visible
+      eyebrow="03. featured_work.tsx"
+      headline="Things I've"
+      headlineAccent="Built"
+    />
     <span style="font-size: 0.85rem; color: var(--color-ink-dim); font-family: 'Space Grotesk', sans-serif">
       {projectlistJson.length}+ projects shipped
     </span>

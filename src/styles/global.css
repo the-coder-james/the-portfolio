@@ -478,6 +478,39 @@
   z-index: 1;
 }
 
+/* ── Section seams ──
+   Sections alternate between two near-black surfaces, and butting them
+   together produced a visible hard edge at every boundary. These blend the
+   join: a soft gradient on each side of the seam plus a thin brand rule, so
+   the page reads as continuous rather than as stacked slabs.
+
+   The gradients are drawn from the section's own background colour to
+   transparent, so each one fades into whatever sits behind it. */
+.page-section::before,
+.page-section::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 96px;
+  pointer-events: none;
+  z-index: 2;
+}
+.page-section::before {
+  top: 0;
+  background: linear-gradient(to bottom, var(--seam-color, transparent), transparent);
+}
+.page-section::after {
+  bottom: 0;
+  background: linear-gradient(to top, var(--seam-color, transparent), transparent);
+}
+
+/* The hero is transparent over the fixed backdrop, so it needs no seam. */
+#hero.page-section::before,
+#hero.page-section::after {
+  display: none;
+}
+
 /* ── Reduced motion ──
    Nothing in this codebase honoured prefers-reduced-motion before this. The
    JS animations are gated per-component via useReducedMotion; this covers the
