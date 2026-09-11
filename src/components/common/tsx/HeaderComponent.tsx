@@ -3,6 +3,7 @@ import { useState, useEffect, useRef } from "react";
 import { animateEl } from "@/lib/utils";
 import { Menu, Code2 } from "lucide-react";
 import { Sheet, SheetTrigger, SheetContent, SheetClose } from "@/components/ui/sheet";
+import { ThemeToggle } from "@/components/common/tsx/ThemeToggle";
 import dataJson from "@/assets/data.json";
 
 const navLinks = dataJson.nav;
@@ -107,6 +108,7 @@ export function HeaderComponent() {
         </div>
 
         <div className="flex items-center gap-3">
+          <ThemeToggle />
           <Sheet>
             <SheetTrigger className="md:hidden inline-flex w-9 h-9 items-center justify-center rounded-md text-white hover:bg-[var(--tint-white-06)] transition-colors">
               <Menu size={22} />
@@ -124,6 +126,7 @@ export function HeaderComponent() {
                   <span className="text-blue-400">&lt;</span>james<span className="text-blue-400">/&gt;</span>
                 </span>
               </div>
+              <ThemeToggle withLabel className="mx-2 mb-4" />
               <nav className="flex flex-col gap-1 flex-1">
                 {navLinks.map((link) => {
                   const isActive = activeSection === link.href.slice(1);

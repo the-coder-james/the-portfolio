@@ -1,4 +1,5 @@
 import { useEffect, useRef } from "react";
+import { useTheme } from "@/components/common/tsx/ThemeProvider";
 
 /**
  * Drifting particle field layered over the static hero background.
@@ -22,6 +23,9 @@ const LINK_DIST = 130;
 
 export function ParticleCanvas() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  // The brand token differs per theme, and the colour below is sampled once
+  // per effect run, so the effect has to re-run when the theme flips.
+  const theme = useTheme();
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -32,14 +36,30 @@ export function ParticleCanvas() {
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
-    // Canvas can't resolve CSS custom properties, so read the brand token once.
+    // Canvas can't resolve CSS custom properties, so sample the brand token.
+    // It may come back as a hex, rgb() or oklch() depending on how the token
+    // is authored, so anything that isn't a plain 6-digit hex is normalised by
+    // letting the canvas itself parse it. Guessing a fallback colour here
+    // would silently pin the particles to one theme's blue.
     const brand = getComputedStyle(document.documentElement)
       .getPropertyValue("--color-brand")
-      .trim() || "#3b82f6";
+      .trim();
     const rgb = (() => {
       const h = brand.replace("#", "");
-      if (h.length !== 6) return "59,130,246";
-      return [0, 2, 4].map((i) => parseInt(h.slice(i, i + 2), 16)).join(",");
+      if (/^[0-9a-f]{6}$/i.test(h)) {
+        return [0, 2, 4].map((i) => parseInt(h.slice(i, i + 2), 16)).join(",");
+      }
+      if (brand) {
+        ctx.fillStyle = brand;
+        const resolved = ctx.fillStyle; // always normalised to #rrggbb or rgba()
+        const m = resolved.match(/^#([0-9a-f]{6})$/i);
+        if (m) {
+          return [0, 2, 4].map((i) => parseInt(m[1].slice(i, i + 2), 16)).join(",");
+        }
+        const parts = resolved.match(/\d+(\.\d+)?/g);
+        if (parts && parts.length >= 3) return parts.slice(0, 3).join(",");
+      }
+      return "59,130,246";
     })();
 
     let width = 0;
@@ -158,7 +178,10 @@ export function ParticleCanvas() {
       window.removeEventListener("resize", onResize);
       window.clearTimeout(resizeTimer);
     };
-  }, []);
+    // Re-runs on theme change to resample the brand colour. The teardown above
+    // stops the loop and drops every listener first, so this is a clean
+    // restart; the particles simply reseed, which reads as a mode switch.
+  }, [theme]);
 
   return (
     <canvas
