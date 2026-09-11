@@ -7,107 +7,15 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 /* ── Design tokens ──
-   Ported from tailwind.config.mjs. In v4 the theme lives here; each
-   --color-* key generates the matching bg-/text-/border-* utilities. */
+   Tailwind v4 compiles @theme keys into utilities at build time, so a
+   --color-* declared here cannot be redefined by .dark. The themed colours
+   therefore live as plain --t-* vars in :root / .dark below, and @theme
+   inline points at them: `inline` makes the utility body resolve to
+   var(--t-x) directly instead of adding a --color-x hop, which keeps
+   color-mix() fallbacks working. */
+
+/* Structural tokens — identical in both themes, so they stay literal. */
 @theme {
-  --color-border: hsl(217 33% 17%);
-  --color-input: hsl(217 33% 17%);
-  --color-ring: hsl(217 91% 60%);
-
-  --color-background: hsl(222 47% 4%);
-  --color-foreground: hsl(210 40% 98%);
-
-  --color-primary: hsl(217 91% 60%);
-  --color-primary-foreground: hsl(222 47% 4%);
-
-  --color-secondary: hsl(217 33% 17%);
-  --color-secondary-foreground: hsl(210 40% 98%);
-
-  --color-destructive: hsl(0 84% 60%);
-  --color-destructive-foreground: hsl(210 40% 98%);
-
-  --color-muted: hsl(217 33% 17%);
-  --color-muted-foreground: hsl(215 20% 55%);
-
-  --color-accent: hsl(217 33% 17%);
-  --color-accent-foreground: hsl(210 40% 98%);
-
-  --color-popover: hsl(222 47% 5%);
-  --color-popover-foreground: hsl(210 40% 98%);
-
-  --color-card: hsl(222 47% 5%);
-  --color-card-foreground: hsl(210 40% 98%);
-
-  /* ── Site palette ──
-     The de-facto palette this site was built with, promoted from ~442
-     inline literals to named tokens. Grays that failed WCAG AA have been
-     raised on the slate ramp — same muted character, readable contrast. */
-
-  /* Surfaces */
-  --color-surface-base: #030712;      /* hero, projects, contact */
-  --color-surface-alt: #040b1a;       /* skills, experience */
-  --color-surface-deep: #020509;      /* footer */
-  --color-surface-code: #0d1117;      /* terminal/editor body */
-  --color-surface-code-head: #161b22; /* terminal/editor header */
-
-  /* Brand blues */
-  --color-brand-900: #1d4ed8;
-  --color-brand-700: #2563eb;
-  --color-brand: #3b82f6;
-  --color-brand-400: #60a5fa;
-  --color-brand-300: #93c5fd;
-
-  /* Text ramp — every value meets AA on the surfaces above */
-  --color-ink: #f1f5f9;               /* headings */
-  --color-ink-muted: #e2e8f0;         /* body on dark surfaces */
-  --color-ink-dim: #94a3b8;           /* secondary text (7.9:1) */
-  --color-ink-faint: #64748b;         /* decorative/large only (4.2:1) */
-
-  /* Status */
-  --color-success: #4ade80;
-  --color-success-strong: #22c55e;
-  --color-success-soft: #6ee7b7;
-  --color-danger: #dc2626;
-
-  /* Syntax highlighting — replaces 3 duplicated token maps (~130 literals) */
-  --color-syn-keyword: #c084fc;
-  --color-syn-ident: #60a5fa;
-  --color-syn-fn: #fcd34d;
-  --color-syn-string: #86efac;
-  --color-syn-number: #a5b4fc;
-  --color-syn-punct: #94a3b8;
-  --color-syn-plain: #e2e8f0;
-  --color-syn-comment: #94a3b8;
-  --color-syn-attr: #93c5fd;
-  --color-syn-tag: #f9a8d4;
-  --color-syn-violet: #c4b5fd;
-
-  /* Card surfaces.
-     Cards used to be white at 2-6% alpha over a near-black page, which put
-     their edge at ~1.03:1 against the background — WCAG asks 3:1 for UI
-     boundaries, so they were effectively invisible. A fill alone cannot fix
-     that on this palette (even a much lighter card only reaches ~1.2:1), so
-     the border carries the separation. */
-  --color-card-surface: #111827;
-  --color-card-surface-raised: #161f33;
-  --color-card-border: #506282;        /* 3.2:1 on both surfaces — WCAG 1.4.11 */
-  --color-card-border-strong: #64748b; /* 4.2:1 — hover/focus */
-  --color-card-titlebar: #1b2437;
-
-  /* Editor chrome */
-  --color-chrome-red: #ff5f57;
-  --color-chrome-yellow: #febc2e;
-  --color-chrome-green: #28c840;
-  --color-chrome-line: #64748b;       /* line numbers (was #2d3748, 1.4:1) */
-
-  /* Project card accents */
-  --color-accent-1: #3b82f6;
-  --color-accent-2: #818cf8;
-  --color-accent-3: #34d399;
-  --color-accent-4: #f59e0b;
-  --color-accent-5: #ec4899;
-  --color-accent-6: #60a5fa;
-
   --radius: 0.5rem;
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
@@ -115,6 +23,304 @@
 
   /* container: center + 2rem padding + 1400px 2xl cap (was theme.container) */
   --breakpoint-2xl: 1400px;
+}
+
+/* Themed tokens — the indirection layer. */
+@theme inline {
+  /* shadcn semantic set */
+  --color-border: var(--t-border);
+  --color-input: var(--t-input);
+  --color-ring: var(--t-ring);
+
+  --color-background: var(--t-background);
+  --color-foreground: var(--t-foreground);
+
+  --color-primary: var(--t-primary);
+  --color-primary-foreground: var(--t-primary-foreground);
+
+  --color-secondary: var(--t-secondary);
+  --color-secondary-foreground: var(--t-secondary-foreground);
+
+  --color-destructive: var(--t-destructive);
+  --color-destructive-foreground: var(--t-destructive-foreground);
+
+  --color-muted: var(--t-muted);
+  --color-muted-foreground: var(--t-muted-foreground);
+
+  --color-accent: var(--t-accent);
+  --color-accent-foreground: var(--t-accent-foreground);
+
+  --color-popover: var(--t-popover);
+  --color-popover-foreground: var(--t-popover-foreground);
+
+  --color-card: var(--t-card);
+  --color-card-foreground: var(--t-card-foreground);
+
+  /* Surfaces */
+  --color-surface-base: var(--t-surface-base);
+  --color-surface-alt: var(--t-surface-alt);
+  --color-surface-deep: var(--t-surface-deep);
+  --color-surface-code: var(--t-surface-code);
+  --color-surface-code-head: var(--t-surface-code-head);
+
+  /* Destiny blue ramp */
+  --color-brand-900: var(--t-brand-900);
+  --color-brand-700: var(--t-brand-700);
+  --color-brand: var(--t-brand);
+  --color-brand-400: var(--t-brand-400);
+  --color-brand-300: var(--t-brand-300);
+
+  /* Destiny trim */
+  --color-crimson: var(--t-crimson);
+  --color-gold: var(--t-gold);
+
+  /* Text ramp */
+  --color-ink: var(--t-ink);
+  --color-ink-muted: var(--t-ink-muted);
+  --color-ink-dim: var(--t-ink-dim);
+  --color-ink-faint: var(--t-ink-faint);
+
+  /* Status */
+  --color-success: var(--t-success);
+  --color-success-strong: var(--t-success-strong);
+  --color-success-soft: var(--t-success-soft);
+  --color-danger: var(--t-danger);
+
+  /* Syntax highlighting — identical in both themes; the code surface stays
+     dark either way, so these need no light variant. */
+  --color-syn-keyword: var(--t-syn-keyword);
+  --color-syn-ident: var(--t-syn-ident);
+  --color-syn-fn: var(--t-syn-fn);
+  --color-syn-string: var(--t-syn-string);
+  --color-syn-number: var(--t-syn-number);
+  --color-syn-punct: var(--t-syn-punct);
+  --color-syn-plain: var(--t-syn-plain);
+  --color-syn-comment: var(--t-syn-comment);
+  --color-syn-attr: var(--t-syn-attr);
+  --color-syn-tag: var(--t-syn-tag);
+  --color-syn-violet: var(--t-syn-violet);
+
+  /* Card surfaces */
+  --color-card-surface: var(--t-card-surface);
+  --color-card-surface-raised: var(--t-card-surface-raised);
+  --color-card-border: var(--t-card-border);
+  --color-card-border-strong: var(--t-card-border-strong);
+  --color-card-titlebar: var(--t-card-titlebar);
+
+  /* Editor chrome */
+  --color-chrome-red: var(--t-chrome-red);
+  --color-chrome-yellow: var(--t-chrome-yellow);
+  --color-chrome-green: var(--t-chrome-green);
+  --color-chrome-line: var(--t-chrome-line);
+
+  /* Project card accents */
+  --color-accent-1: var(--t-accent-1);
+  --color-accent-2: var(--t-accent-2);
+  --color-accent-3: var(--t-accent-3);
+  --color-accent-4: var(--t-accent-4);
+  --color-accent-5: var(--t-accent-5);
+  --color-accent-6: var(--t-accent-6);
+
+  /* Wings of Light — the prismatic ramp (gradient text + card bloom) */
+  --color-wing-1: var(--t-wing-1);
+  --color-wing-2: var(--t-wing-2);
+  --color-wing-3: var(--t-wing-3);
+  --color-wing-4: var(--t-wing-4);
+  --color-wing-5: var(--t-wing-5);
+  --color-wing-6: var(--t-wing-6);
+}
+
+/* ── Palette: Destiny (ZGMF-X42S) ──
+   White/light-grey armour, Destiny blue, crimson vents, gold V-fin, green
+   sensors, and the prismatic Wings of Light.
+
+   Light is the default ("standby"); .dark is "combat mode". Contrast ratios
+   in the comments are measured against that theme's own surface-base. */
+
+:root {
+  color-scheme: light;
+
+  /* Surfaces — armour white / light plating */
+  --t-surface-base: #f8fafc;
+  --t-surface-alt: #eef2f7;
+  --t-surface-deep: #e2e8f0;
+  /* The terminal/editor chrome stays dark in BOTH themes: those cards are the
+     developer identity of this site, and a light code block reads as a docs
+     page. This is why the --t-syn-* ramp needs no light variant. */
+  --t-surface-code: #0f172a;
+  --t-surface-code-head: #1e293b;
+
+  /* Destiny blue */
+  --t-brand-900: #1e3a8a;             /* 8.6:1 */
+  --t-brand-700: #1d4ed8;             /* 6.9:1 — AA body text */
+  --t-brand: #2563eb;                 /* 5.2:1 — AA */
+  --t-brand-400: #3b82f6;             /* 3.6:1 — large text / UI only */
+  --t-brand-300: #60a5fa;             /* decorative only */
+
+  /* Trim */
+  --t-crimson: #be123c;               /* 5.9:1 — chest vents */
+  --t-gold: #a16207;                  /* 4.9:1 — V-fin, AA on light */
+
+  /* Text ramp */
+  --t-ink: #0b1220;                   /* 17.9:1 headings */
+  --t-ink-muted: #1e293b;             /* 13.6:1 body */
+  --t-ink-dim: #475569;               /* 7.5:1 secondary */
+  --t-ink-faint: #64748b;             /* 4.8:1 — passes AA normal text */
+
+  /* Status — sensor green */
+  --t-success: #047857;               /* 4.9:1 */
+  --t-success-strong: #065f46;        /* 6.9:1 */
+  --t-success-soft: #059669;          /* 3.9:1 — UI only */
+  --t-danger: #b91c1c;                /* 6.4:1 */
+
+  /* Cards */
+  --t-card-surface: #ffffff;
+  --t-card-surface-raised: #f1f5f9;
+  --t-card-border: #94a3b8;           /* 3.1:1 vs white — WCAG 1.4.11 */
+  --t-card-border-strong: #64748b;    /* 4.8:1 — hover/focus */
+  --t-card-titlebar: #e2e8f0;
+
+  /* Editor chrome. The dots are decorative; the line-number colour is measured
+     against --t-surface-code (dark), not the page. */
+  --t-chrome-red: #ef4444;
+  --t-chrome-yellow: #eab308;
+  --t-chrome-green: #22c55e;
+  --t-chrome-line: #64748b;
+
+  /* Project accents — each ≥4.5:1 on the light surfaces */
+  --t-accent-1: #2563eb;
+  --t-accent-2: #4f46e5;
+  --t-accent-3: #047857;
+  --t-accent-4: #b45309;
+  --t-accent-5: #be185d;
+  --t-accent-6: #0369a1;
+
+  /* Wings of Light — deeper stops so the ramp holds on a pale ground */
+  --t-wing-1: #2563eb;
+  --t-wing-2: #7c3aed;
+  --t-wing-3: #be123c;
+  --t-wing-4: #b45309;
+  --t-wing-5: #047857;
+  --t-wing-6: #0369a1;
+
+  /* shadcn semantic set */
+  --t-border: #cbd5e1;
+  --t-input: #cbd5e1;
+  --t-ring: #2563eb;
+  --t-background: #f8fafc;
+  --t-foreground: #0b1220;
+  --t-primary: #2563eb;
+  --t-primary-foreground: #f8fafc;
+  --t-secondary: #e2e8f0;
+  --t-secondary-foreground: #0b1220;
+  --t-destructive: #b91c1c;
+  --t-destructive-foreground: #f8fafc;
+  --t-muted: #e2e8f0;
+  --t-muted-foreground: #475569;
+  --t-accent: #e2e8f0;
+  --t-accent-foreground: #0b1220;
+  --t-popover: #ffffff;
+  --t-popover-foreground: #0b1220;
+  --t-card: #ffffff;
+  --t-card-foreground: #0b1220;
+
+  /* Syntax — shared by both themes (see --t-surface-code above) */
+  --t-syn-keyword: #c084fc;
+  --t-syn-ident: #60a5fa;
+  --t-syn-fn: #fcd34d;
+  --t-syn-string: #86efac;
+  --t-syn-number: #a5b4fc;
+  --t-syn-punct: #94a3b8;
+  --t-syn-plain: #e2e8f0;
+  --t-syn-comment: #94a3b8;
+  --t-syn-attr: #93c5fd;
+  --t-syn-tag: #f9a8d4;
+  --t-syn-violet: #c4b5fd;
+}
+
+.dark {
+  color-scheme: dark;
+
+  /* Surfaces */
+  --t-surface-base: #05080f;
+  --t-surface-alt: #0a1020;
+  --t-surface-deep: #020509;
+  --t-surface-code: #0d1117;
+  --t-surface-code-head: #161b22;
+
+  /* Destiny blue */
+  --t-brand-900: #1d4ed8;
+  --t-brand-700: #2563eb;
+  --t-brand: #3b82f6;                 /* 6.0:1 */
+  --t-brand-400: #60a5fa;             /* 8.7:1 */
+  --t-brand-300: #93c5fd;             /* 11.4:1 */
+
+  /* Trim */
+  --t-crimson: #f43f5e;               /* 6.2:1 */
+  --t-gold: #fbbf24;                  /* 11.1:1 */
+
+  /* Text ramp */
+  --t-ink: #f1f5f9;
+  --t-ink-muted: #e2e8f0;
+  --t-ink-dim: #94a3b8;               /* 7.9:1 */
+  --t-ink-faint: #64748b;             /* 4.2:1 — decorative / large only */
+
+  /* Status */
+  --t-success: #4ade80;
+  --t-success-strong: #22c55e;
+  --t-success-soft: #6ee7b7;
+  --t-danger: #f87171;                /* 6.0:1 — was #dc2626 at 3.1:1 (AA fail) */
+
+  /* Cards. A fill alone cannot separate a card from a near-black page (even a
+     much lighter card only reaches ~1.2:1), so the border carries it. */
+  --t-card-surface: #111827;
+  --t-card-surface-raised: #161f33;
+  --t-card-border: #506282;           /* 3.2:1 on both surfaces — WCAG 1.4.11 */
+  --t-card-border-strong: #64748b;    /* 4.2:1 — hover/focus */
+  --t-card-titlebar: #1b2437;
+
+  /* Editor chrome */
+  --t-chrome-red: #ff5f57;
+  --t-chrome-yellow: #febc2e;
+  --t-chrome-green: #28c840;
+  --t-chrome-line: #64748b;
+
+  /* Project accents */
+  --t-accent-1: #3b82f6;
+  --t-accent-2: #818cf8;
+  --t-accent-3: #34d399;
+  --t-accent-4: #f59e0b;
+  --t-accent-5: #ec4899;
+  --t-accent-6: #60a5fa;
+
+  /* Wings of Light — brighter stops for the dark ground */
+  --t-wing-1: #60a5fa;
+  --t-wing-2: #a78bfa;
+  --t-wing-3: #fb7185;
+  --t-wing-4: #fbbf24;
+  --t-wing-5: #34d399;
+  --t-wing-6: #38bdf8;
+
+  /* shadcn semantic set */
+  --t-border: #1e293b;
+  --t-input: #1e293b;
+  --t-ring: #3b82f6;
+  --t-background: #05080f;
+  --t-foreground: #f1f5f9;
+  --t-primary: #3b82f6;
+  --t-primary-foreground: #05080f;
+  --t-secondary: #1e293b;
+  --t-secondary-foreground: #f1f5f9;
+  --t-destructive: #f87171;
+  --t-destructive-foreground: #05080f;
+  --t-muted: #1e293b;
+  --t-muted-foreground: #94a3b8;
+  --t-accent: #1e293b;
+  --t-accent-foreground: #f1f5f9;
+  --t-popover: #0a1020;
+  --t-popover-foreground: #f1f5f9;
+  --t-card: #0a1020;
+  --t-card-foreground: #f1f5f9;
 }
 
 /* v3's `container` config has no direct v4 equivalent; express it as a utility. */
@@ -138,11 +344,18 @@
     background-color: var(--color-background);
     color: var(--color-foreground);
     font-family: 'Space Grotesk', sans-serif;
-    background-color: #030712;
   }
 
   html {
     scroll-behavior: smooth;
+    /* Firefox scrollbar; the WebKit equivalent is further down. */
+    scrollbar-color: var(--color-brand) var(--color-surface-alt);
+  }
+
+  /* Tab panels are hidden with the `hidden` attribute. Without this, any
+     `display` utility on the same element silently wins over the UA rule. */
+  [hidden] {
+    display: none !important;
   }
 }
 
@@ -171,6 +384,49 @@
   --tint-brand-50: color-mix(in srgb, var(--color-brand) 50%, transparent);
   --tint-brand-60: color-mix(in srgb, var(--color-brand) 60%, transparent);
 
+  --tint-success-08: color-mix(in srgb, var(--color-success) 8%, transparent);
+  --tint-success-10: color-mix(in srgb, var(--color-success) 10%, transparent);
+  --tint-success-20: color-mix(in srgb, var(--color-success) 20%, transparent);
+  --tint-success-30: color-mix(in srgb, var(--color-success) 30%, transparent);
+  --tint-success-60: color-mix(in srgb, var(--color-success) 60%, transparent);
+
+  --tint-violet-07: rgb(139 92 246 / 0.07);
+  --tint-violet-20: rgb(139 92 246 / 0.2);
+}
+
+/* ── Contrast films and scrims ──
+   NOTE the historical name: `--tint-white-*` means "a faint film that lifts a
+   surface away from the page", not literally white. On the dark theme that
+   film is white; on the light theme it has to invert to near-black, or it
+   disappears. The 31 call sites are unchanged — only the values flip.
+
+   The light alphas are roughly 1.5x their dark counterparts: dark-on-light at
+   2-8% is far less visible than white-on-black at the same alpha. */
+:root {
+  --tint-white-02: rgb(15 23 42 / 0.03);
+  --tint-white-03: rgb(15 23 42 / 0.045);
+  --tint-white-04: rgb(15 23 42 / 0.06);
+  --tint-white-05: rgb(15 23 42 / 0.07);
+  --tint-white-06: rgb(15 23 42 / 0.085);
+  --tint-white-07: rgb(15 23 42 / 0.10);
+  --tint-white-08: rgb(15 23 42 / 0.12);
+  --tint-white-15: rgb(15 23 42 / 0.20);
+
+  /* Scrims sit under the sticky header and the mobile drawer, so they take the
+     page colour, not a fixed near-black. */
+  --scrim-soft: rgb(248 250 252 / 0.35);
+  --scrim-strong: rgb(248 250 252 / 0.7);
+  --scrim-base-35: rgb(248 250 252 / 0.35);
+  --scrim-base-90: rgb(248 250 252 / 0.9);
+  --scrim-base-98: rgb(248 250 252 / 0.98);
+
+  /* Pure black over a pale surface reads as dirt; tint the shadow with the
+     surface hue instead. */
+  --shadow-black-40: rgb(15 23 42 / 0.12);
+  --shadow-black-50: rgb(15 23 42 / 0.16);
+}
+
+.dark {
   --tint-white-02: rgb(255 255 255 / 0.02);
   --tint-white-03: rgb(255 255 255 / 0.03);
   --tint-white-04: rgb(255 255 255 / 0.04);
@@ -180,19 +436,11 @@
   --tint-white-08: rgb(255 255 255 / 0.08);
   --tint-white-15: rgb(255 255 255 / 0.15);
 
-  --tint-success-08: color-mix(in srgb, var(--color-success) 8%, transparent);
-  --tint-success-10: color-mix(in srgb, var(--color-success) 10%, transparent);
-  --tint-success-20: color-mix(in srgb, var(--color-success) 20%, transparent);
-  --tint-success-30: color-mix(in srgb, var(--color-success) 30%, transparent);
-  --tint-success-60: color-mix(in srgb, var(--color-success) 60%, transparent);
-
   --scrim-soft: rgb(10 15 26 / 0.35);
   --scrim-strong: rgb(10 15 26 / 0.7);
   --scrim-base-35: rgb(3 7 18 / 0.35);
   --scrim-base-90: rgb(3 7 18 / 0.9);
   --scrim-base-98: rgb(3 7 18 / 0.98);
-  --tint-violet-07: rgb(139 92 246 / 0.07);
-  --tint-violet-20: rgb(139 92 246 / 0.2);
 
   --shadow-black-40: rgb(0 0 0 / 0.4);
   --shadow-black-50: rgb(0 0 0 / 0.5);
@@ -202,6 +450,42 @@
 :root {
   --blue-glow: 0 0 20px var(--tint-brand-40);
   --blue-glow-lg: 0 0 40px var(--tint-brand-30);
+}
+
+/* ── Wings of Light glow ──
+   box-shadow takes no gradient, so the prismatic bloom is built from stacked
+   shadows fanned out along x: each layer contributes one stop of the ramp and
+   they blend where they overlap.
+
+   Light and dark are tuned separately. A 22% chromatic bloom reads as energy
+   against near-black and as a smudge against #f8fafc, so the light theme runs
+   at roughly half the alpha and leans on a real depth shadow instead. */
+:root {
+  --wing-glow:
+    -10px 0 22px color-mix(in srgb, var(--color-wing-1) 12%, transparent),
+     -4px 0 20px color-mix(in srgb, var(--color-wing-2) 11%, transparent),
+      0    0 18px color-mix(in srgb, var(--color-wing-3) 10%, transparent),
+      4px 0 20px color-mix(in srgb, var(--color-wing-4) 11%, transparent),
+     10px 0 22px color-mix(in srgb, var(--color-wing-5) 12%, transparent),
+      0    8px 24px var(--shadow-black-40);
+  --wing-glow-sm:
+    -5px 0 12px color-mix(in srgb, var(--color-wing-1) 10%, transparent),
+     0   0 10px color-mix(in srgb, var(--color-wing-3) 9%, transparent),
+     5px 0 12px color-mix(in srgb, var(--color-wing-5) 10%, transparent),
+     0   4px 14px var(--shadow-black-40);
+}
+
+.dark {
+  --wing-glow:
+    -10px 0 22px color-mix(in srgb, var(--color-wing-1) 22%, transparent),
+     -4px 0 20px color-mix(in srgb, var(--color-wing-2) 20%, transparent),
+      0    0 18px color-mix(in srgb, var(--color-wing-3) 18%, transparent),
+      4px 0 20px color-mix(in srgb, var(--color-wing-4) 20%, transparent),
+     10px 0 22px color-mix(in srgb, var(--color-wing-5) 22%, transparent);
+  --wing-glow-sm:
+    -5px 0 12px color-mix(in srgb, var(--color-wing-1) 18%, transparent),
+     0   0 10px color-mix(in srgb, var(--color-wing-3) 16%, transparent),
+     5px 0 12px color-mix(in srgb, var(--color-wing-5) 18%, transparent);
 }
 
 /* ── Font overrides ── */
@@ -359,8 +643,8 @@
 
 /* ── Scrollbar ── */
 ::-webkit-scrollbar { width: 4px; }
-::-webkit-scrollbar-track { background: #030712; }
-::-webkit-scrollbar-thumb { background: #3b82f6; border-radius: 4px; }
+::-webkit-scrollbar-track { background: var(--color-surface-alt); }
+::-webkit-scrollbar-thumb { background: var(--color-brand); border-radius: 4px; }
 
 /* ── Dot grid background ── */
 .dot-grid {
@@ -368,33 +652,58 @@
   background-size: 28px 28px;
 }
 
-/* ── Card glow hover ── */
+/* ── Card glow hover ──
+   The bloom is the Wings of Light ramp; see --wing-glow above. */
 .card-glow {
   transition: box-shadow 0.3s ease, border-color 0.3s ease;
 }
 .card-glow:hover,
 .card-glow:focus-within {
-  box-shadow: 0 0 24px var(--tint-brand-25);
+  box-shadow: var(--wing-glow);
   border-color: var(--color-card-border-strong) !important;
 }
 
-/* Window-chrome cards. The border is the card's edge against a near-black
-   page, so it strengthens rather than disappears on interaction. */
+/* Window-chrome cards. The border is the card's edge against the page, so it
+   strengthens rather than disappears on interaction.
+
+   Shadow order matters: the 1px ring sits tight to the edge, the wing bloom
+   is chromatic light around it, and the depth shadow lands last so the card
+   still reads as lifted rather than merely glowing. */
 .window-card {
   transition: border-color 0.25s ease, box-shadow 0.25s ease, transform 0.25s ease;
 }
 .window-card:hover,
 .window-card:focus-within {
   border-color: var(--color-card-border-strong);
-  box-shadow: 0 0 0 1px var(--tint-brand-15), 0 12px 32px var(--shadow-black-40);
+  box-shadow: 0 0 0 1px var(--tint-brand-15), var(--wing-glow);
 }
 
-/* ── Gradient text ── */
+/* ── Gradient text — Wings of Light ── */
 .gradient-text {
-  background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 50%, #1d4ed8 100%);
+  background: linear-gradient(
+    115deg,
+    var(--color-wing-1) 0%,
+    var(--color-wing-2) 20%,
+    var(--color-wing-3) 40%,
+    var(--color-wing-4) 60%,
+    var(--color-wing-5) 80%,
+    var(--color-wing-6) 100%
+  );
+  background-size: 200% 100%;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
+}
+
+/* The wings drift only when motion is welcome. */
+@media (prefers-reduced-motion: no-preference) {
+  .gradient-text {
+    animation: wingShift 9s ease-in-out infinite alternate;
+  }
+}
+
+@keyframes wingShift {
+  to { background-position: 100% 0; }
 }
 
 /* ── Floating animation ── */
@@ -466,8 +775,14 @@
   z-index: 0;
   pointer-events: none;
   background-color: var(--color-surface-base);
-  background-size: cover;
-  background-position: center;
+  /* Was a static hero-mesh.svg, which could not read CSS vars and so could not
+     follow the theme. Shipping one SVG per theme would have meant baking
+     Astro's BASE_URL into CSS, which does not resolve under base:
+     '/the-portfolio/'. These gradients theme themselves and drop a request. */
+  background-image:
+    radial-gradient(55% 55% at 18% 22%, var(--tint-brand-20), transparent 70%),
+    radial-gradient(52% 52% at 82% 72%, var(--tint-brand-20), transparent 70%),
+    radial-gradient(40% 40% at 62% 12%, var(--tint-brand-12), transparent 70%);
 }
 
 /* Sections sit above the fixed backdrop. The hero is transparent so the
