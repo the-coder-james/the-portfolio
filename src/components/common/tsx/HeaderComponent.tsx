@@ -155,7 +155,7 @@ export function HeaderComponent() {
           onClick={() => selectTab(DEFAULT_TAB)}
           className="flex items-center gap-2 group"
         >
-          <div className="w-8 h-8 rounded-lg bg-brand flex items-center justify-center group-hover:bg-brand-700 transition-colors">
+          <div className="w-8 h-8 rounded-lg bg-brand-700 flex items-center justify-center group-hover:bg-brand-900 transition-colors">
             <Code2 size={16} className="text-on-brand" />
           </div>
           <span className="font-mono text-ink" style={{ fontSize: "0.9rem" }}>
@@ -215,7 +215,7 @@ export function HeaderComponent() {
               style={{ background: "var(--scrim-base-98)", backdropFilter: "blur(20px)" }}
             >
               <div className="flex items-center gap-2 mb-8 px-2">
-                <div className="w-7 h-7 rounded-lg bg-brand flex items-center justify-center">
+                <div className="w-7 h-7 rounded-lg bg-brand-700 flex items-center justify-center">
                   <Code2 size={14} className="text-on-brand" />
                 </div>
                 <span className="font-mono text-ink" style={{ fontSize: "0.85rem" }}>

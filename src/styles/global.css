@@ -171,7 +171,7 @@
 
   /* Trim */
   --t-crimson: #be123c;               /* 5.9:1 — chest vents */
-  --t-on-brand: #f8fafc;              /* on brand blue in both themes */
+  --t-on-brand: #f8fafc;              /* 4.9:1 on --t-brand-700, the fill colour */
   --t-gold: #a16207;                  /* 4.9:1 — V-fin, AA on light */
 
   /* Text ramp */
@@ -189,8 +189,8 @@
   /* Cards */
   --t-card-surface: #ffffff;
   --t-card-surface-raised: #f1f5f9;
-  --t-card-border: #94a3b8;           /* 3.1:1 vs white — WCAG 1.4.11 */
-  --t-card-border-strong: #64748b;    /* 4.8:1 — hover/focus */
+  --t-card-border: #7c8ca1;           /* 3.4:1 on card, 3.3:1 on page — WCAG 1.4.11 */
+  --t-card-border-strong: #6b7b90;    /* 4.3:1 — hover/focus */
   --t-card-titlebar: #e2e8f0;
 
   /* Editor chrome. The dots are decorative; the line-number colour is measured
@@ -280,7 +280,7 @@
 
   /* Trim */
   --t-crimson: #f43f5e;               /* 6.2:1 */
-  --t-on-brand: #f8fafc;              /* on brand blue in both themes */
+  --t-on-brand: #f8fafc;              /* 6.4:1 on --t-brand-700, the fill colour */
   --t-gold: #fbbf24;                  /* 11.1:1 */
 
   /* Text ramp */
@@ -299,8 +299,8 @@
      much lighter card only reaches ~1.2:1), so the border carries it. */
   --t-card-surface: #111827;
   --t-card-surface-raised: #161f33;
-  --t-card-border: #506282;           /* 3.2:1 on both surfaces — WCAG 1.4.11 */
-  --t-card-border-strong: #64748b;    /* 4.2:1 — hover/focus */
+  --t-card-border: #5a6d90;           /* 3.4:1 on card, 3.8:1 on page — WCAG 1.4.11 */
+  --t-card-border-strong: #6b7f9c;    /* 4.3:1 — hover/focus */
   --t-card-titlebar: #1b2437;
 
   /* Editor chrome */
