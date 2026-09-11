@@ -79,6 +79,7 @@ export function SkillsTabs({ techstack, extraSkills }: SkillsTabsProps) {
         className="gap-0"
       >
         <TabsList
+          aria-label="Skill category"
           className="h-auto p-1 mb-8 flex-wrap justify-start gap-1"
           style={{ background: "var(--tint-white-03)", border: "1px solid var(--tint-white-07)", borderRadius: "12px" }}
         >

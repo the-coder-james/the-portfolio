@@ -21,7 +21,14 @@ const socials = contactJson
   .map((c) => ({ label: c.name, href: c.url, iconKey: c.name }))
 ---
 
-<section id="hero" class="page-section min-h-screen flex items-center overflow-hidden" style="background: transparent">
+<section
+  id="home"
+  class="page-section tabpanel min-h-screen flex items-center overflow-hidden"
+  style="background: transparent"
+  role="tabpanel"
+  aria-labelledby="tab-home"
+  tabindex="-1"
+>
   <!-- The mesh backdrop is a fixed page-level layer (see .site-backdrop), so
        the hero is transparent and it shows through. -->
 
@@ -82,10 +89,10 @@ const socials = contactJson
           {mainvisual.ctas.map((cta) => (
             <a
               href={cta.href}
-              class={`px-6 py-3 rounded-lg text-ink transition-all duration-200 ${cta.variant === "primary" ? "hero-btn-primary" : "hero-btn-outline"}`}
+              class={`px-6 py-3 rounded-lg transition-all duration-200 ${cta.variant === "primary" ? "hero-btn-primary" : "hero-btn-outline text-ink"}`}
               style={cta.variant === "primary"
-                ? "background: linear-gradient(135deg, var(--color-brand-700), var(--color-brand)); box-shadow: 0 4px 20px var(--tint-brand-35); font-family: 'Space Grotesk', sans-serif; font-size: 0.9rem; font-weight: 500; text-decoration: none"
-                : "background: transparent; border: 1px solid var(--tint-white-15); font-family: 'Space Grotesk', sans-serif; font-size: 0.9rem; font-weight: 500; text-decoration: none"}
+                ? "color: var(--color-on-brand); background: linear-gradient(135deg, var(--color-brand-700), var(--color-brand)); box-shadow: 0 4px 20px var(--tint-brand-35); font-family: 'Space Grotesk', sans-serif; font-size: 0.9rem; font-weight: 500; text-decoration: none"
+                : "background: transparent; border: 1px solid var(--color-card-border); font-family: 'Space Grotesk', sans-serif; font-size: 0.9rem; font-weight: 500; text-decoration: none"}
             >
               {cta.label}
             </a>
@@ -127,14 +134,6 @@ const socials = contactJson
       />
     </div>
 
-    <!-- Static: scroll hint -->
-    <div class="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1 hero-scroll-hint" style="color: var(--color-ink-faint)">
-      <span style="font-size: 0.65rem; font-family: 'JetBrains Mono'">scroll</span>
-      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-        <line x1="12" y1="5" x2="12" y2="19"></line>
-        <polyline points="19 12 12 19 5 12"></polyline>
-      </svg>
-    </div>
   </div>
 </section>
 
@@ -151,8 +150,5 @@ const socials = contactJson
     color: var(--color-brand-400) !important;
     border-color: var(--tint-brand-40) !important;
     background: var(--tint-brand-10) !important;
-  }
-  .hero-scroll-hint:hover {
-    color: var(--color-brand-400);
   }
 </style>

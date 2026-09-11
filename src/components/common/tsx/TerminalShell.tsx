@@ -66,7 +66,7 @@ export function TerminalShell({
         <div className="flex items-center gap-2">
           <TrafficLights />
           {filename && (
-            <span className="ml-2 font-mono" style={{ fontSize: "0.7rem", color: "var(--color-ink-dim)" }}>
+            <span className="ml-2 font-mono" style={{ fontSize: "0.7rem", color: "var(--color-code-ink-dim)" }}>
               {filename}
             </span>
           )}

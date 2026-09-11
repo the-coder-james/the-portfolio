@@ -2,17 +2,19 @@
 import { SectionHeading } from "@/components/common/tsx/SectionHeading"
 
 /**
- * The shared frame for every full-page section: the section element itself,
- * the top hairline divider (previously copy-pasted into five files), an
- * optional radial glow, and the eyebrow/headline heading block.
+ * The shared frame for every tab panel: the section element itself and the
+ * eyebrow/headline heading block.
  *
- * Content is passed through the default slot. Sections that need extra
+ * Panels are shown one at a time, so this no longer carries a per-section
+ * background or the seam gradients that used to blend stacked sections -- see
+ * the note on .page-section in global.css. Every panel is transparent over the
+ * fixed .site-backdrop, which is what the hero always did.
+ *
+ * Content is passed through the default slot. Panels that need extra
  * decoration behind their content can use the `backdrop` slot.
  */
 interface Props {
   id: string;
-  /** Section background; defaults to the base surface. */
-  background?: string;
   /** Small mono label above the headline. */
   eyebrow?: string;
   /** Headline text. */
@@ -23,21 +25,17 @@ interface Props {
   sub?: string;
   /** Width of the inner container. */
   maxWidth?: string;
-  /** Whether the section fills the viewport height. */
-  fullHeight?: boolean;
   class?: string;
   headingClass?: string;
 }
 
 const {
   id,
-  background = "var(--color-surface-base)",
   eyebrow,
   headline,
   headlineAccent,
   sub,
   maxWidth = "max-w-7xl",
-  fullHeight = true,
   class: className = "py-28",
   headingClass = "mb-16",
 } = Astro.props;
@@ -47,23 +45,17 @@ const hasHeading = Boolean(eyebrow || headline);
 
 <section
   id={id}
-  class:list={["page-section", fullHeight ? "min-h-screen flex flex-col justify-center" : "", className]}
-  style={`background: ${background}; --seam-color: ${background}`}
+  class:list={["page-section tabpanel min-h-screen flex flex-col justify-center", className]}
+  role="tabpanel"
+  aria-labelledby={`tab-${id}`}
+  tabindex="-1"
 >
-  <!-- Seam rule, above the blend gradients (z-index 2) so it stays crisp -->
-  <div
-    class="absolute top-0 left-0 right-0 h-px"
-    aria-hidden="true"
-    style="z-index: 3; background: linear-gradient(90deg, transparent, var(--tint-brand-30) 50%, transparent)"
-  >
-  </div>
-
   <slot name="backdrop" />
 
-  <div class:list={[maxWidth, "mx-auto px-6 relative"]}>
+  <div class:list={[maxWidth, "mx-auto px-6 relative w-full"]}>
     {hasHeading && (
       <SectionHeading
-        client:visible
+        client:idle
         eyebrow={eyebrow}
         headline={headline}
         headlineAccent={headlineAccent}

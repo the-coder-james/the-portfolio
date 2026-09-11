@@ -106,7 +106,7 @@ export function ContactForm() {
           <Button
             type="submit"
             size="lg"
-            className="btn-lift w-full text-primary-foreground rounded-xl border-0 gap-2"
+            className="btn-lift w-full text-on-brand rounded-xl border-0 gap-2"
             style={{
               background: "linear-gradient(135deg, var(--color-brand-900), var(--color-brand))",
               boxShadow: "0 4px 20px var(--tint-brand-30)",

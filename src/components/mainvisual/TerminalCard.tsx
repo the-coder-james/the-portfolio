@@ -14,18 +14,18 @@ export function TerminalCard({ name, since, professional, stackLabels }: Termina
 
   const stackContent = stackLabels.flatMap((label, i) => {
     const items = [<span key={`s${i}`} style={{ color: "var(--color-syn-tag)" }}>"{label}"</span>];
-    if (i < stackLabels.length - 1) items.push(<span key={`c${i}`} style={{ color: "var(--color-ink-dim)" }}>, </span>);
+    if (i < stackLabels.length - 1) items.push(<span key={`c${i}`} style={{ color: "var(--color-code-ink-dim)" }}>, </span>);
     return items;
   });
 
   const terminalLines = [
-    <><span style={{ color: "var(--color-brand-400)" }}>const</span> <span style={{ color: "var(--color-brand-300)" }}>developer</span> <span style={{ color: "var(--color-ink-muted)" }}>=</span> <span style={{ color: "var(--color-syn-string)" }}>{`{`}</span></>,
-    <>&nbsp;&nbsp;<span style={{ color: "var(--color-syn-fn)" }}>name</span><span style={{ color: "var(--color-ink-muted)" }}>:</span> <span style={{ color: "var(--color-syn-tag)" }}>"{name}"</span><span style={{ color: "var(--color-ink-dim)" }}>,</span></>,
-    <>&nbsp;&nbsp;<span style={{ color: "var(--color-syn-fn)" }}>since</span><span style={{ color: "var(--color-ink-muted)" }}>:</span> <span style={{ color: "var(--color-syn-number)" }}>{since}</span><span style={{ color: "var(--color-ink-dim)" }}>,</span></>,
-    <>&nbsp;&nbsp;<span style={{ color: "var(--color-syn-fn)" }}>professional</span><span style={{ color: "var(--color-ink-muted)" }}>:</span> <span style={{ color: "var(--color-syn-number)" }}>{professional}</span><span style={{ color: "var(--color-ink-dim)" }}>,</span></>,
-    <>&nbsp;&nbsp;<span style={{ color: "var(--color-syn-fn)" }}>stack</span><span style={{ color: "var(--color-ink-muted)" }}>:</span> <span style={{ color: "var(--color-syn-string)" }}>[</span>{stackContent}<span style={{ color: "var(--color-syn-string)" }}>]</span><span style={{ color: "var(--color-ink-dim)" }}>,</span></>,
-    <>&nbsp;&nbsp;<span style={{ color: "var(--color-syn-fn)" }}>available</span><span style={{ color: "var(--color-ink-muted)" }}>:</span> <span style={{ color: "var(--color-syn-string)" }}>true</span></>,
-    <><span style={{ color: "var(--color-syn-string)" }}>{`}`}</span><span style={{ color: "var(--color-ink-dim)" }}>;</span></>,
+    <><span style={{ color: "var(--color-brand-400)" }}>const</span> <span style={{ color: "var(--color-brand-300)" }}>developer</span> <span style={{ color: "var(--color-code-ink)" }}>=</span> <span style={{ color: "var(--color-syn-string)" }}>{`{`}</span></>,
+    <>&nbsp;&nbsp;<span style={{ color: "var(--color-syn-fn)" }}>name</span><span style={{ color: "var(--color-code-ink)" }}>:</span> <span style={{ color: "var(--color-syn-tag)" }}>"{name}"</span><span style={{ color: "var(--color-code-ink-dim)" }}>,</span></>,
+    <>&nbsp;&nbsp;<span style={{ color: "var(--color-syn-fn)" }}>since</span><span style={{ color: "var(--color-code-ink)" }}>:</span> <span style={{ color: "var(--color-syn-number)" }}>{since}</span><span style={{ color: "var(--color-code-ink-dim)" }}>,</span></>,
+    <>&nbsp;&nbsp;<span style={{ color: "var(--color-syn-fn)" }}>professional</span><span style={{ color: "var(--color-code-ink)" }}>:</span> <span style={{ color: "var(--color-syn-number)" }}>{professional}</span><span style={{ color: "var(--color-code-ink-dim)" }}>,</span></>,
+    <>&nbsp;&nbsp;<span style={{ color: "var(--color-syn-fn)" }}>stack</span><span style={{ color: "var(--color-code-ink)" }}>:</span> <span style={{ color: "var(--color-syn-string)" }}>[</span>{stackContent}<span style={{ color: "var(--color-syn-string)" }}>]</span><span style={{ color: "var(--color-code-ink-dim)" }}>,</span></>,
+    <>&nbsp;&nbsp;<span style={{ color: "var(--color-syn-fn)" }}>available</span><span style={{ color: "var(--color-code-ink)" }}>:</span> <span style={{ color: "var(--color-syn-string)" }}>true</span></>,
+    <><span style={{ color: "var(--color-syn-string)" }}>{`}`}</span><span style={{ color: "var(--color-code-ink-dim)" }}>;</span></>,
   ];
 
 
@@ -56,9 +56,9 @@ export function TerminalCard({ name, since, professional, stackLabels }: Termina
           <>
             <div className="flex items-center gap-2">
               <span className="w-2 h-2 rounded-full bg-brand" aria-hidden="true" />
-              <span style={{ fontSize: "0.65rem", color: "var(--color-ink-dim)", fontFamily: "'JetBrains Mono'" }}>TypeScript</span>
+              <span style={{ fontSize: "0.65rem", color: "var(--color-code-ink-dim)", fontFamily: "'JetBrains Mono'" }}>TypeScript</span>
             </div>
-            <span style={{ fontSize: "0.65rem", color: "var(--color-ink-dim)", fontFamily: "'JetBrains Mono'" }}>UTF-8</span>
+            <span style={{ fontSize: "0.65rem", color: "var(--color-code-ink-dim)", fontFamily: "'JetBrains Mono'" }}>UTF-8</span>
           </>
         }
       >
@@ -67,7 +67,7 @@ export function TerminalCard({ name, since, professional, stackLabels }: Termina
           <div className="flex gap-4">
             <div
               className="flex flex-col"
-              style={{ color: "var(--color-ink-faint)", userSelect: "none", minWidth: "20px", textAlign: "right" }}
+              style={{ color: "var(--color-code-ink-faint)", userSelect: "none", minWidth: "20px", textAlign: "right" }}
             >
               {terminalLines.map((_, i) => (
                 <motion.span key={i} style={{ lineHeight: 1.8 }} {...line(i)}>{i + 1}</motion.span>
@@ -90,7 +90,7 @@ export function TerminalCard({ name, since, professional, stackLabels }: Termina
           >
             <span style={{ color: "var(--color-success-strong)" }}>❯</span>
             <span style={{ color: "var(--color-brand-400)" }}>node</span>
-            <span style={{ color: "var(--color-ink-muted)" }}> developer.config.ts</span>
+            <span style={{ color: "var(--color-code-ink)" }}> developer.config.ts</span>
           </motion.div>
           <motion.div
             style={{ color: "var(--color-success)", marginLeft: "18px" }}

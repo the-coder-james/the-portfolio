@@ -1,5 +1,6 @@
 {
   "nav": [
+    { "label": "Home", "href": "#home" },
     { "label": "About", "href": "#about" },
     { "label": "Skills", "href": "#skills" },
     { "label": "Projects", "href": "#projects" },
@@ -82,8 +83,8 @@
     "floaters": [
       { "text": "const x = () => {}", "x": "8%", "y": "20%" },
       { "text": "npm run dev", "x": "82%", "y": "18%" },
-      { "text": "<Component />", "x": "5%", "y": "75%" },
-      { "text": "git commit -m '✨'", "x": "78%", "y": "72%" },
+      { "text": "<Component />", "x": "3%", "y": "88%" },
+      { "text": "git commit -m '✨'", "x": "78%", "y": "84%" },
       { "text": "// TODO: ship it", "x": "70%", "y": "40%" }
     ]
   },

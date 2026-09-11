@@ -257,7 +257,7 @@ export function ProjectCard({ project, index, taglist, roles, providers, baseUrl
             style={{
               background: "var(--color-surface-code)",
               border: `1px solid ${tint(accent, 25)}`,
-              color: "var(--color-ink-muted)",
+              color: "var(--color-code-ink)",
               fontSize: "0.8rem",
               padding: "10px 12px",
               boxShadow: `0 8px 24px var(--shadow-black-50), 0 0 20px ${tint(accent, 8)}`,
@@ -292,7 +292,7 @@ export function ProjectCard({ project, index, taglist, roles, providers, baseUrl
                 style={{
                   background: "var(--color-surface-code)",
                   border: `1px solid ${tint(accent, 25)}`,
-                  color: "var(--color-ink-dim)",
+                  color: "var(--color-code-ink-dim)",
                   fontSize: "0.78rem",
                   padding: "8px 12px",
                   boxShadow: `0 8px 24px var(--shadow-black-50), 0 0 20px ${tint(accent, 8)}`,

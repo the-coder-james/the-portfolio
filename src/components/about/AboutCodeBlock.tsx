@@ -34,29 +34,29 @@ type CodeLineType = ReturnType<typeof buildCodeBio>[number];
 
 function CodeLine({ line }: { line: CodeLineType }) {
   if (line.type === "blank")         return <div style={{ height: "0.9rem" }} />;
-  if (line.type === "comment")       return <div style={{ color: "var(--color-ink-dim)" }}>{line.content}</div>;
+  if (line.type === "comment")       return <div style={{ color: "var(--color-code-ink-dim)" }}>{line.content}</div>;
   if (line.type === "keyword")       return (
     <div>
       <span style={{ color: "var(--color-syn-keyword)" }}>{line.content}</span>
       <span style={{ color: "var(--color-brand-400)" }}> Developer</span>
-      <span style={{ color: "var(--color-ink-dim)" }}> extends </span>
+      <span style={{ color: "var(--color-code-ink-dim)" }}> extends </span>
       <span style={{ color: "var(--color-brand-400)" }}>Human</span>
-      <span style={{ color: "var(--color-ink-muted)" }}> {"{"}</span>
+      <span style={{ color: "var(--color-code-ink)" }}> {"{"}</span>
     </div>
   );
   if (line.type === "indent")        return (
     <div style={{ paddingLeft: "1.5rem" }}>
       <span style={{ color: "var(--color-syn-fn)" }}>{line.label}</span>
-      <span style={{ color: "var(--color-ink-dim)" }}> = </span>
+      <span style={{ color: "var(--color-code-ink-dim)" }}> = </span>
       <span style={{ color: line.label === "started" || line.label === "professional" ? "var(--color-syn-number)" : "var(--color-syn-string)" }}>
         {line.value}
       </span>
-      <span style={{ color: "var(--color-ink-dim)" }}>;</span>
+      <span style={{ color: "var(--color-code-ink-dim)" }}>;</span>
     </div>
   );
-  if (line.type === "method")        return <div style={{ color: "var(--color-ink-muted)" }}>{line.content}</div>;
-  if (line.type === "method-body")   return <div style={{ color: "var(--color-ink-dim)" }}>{line.content}</div>;
-  if (line.type === "keyword-close") return <div style={{ color: "var(--color-ink-muted)" }}>{line.content}</div>;
+  if (line.type === "method")        return <div style={{ color: "var(--color-code-ink)" }}>{line.content}</div>;
+  if (line.type === "method-body")   return <div style={{ color: "var(--color-code-ink-dim)" }}>{line.content}</div>;
+  if (line.type === "keyword-close") return <div style={{ color: "var(--color-code-ink)" }}>{line.content}</div>;
   return null;
 }
 
@@ -79,7 +79,7 @@ export function AboutCodeBlock({ since, professional }: AboutCodeBlockProps) {
         footer={
           <div className="flex items-center gap-3">
             <div className="w-1.5 h-1.5 rounded-full" style={{ background: "var(--color-brand)" }} aria-hidden="true" />
-            <span style={{ fontSize: "0.62rem", color: "var(--color-ink-faint)", fontFamily: "'JetBrains Mono'" }}>
+            <span style={{ fontSize: "0.62rem", color: "var(--color-code-ink-faint)", fontFamily: "'JetBrains Mono'" }}>
               Ln 21, Col 1 · TypeScript · No errors
             </span>
           </div>
