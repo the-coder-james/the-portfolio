@@ -1,5 +1,1 @@
-declare namespace App {
-  interface Locals {
-    webdata:JSON<any>
-  }
-}
+/// <reference types="astro/client" />
