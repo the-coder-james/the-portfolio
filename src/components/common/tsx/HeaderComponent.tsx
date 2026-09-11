@@ -75,18 +75,18 @@ export function HeaderComponent() {
           onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
           className="flex items-center gap-2 group"
         >
-          <div className="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center group-hover:bg-blue-500 transition-colors">
-            <Code2 size={16} className="text-white" />
+          <div className="w-8 h-8 rounded-lg bg-brand flex items-center justify-center group-hover:bg-brand-700 transition-colors">
+            <Code2 size={16} className="text-primary-foreground" />
           </div>
-          <span className="font-mono text-white" style={{ fontSize: "0.9rem" }}>
-            <span className="text-blue-400">&lt;</span>james<span className="text-blue-400">/&gt;</span>
+          <span className="font-mono text-ink" style={{ fontSize: "0.9rem" }}>
+            <span className="text-brand">&lt;</span>james<span className="text-brand">/&gt;</span>
           </span>
         </button>
 
         <div className="hidden md:flex items-center gap-1 relative">
           <div
             ref={indicatorRef}
-            className="absolute bottom-0 h-0.5 bg-blue-500 rounded-full pointer-events-none"
+            className="absolute bottom-0 h-0.5 bg-brand rounded-full pointer-events-none"
             style={{ left: 0, width: 0, opacity: 0 }}
           />
           {navLinks.map((link) => {
@@ -110,7 +110,7 @@ export function HeaderComponent() {
         <div className="flex items-center gap-3">
           <ThemeToggle />
           <Sheet>
-            <SheetTrigger className="md:hidden inline-flex w-9 h-9 items-center justify-center rounded-md text-white hover:bg-[var(--tint-white-06)] transition-colors">
+            <SheetTrigger className="md:hidden inline-flex w-9 h-9 items-center justify-center rounded-md text-ink hover:bg-[var(--tint-white-06)] transition-colors">
               <Menu size={22} />
             </SheetTrigger>
             <SheetContent
@@ -119,11 +119,11 @@ export function HeaderComponent() {
               style={{ background: "var(--scrim-base-98)", backdropFilter: "blur(20px)" }}
             >
               <div className="flex items-center gap-2 mb-8 px-2">
-                <div className="w-7 h-7 rounded-lg bg-blue-600 flex items-center justify-center">
-                  <Code2 size={14} className="text-white" />
+                <div className="w-7 h-7 rounded-lg bg-brand flex items-center justify-center">
+                  <Code2 size={14} className="text-primary-foreground" />
                 </div>
-                <span className="font-mono text-white" style={{ fontSize: "0.85rem" }}>
-                  <span className="text-blue-400">&lt;</span>james<span className="text-blue-400">/&gt;</span>
+                <span className="font-mono text-ink" style={{ fontSize: "0.85rem" }}>
+                  <span className="text-brand">&lt;</span>james<span className="text-brand">/&gt;</span>
                 </span>
               </div>
               <ThemeToggle withLabel className="mx-2 mb-4" />
@@ -141,7 +141,7 @@ export function HeaderComponent() {
                         fontFamily: "'Space Grotesk', sans-serif",
                       }}
                     >
-                      <span className="text-blue-500 font-mono mr-2">//</span>
+                      <span className="text-brand font-mono mr-2">//</span>
                       {link.label}
                     </SheetClose>
                   );
@@ -149,7 +149,7 @@ export function HeaderComponent() {
               </nav>
               <SheetClose
                 onClick={() => scrollTo("#contact")}
-                className="m-4 inline-flex items-center justify-center rounded-xl px-4 py-2 text-sm text-white border border-[var(--tint-brand-40)] bg-[var(--tint-brand-20)] hover:bg-[var(--tint-brand-35)] transition-colors"
+                className="m-4 inline-flex items-center justify-center rounded-xl px-4 py-2 text-sm text-ink border border-[var(--tint-brand-40)] bg-[var(--tint-brand-20)] hover:bg-[var(--tint-brand-35)] transition-colors"
                 style={{ fontFamily: "'Space Grotesk', sans-serif" }}
               >
                 Hire Me

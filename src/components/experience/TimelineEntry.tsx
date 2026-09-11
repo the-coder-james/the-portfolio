@@ -57,7 +57,7 @@ export function TimelineEntry({ item, index }: TimelineEntryProps) {
                 className="gap-1 rounded-full"
                 style={{ fontSize: "0.6rem", color: "var(--color-success)", background: "var(--tint-success-10)", border: "1px solid var(--tint-success-20)" }}
               >
-                <span className="w-1 h-1 rounded-full bg-green-400 cursor-blink" />
+                <span className="w-1 h-1 rounded-full bg-success cursor-blink" />
                 Live
               </Badge>
             )}

@@ -86,7 +86,7 @@ export function AboutImage({ name, imagePath, hoverImagePath, baseUrl }: AboutIm
           style={{ background: "var(--color-surface-code)", border: "1px solid var(--tint-brand-35)", boxShadow: "0 4px 12px var(--shadow-black-40)" }}
           {...reveal(0.45, { scale: 0 })}
         >
-          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 cursor-blink" />
+          <span className="w-1.5 h-1.5 rounded-full bg-success cursor-blink" />
           <span className="font-mono" style={{ fontSize: "0.6rem", color: "var(--color-success-soft)", whiteSpace: "nowrap" }}>available</span>
         </motion.div>
         <motion.div

@@ -67,7 +67,7 @@ export function ContactForm() {
           </div>
           <div className="grid sm:grid-cols-2 gap-5">
             <div className="space-y-1.5">
-              <Label htmlFor="contact-name" className="font-mono text-[0.75rem] text-blue-400">name:</Label>
+              <Label htmlFor="contact-name" className="font-mono text-[0.75rem] text-brand">name:</Label>
               <Input
                 id="contact-name"
                 required
@@ -79,7 +79,7 @@ export function ContactForm() {
               />
             </div>
             <div className="space-y-1.5">
-              <Label htmlFor="contact-email" className="font-mono text-[0.75rem] text-blue-400">email:</Label>
+              <Label htmlFor="contact-email" className="font-mono text-[0.75rem] text-brand">email:</Label>
               <Input
                 id="contact-email"
                 required
@@ -92,7 +92,7 @@ export function ContactForm() {
             </div>
           </div>
           <div className="space-y-1.5">
-            <Label htmlFor="contact-message" className="font-mono text-[0.75rem] text-blue-400">message:</Label>
+            <Label htmlFor="contact-message" className="font-mono text-[0.75rem] text-brand">message:</Label>
             <Textarea
               id="contact-message"
               required
@@ -106,7 +106,7 @@ export function ContactForm() {
           <Button
             type="submit"
             size="lg"
-            className="btn-lift w-full text-white rounded-xl border-0 gap-2"
+            className="btn-lift w-full text-primary-foreground rounded-xl border-0 gap-2"
             style={{
               background: "linear-gradient(135deg, var(--color-brand-900), var(--color-brand))",
               boxShadow: "0 4px 20px var(--tint-brand-30)",

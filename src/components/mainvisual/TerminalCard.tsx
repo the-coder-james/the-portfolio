@@ -55,7 +55,7 @@ export function TerminalCard({ name, since, professional, stackLabels }: Termina
         footer={
           <>
             <div className="flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-blue-500" aria-hidden="true" />
+              <span className="w-2 h-2 rounded-full bg-brand" aria-hidden="true" />
               <span style={{ fontSize: "0.65rem", color: "var(--color-ink-dim)", fontFamily: "'JetBrains Mono'" }}>TypeScript</span>
             </div>
             <span style={{ fontSize: "0.65rem", color: "var(--color-ink-dim)", fontFamily: "'JetBrains Mono'" }}>UTF-8</span>
@@ -103,7 +103,7 @@ export function TerminalCard({ name, since, professional, stackLabels }: Termina
           <div className="flex items-center gap-2 mt-1">
             <span style={{ color: "var(--color-success-strong)" }}>❯</span>
             <span
-              className="cursor-blink inline-block w-2 h-4 bg-blue-400"
+              className="cursor-blink inline-block w-2 h-4 bg-brand-400"
               style={{ marginTop: "2px" }}
             />
           </div>
