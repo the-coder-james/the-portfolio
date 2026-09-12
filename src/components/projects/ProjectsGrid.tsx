@@ -1,5 +1,5 @@
-import { useMemo, useState, type ReactNode } from "react";
-import { LayoutGrid, List, Plus, Search, X } from "lucide-react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { LayoutGrid, List, Search, X } from "lucide-react";
 import { ProjectCard } from "@/components/projects/ProjectCard";
 import { TooltipProvider } from "@/components/ui/tooltip";
 
@@ -42,8 +42,8 @@ export function ProjectsGrid({
   roles,
   providers,
   baseUrl,
-  initialCount = 6,
-  step = 6,
+  initialCount = 8,
+  step = 8,
 }: ProjectsGridProps) {
   const [query, setQuery] = useState("");
   const [activeTag, setActiveTag] = useState<string | null>(null);
@@ -51,6 +51,7 @@ export function ProjectsGrid({
   const [activeProvider, setActiveProvider] = useState<string | null>(null);
   const [visible, setVisible] = useState(initialCount);
   const [view, setView] = useState<"grid" | "list">("grid");
+  const sentinelRef = useRef<HTMLDivElement>(null);
 
   const sorted = useMemo(
     () => [...projects].sort((a, b) => parseDate(b.date) - parseDate(a.date)),
@@ -77,6 +78,25 @@ export function ProjectsGrid({
   const providerEntries = Object.entries(providers);
   const displayed = filtered.slice(0, visible);
   const hasMore = visible < filtered.length;
+
+  // Extend as the sentinel scrolls into view. The panel scrolls internally, so
+  // the observer's root is that region rather than the viewport -- against the
+  // viewport the sentinel would never intersect and nothing would ever load.
+  useEffect(() => {
+    const el = sentinelRef.current;
+    if (!el || !hasMore) return;
+    const root = el.closest<HTMLElement>(".panel-scroll") ?? null;
+    const io = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((e) => e.isIntersecting)) {
+          setVisible((v) => Math.min(v + step, filtered.length));
+        }
+      },
+      { root, rootMargin: "200px 0px" },
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, [hasMore, step, filtered.length]);
   const remaining = filtered.length - visible;
 
   const resetVisible = () => setVisible(initialCount);
@@ -251,28 +271,18 @@ export function ProjectsGrid({
         </div>
       )}
 
+      {/* Sentinel: loads the next page as it comes into view, so the grid
+          extends by scrolling rather than by a button press. Kept in the DOM
+          with a live region so screen-reader and keyboard users are told the
+          count changed -- infinite scroll is silent otherwise. */}
       {hasMore && (
-        <div className="flex justify-center mt-6 pb-1">
-          <button
-            type="button"
-            onClick={() => setVisible((v) => Math.min(v + step, filtered.length))}
-            className="btn-soft inline-flex items-center gap-2 px-6 py-3 rounded-xl transition-all duration-200 active:scale-95 hover:scale-[1.03]"
-            style={{
-              color: "var(--color-brand-text)",
-              fontFamily: "'Space Grotesk', sans-serif",
-              fontSize: "0.9rem",
-              fontWeight: 500,
-            }}
+        <div ref={sentinelRef} className="flex justify-center py-4" aria-hidden="true">
+          <span
+            className="font-mono"
+            style={{ fontSize: "0.7rem", color: "var(--color-ink-faint)" }}
           >
-            <Plus size={16} />
-            See more
-            <span
-              className="font-mono"
-              style={{ fontSize: "0.7rem", color: "var(--color-brand-text)", marginLeft: "4px" }}
-            >
-              +{Math.min(step, remaining)}
-            </span>
-          </button>
+            loading {Math.min(step, remaining)} more...
+          </span>
         </div>
       )}
       </div>

@@ -163,7 +163,7 @@ export function ProjectCard({ project, index, taglist, roles, providers, baseUrl
             already in the card body below, which is always present. */}
         <div
           aria-hidden="true"
-          className={`absolute inset-0 flex-col justify-end p-4 ${isList ? "hidden" : "flex"}`}
+          className={`absolute inset-0 flex-col justify-end p-3 overflow-hidden ${isList ? "hidden" : "flex"}`}
           style={{
             zIndex: 3,
             opacity: showDetail ? 1 : 0,
@@ -173,7 +173,7 @@ export function ProjectCard({ project, index, taglist, roles, providers, baseUrl
           }}
         >
           <div
-            className="rounded-lg p-3"
+            className="rounded-lg p-3 max-h-full overflow-hidden"
             style={{
               background: "var(--glass-bg)",
               border: `1px solid ${tint(accent, 35)}`,
@@ -187,9 +187,13 @@ export function ProjectCard({ project, index, taglist, roles, providers, baseUrl
             <p
               style={{
                 fontSize: "0.76rem",
-                lineHeight: 1.6,
+                lineHeight: 1.55,
                 color: "var(--color-ink)",
                 fontFamily: "'Space Grotesk', sans-serif",
+                display: "-webkit-box",
+                WebkitBoxOrient: "vertical",
+                WebkitLineClamp: 5,
+                overflow: "hidden",
               }}
             >
               {project.description}
