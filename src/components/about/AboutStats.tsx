@@ -68,21 +68,21 @@ export function AboutStats({ stats }: AboutStatsProps) {
 
   return (
     <div ref={ref}>
-      <RevealGroup className="grid grid-cols-2 xl:grid-cols-4 gap-2" preset="scale" margin="-80px">
+      <RevealGroup className="grid grid-cols-4 gap-1.5 sm:gap-2" preset="scale" margin="-80px">
         {stats.map((stat) => (
           <div
             key={stat.label}
-            className="card-glow rounded-xl px-2 py-2.5 text-center"
+            className="card-glow rounded-xl px-1 py-2 sm:px-2 sm:py-2.5 text-center"
             style={{ background: "var(--color-card-surface)", border: "1px solid var(--color-card-border)" }}
           >
             <div className="text-base leading-none mb-1" aria-hidden="true">{stat.icon}</div>
             <div
               className="gradient-text"
-              style={{ fontSize: "1.15rem", fontWeight: 700, lineHeight: 1.1, fontFamily: "'Space Grotesk', sans-serif" }}
+              style={{ fontSize: "0.95rem", fontWeight: 700, lineHeight: 1.1, fontFamily: "'Space Grotesk', sans-serif" }}
             >
               <StatValue value={stat.value} start={revealed} />
             </div>
-            <div style={{ fontSize: "0.62rem", color: "var(--color-ink-dim)", marginTop: "2px", lineHeight: 1.25, fontFamily: "'Space Grotesk', sans-serif" }}>
+            <div style={{ fontSize: "0.56rem", color: "var(--color-ink-dim)", marginTop: "2px", lineHeight: 1.2, fontFamily: "'Space Grotesk', sans-serif" }}>
               {stat.label}
             </div>
           </div>

@@ -147,7 +147,7 @@ export function ProjectsGrid({
             )}
           </div>
 
-          <div className="flex items-center gap-2 shrink-0">
+          <div className="flex items-center gap-2 flex-wrap sm:flex-nowrap sm:shrink-0">
             <FilterSelect
               label="tag"
               value={activeTag}
@@ -309,12 +309,12 @@ function FilterSelect({
 }) {
   const active = value !== null;
   return (
-    <label className="relative flex items-center">
+    <label className="relative flex items-center min-w-0 flex-1 sm:flex-none">
       <span className="sr-only">Filter by {label}</span>
       <select
         value={value ?? ""}
         onChange={(e) => onChange(e.target.value || null)}
-        className="filter-select font-mono appearance-none rounded-lg pl-2.5 pr-6 py-1.5 outline-none cursor-pointer"
+        className="filter-select font-mono appearance-none rounded-lg pl-2.5 pr-6 py-1.5 outline-none cursor-pointer min-w-0 w-full sm:w-auto truncate"
         data-active={active ? "true" : undefined}
         style={{ fontSize: "0.72rem" }}
       >

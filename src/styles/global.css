@@ -792,7 +792,7 @@
     var(--color-wing-5) 80%,
     var(--color-wing-6) 100%
   );
-  background-size: 200% 100%;
+  background-size: 300% 100%;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -801,12 +801,13 @@
 /* The wings drift only when motion is welcome. */
 @media (prefers-reduced-motion: no-preference) {
   .gradient-text {
-    animation: wingShift 9s ease-in-out infinite alternate;
+    animation: wingShift 6s linear infinite;
   }
 }
 
 @keyframes wingShift {
-  to { background-position: 100% 0; }
+  from { background-position: 0% 0; }
+  to { background-position: -200% 0; }
 }
 
 /* ── Floating animation ── */
@@ -975,6 +976,30 @@
    an entry needs more than roughly fifteen -- the columns get too narrow and
    every description wraps into a thin ragged strip. Master-detail gives the
    selected entry the full width instead. */
+/* The About portrait as backdrop: large, offset and dimmed so it reads as
+   texture behind the panel rather than a third column competing with the copy.
+   Hidden on phones, where there is no room to spend on decoration. */
+.about-portrait-backdrop {
+  position: absolute;
+  right: 3%;
+  bottom: 8%;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.14;
+  filter: saturate(0.65) blur(1px);
+  --portrait-size: 300px;
+  display: none;
+  -webkit-mask-image: radial-gradient(circle at 50% 50%, #000 55%, transparent 78%);
+  mask-image: radial-gradient(circle at 50% 50%, #000 55%, transparent 78%);
+}
+@media (min-width: 1024px) {
+  .about-portrait-backdrop { display: block; }
+}
+@media (min-width: 1536px) {
+  .about-portrait-backdrop { --portrait-size: 380px; }
+}
+.dark .about-portrait-backdrop { opacity: 0.2; }
+
 /* ── Project filters and view toggle ── */
 .filter-select {
   color: var(--color-ink-dim);
@@ -1150,7 +1175,13 @@
     --panel-pad-y: 0.5rem;
     --panel-pad-x: 0.875rem;
   }
-  .panel-inner { gap: 0.6rem; }
+  .panel-inner {
+    gap: 0.6rem;
+    /* Very small screens can still outgrow the panel even after the per-panel
+       trims. Scroll the whole inner column rather than clip it. */
+    overflow-y: auto;
+    scrollbar-width: thin;
+  }
 }
 
 /* Panels are toggled by the `hidden` attribute from the tab bar. Until the tab

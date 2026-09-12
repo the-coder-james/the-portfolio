@@ -194,16 +194,16 @@ export function HeaderComponent() {
   return (
     <nav
       ref={navRef}
-      className="fixed top-3 left-1/2 -translate-x-1/2 z-[60] w-[min(1120px,calc(100%-1.5rem))]"
+      className="fixed top-3 left-1/2 -translate-x-1/2 z-[60] w-[min(1120px,calc(100%-1.25rem))]"
       style={{ opacity: 0 }}
       aria-label="Primary"
     >
-      <div className="glass-surface rounded-full px-2 sm:px-4 py-2 flex items-center justify-between gap-1 sm:gap-3 relative">
+      <div className="glass-surface rounded-full px-2.5 sm:px-4 py-2.5 sm:py-2 flex items-center justify-between gap-1 sm:gap-3 relative">
         <button
           onClick={() => selectTab(DEFAULT_TAB)}
           className="flex items-center gap-2 group"
         >
-          <div className="w-8 h-8 rounded-lg bg-brand-700 flex items-center justify-center group-hover:bg-brand-900 transition-colors">
+          <div className="w-8 h-8 rounded-full bg-brand-700 flex items-center justify-center group-hover:bg-brand-900 transition-colors">
             <Code2 size={16} className="text-on-brand" />
           </div>
           <span className="font-mono text-ink hidden sm:inline" style={{ fontSize: "0.9rem" }}>
