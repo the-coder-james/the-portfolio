@@ -2,31 +2,28 @@
 import { SectionHeading } from "@/components/common/tsx/SectionHeading"
 
 /**
- * The shared frame for every tab panel: the section element itself and the
- * eyebrow/headline heading block.
+ * The shared frame for every tab panel.
  *
- * Panels are shown one at a time, so this no longer carries a per-section
- * background or the seam gradients that used to blend stacked sections -- see
- * the note on .page-section in global.css. Every panel is transparent over the
- * fixed .site-backdrop, which is what the hero always did.
+ * A panel is exactly one viewport tall, never more: the heading sits at a
+ * fixed height and the slot below it takes the remaining space as a flex
+ * child that is allowed to shrink (`min-h-0`). Panels whose content cannot
+ * fit scroll *inside* that region rather than growing the document, so the
+ * tab bar and footer stay put and only one thing on the page ever scrolls.
  *
- * Content is passed through the default slot. Panels that need extra
- * decoration behind their content can use the `backdrop` slot.
+ * Panels are transparent over the fixed .site-backdrop -- see the note on
+ * .page-section in global.css.
  */
 interface Props {
   id: string;
-  /** Small mono label above the headline. */
   eyebrow?: string;
-  /** Headline text. */
   headline?: string;
-  /** Trailing headline words, rendered with the gradient treatment. */
   headlineAccent?: string;
-  /** Optional supporting line under the headline. */
   sub?: string;
-  /** Width of the inner container. */
   maxWidth?: string;
   class?: string;
   headingClass?: string;
+  /** Let the content region scroll when it overflows the viewport. */
+  scrollable?: boolean;
 }
 
 const {
@@ -36,8 +33,9 @@ const {
   headlineAccent,
   sub,
   maxWidth = "max-w-7xl",
-  class: className = "py-28",
-  headingClass = "mb-16",
+  class: className = "",
+  headingClass = "",
+  scrollable = true,
 } = Astro.props;
 
 const hasHeading = Boolean(eyebrow || headline);
@@ -45,25 +43,29 @@ const hasHeading = Boolean(eyebrow || headline);
 
 <section
   id={id}
-  class:list={["page-section tabpanel min-h-screen flex flex-col justify-center", className]}
+  class:list={["page-section tabpanel panel-viewport", className]}
   role="tabpanel"
   aria-labelledby={`tab-${id}`}
   tabindex="-1"
 >
   <slot name="backdrop" />
 
-  <div class:list={[maxWidth, "mx-auto px-6 relative w-full"]}>
+  <div class:list={[maxWidth, "panel-inner", "mx-auto w-full relative flex flex-col min-h-0"]}>
     {hasHeading && (
-      <SectionHeading
-        client:idle
-        eyebrow={eyebrow}
-        headline={headline}
-        headlineAccent={headlineAccent}
-        sub={sub}
-        className={headingClass}
-      />
+      <div class:list={["shrink-0", headingClass]}>
+        <SectionHeading
+          client:idle
+          eyebrow={eyebrow}
+          headline={headline}
+          headlineAccent={headlineAccent}
+          sub={sub}
+          className="mb-0"
+        />
+      </div>
     )}
 
-    <slot />
+    <div class:list={["flex-1 min-h-0 flex flex-col", scrollable ? "panel-scroll" : ""]}>
+      <slot />
+    </div>
   </div>
 </section>

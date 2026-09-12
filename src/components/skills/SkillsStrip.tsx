@@ -60,10 +60,10 @@ export function SkillsStrip({ techstack, extraSkills }: SkillsStripProps) {
 
   return (
     <div
-      className="overflow-hidden rounded-xl py-5 px-6"
+      className="overflow-hidden rounded-xl py-3 px-5 shrink-0"
       style={{ background: "var(--color-card-surface)", border: "1px solid var(--color-card-border)" }}
     >
-      <p className="font-mono mb-4" style={{ fontSize: "0.65rem", color: "var(--color-brand-300)", textAlign: "center" }}>
+      <p className="font-mono mb-2.5" style={{ fontSize: "0.65rem", color: "var(--color-brand-300)", textAlign: "center" }}>
         // technologies I work with
       </p>
 

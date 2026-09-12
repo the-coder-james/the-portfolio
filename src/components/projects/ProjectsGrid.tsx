@@ -81,7 +81,9 @@ export function ProjectsGrid({
 
   return (
     <TooltipProvider delayDuration={200}>
-      <div className="mb-10 flex flex-col md:flex-row md:items-center gap-4">
+      {/* Controls stay pinned; only the grid below them scrolls, so the panel
+          holds one viewport no matter how many projects are shown. */}
+      <div className="shrink-0 flex flex-col md:flex-row md:items-center gap-3 mb-3">
         <div className="relative flex-1">
           <Search
             size={15}
@@ -142,7 +144,7 @@ export function ProjectsGrid({
         </div>
       </div>
 
-      <div className="mb-6 flex flex-col gap-3">
+      <div className="shrink-0 flex flex-col gap-2 mb-2">
         <FilterRow label="role">
           <FilterChip
             label="all"
@@ -189,7 +191,7 @@ export function ProjectsGrid({
       </div>
 
       <div
-        className="font-mono mb-6"
+        className="font-mono mb-3 shrink-0"
         role="status"
         aria-live="polite"
         style={{ fontSize: "0.72rem", color: "var(--color-ink-dim)" }}
@@ -198,6 +200,7 @@ export function ProjectsGrid({
         {filtered.length !== sorted.length && ` (${sorted.length} total)`}
       </div>
 
+      <div className="panel-scroll flex-1 min-h-0 -mr-1 pr-1">
       {filtered.length === 0 ? (
         <div
           className="rounded-2xl py-16 text-center"
@@ -214,7 +217,7 @@ export function ProjectsGrid({
           </p>
         </div>
       ) : (
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid sm:grid-cols-2 xl:grid-cols-3 gap-4">
           {displayed.map((project, i) => (
             <ProjectCard
               key={`${project.title}-${project.date}`}
@@ -230,7 +233,7 @@ export function ProjectsGrid({
       )}
 
       {hasMore && (
-        <div className="flex justify-center mt-12">
+        <div className="flex justify-center mt-6 pb-1">
           <button
             type="button"
             onClick={() => setVisible((v) => Math.min(v + step, filtered.length))}
@@ -253,6 +256,7 @@ export function ProjectsGrid({
           </button>
         </div>
       )}
+      </div>
     </TooltipProvider>
   );
 }

@@ -1,6 +1,5 @@
 ---
 import SectionShell from "@/components/common/astro/SectionShell.astro"
-import { TimelineLine } from "@/components/experience/TimelineLine"
 import { TimelineList } from "@/components/experience/TimelineList"
 import experienceJson from "@/assets/experience.json"
 ---
@@ -10,13 +9,8 @@ import experienceJson from "@/assets/experience.json"
   eyebrow="04. git log --oneline"
   headline="My Dev"
   headlineAccent="Journey"
-  maxWidth="max-w-5xl"
+  scrollable={false}
 >
-  <div class="relative">
-    <!-- Dynamic: animated vertical line -->
-    <TimelineLine client:load />
-
-    <!-- Dynamic: one island renders the whole ordered timeline -->
-    <TimelineList client:load items={experienceJson} />
-  </div>
+  <!-- Dynamic: the whole timeline as one horizontal rail -->
+  <TimelineList client:load items={experienceJson} />
 </SectionShell>

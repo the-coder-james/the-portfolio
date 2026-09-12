@@ -2,7 +2,6 @@ import { useEffect, useRef, useState } from "react";
 
 import { SlidingNumber } from "@/components/motion-primitives/sliding-number";
 import { RevealGroup } from "@/components/common/tsx/RevealGroup";
-import { WindowCard } from "@/components/common/tsx/WindowCard";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { useRevealed } from "@/hooks/useRevealed";
 
@@ -69,23 +68,24 @@ export function AboutStats({ stats }: AboutStatsProps) {
 
   return (
     <div ref={ref}>
-      <RevealGroup className="grid grid-cols-2 gap-4" preset="scale" margin="-80px">
+      <RevealGroup className="grid grid-cols-2 xl:grid-cols-4 gap-2" preset="scale" margin="-80px">
         {stats.map((stat) => (
-          <WindowCard
+          <div
             key={stat.label}
-            title={`${stat.label.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`}
+            className="card-glow rounded-xl px-2 py-2.5 text-center"
+            style={{ background: "var(--color-card-surface)", border: "1px solid var(--color-card-border)" }}
           >
-            <div className="text-2xl mb-2" aria-hidden="true">{stat.icon}</div>
+            <div className="text-base leading-none mb-1" aria-hidden="true">{stat.icon}</div>
             <div
               className="gradient-text"
-              style={{ fontSize: "1.8rem", fontWeight: 700, lineHeight: 1, fontFamily: "'Space Grotesk', sans-serif" }}
+              style={{ fontSize: "1.15rem", fontWeight: 700, lineHeight: 1.1, fontFamily: "'Space Grotesk', sans-serif" }}
             >
               <StatValue value={stat.value} start={revealed} />
             </div>
-            <div style={{ fontSize: "0.78rem", color: "var(--color-ink-dim)", marginTop: "4px", fontFamily: "'Space Grotesk', sans-serif" }}>
+            <div style={{ fontSize: "0.62rem", color: "var(--color-ink-dim)", marginTop: "2px", lineHeight: 1.25, fontFamily: "'Space Grotesk', sans-serif" }}>
               {stat.label}
             </div>
-          </WindowCard>
+          </div>
         ))}
       </RevealGroup>
     </div>

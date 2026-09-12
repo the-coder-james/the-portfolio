@@ -22,7 +22,6 @@ export function HeaderComponent() {
   const navRef = useRef<HTMLElement>(null);
   const indicatorRef = useRef<HTMLDivElement>(null);
   const linkRefs = useRef<Record<string, HTMLButtonElement | null>>({});
-  const [scrolled, setScrolled] = useState(false);
 
   // The server can't see the hash, so it always renders the default tab. React
   // reuses that server HTML on hydration, which means seeding state from the
@@ -48,12 +47,30 @@ export function HeaderComponent() {
     );
   }, []);
 
-  // The header still gains its backdrop once the active panel scrolls.
-  useEffect(() => {
-    const handleScroll = () => setScrolled(window.scrollY > 40);
-    handleScroll();
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
+  // Panels are sized against the nav and footer, so measure both rather than
+  // trusting a constant: a wrapped nav or an extra footer line would otherwise
+  // push every panel past the viewport.
+  useLayoutEffect(() => {
+    const root = document.documentElement;
+    const sync = () => {
+      const nav = navRef.current;
+      const footer = document.querySelector("footer");
+      if (nav) {
+        // offsetTop/offsetHeight, not getBoundingClientRect: the nav plays a
+        // slide-in transform on mount, and the rect would measure it mid-flight
+        // (it reads negative while the nav is still above the viewport).
+        const bottom = nav.offsetTop + nav.offsetHeight;
+        root.style.setProperty("--nav-h", `${Math.round(bottom)}px`);
+      }
+      if (footer) root.style.setProperty("--footer-h", `${Math.round(footer.offsetHeight)}px`);
+    };
+    sync();
+    const ro = new ResizeObserver(sync);
+    if (navRef.current) ro.observe(navRef.current);
+    const footer = document.querySelector("footer");
+    if (footer) ro.observe(footer);
+    window.addEventListener("resize", sync);
+    return () => { ro.disconnect(); window.removeEventListener("resize", sync); };
   }, []);
 
   // Show only the active panel. Runs before paint so no second panel is ever
@@ -142,15 +159,11 @@ export function HeaderComponent() {
   return (
     <nav
       ref={navRef}
-      className="fixed top-0 left-0 right-0 z-[60] transition-all duration-300"
-      style={{
-        background: scrolled ? "var(--scrim-base-90)" : "transparent",
-        backdropFilter: scrolled ? "blur(16px)" : "none",
-        borderBottom: scrolled ? "1px solid var(--tint-brand-12)" : "none",
-        opacity: 0,
-      }}
+      className="fixed top-3 left-1/2 -translate-x-1/2 z-[60] w-[min(1120px,calc(100%-1.5rem))]"
+      style={{ opacity: 0 }}
+      aria-label="Primary"
     >
-      <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between relative">
+      <div className="glass-surface rounded-full px-3 sm:px-4 py-2 flex items-center justify-between gap-3 relative">
         <button
           onClick={() => selectTab(DEFAULT_TAB)}
           className="flex items-center gap-2 group"
@@ -175,11 +188,11 @@ export function HeaderComponent() {
           <TabsList
             variant="line"
             aria-label="Sections"
-            className="relative h-auto gap-1 bg-transparent p-0"
+            className="relative h-auto gap-0.5 bg-transparent p-0"
           >
             <div
               ref={indicatorRef}
-              className="absolute bottom-0 h-0.5 bg-brand rounded-full pointer-events-none"
+              className="glass-pill absolute top-0 bottom-0 rounded-full pointer-events-none z-0"
               style={{ left: 0, width: 0, opacity: 0 }}
               aria-hidden="true"
             />
@@ -194,7 +207,7 @@ export function HeaderComponent() {
                   ref={(el) => {
                     linkRefs.current[id] = el;
                   }}
-                  className="nav-link relative px-4 py-2 text-xs font-mono uppercase tracking-wider data-[state=active]:text-brand-400 data-[state=active]:bg-transparent"
+                  className="nav-link relative z-10 px-3.5 py-1.5 text-[0.7rem] font-mono uppercase tracking-wider rounded-full data-[state=active]:text-brand data-[state=active]:bg-transparent"
                 >
                   {link.label}
                 </TabsTrigger>
@@ -206,13 +219,12 @@ export function HeaderComponent() {
         <div className="flex items-center gap-3">
           <ThemeToggle />
           <Sheet>
-            <SheetTrigger className="md:hidden inline-flex w-9 h-9 items-center justify-center rounded-md text-ink hover:bg-[var(--tint-white-06)] transition-colors">
+            <SheetTrigger className="md:hidden inline-flex w-9 h-9 items-center justify-center rounded-full text-ink hover:bg-[var(--tint-white-06)] transition-colors">
               <Menu size={22} />
             </SheetTrigger>
             <SheetContent
               side="right"
-              className="w-[280px] border-l-[var(--tint-brand-15)] flex flex-col gap-0 pt-16"
-              style={{ background: "var(--scrim-base-98)", backdropFilter: "blur(20px)" }}
+              className="glass-surface w-[280px] flex flex-col gap-0 pt-16 border-y-0 border-r-0 rounded-l-2xl"
             >
               <div className="flex items-center gap-2 mb-8 px-2">
                 <div className="w-7 h-7 rounded-lg bg-brand-700 flex items-center justify-center">

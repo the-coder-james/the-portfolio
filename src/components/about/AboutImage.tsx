@@ -90,7 +90,7 @@ export function AboutImage({ name, imagePath, hoverImagePath, baseUrl }: AboutIm
           <span className="font-mono" style={{ fontSize: "0.6rem", color: "var(--color-success-soft)", whiteSpace: "nowrap" }}>available</span>
         </motion.div>
         <motion.div
-          className="absolute -top-2 -left-4 px-2.5 py-1 rounded-lg font-mono"
+          className="absolute -top-1 left-1 px-2.5 py-1 rounded-lg font-mono"
           style={{ background: "var(--tint-brand-15)", border: "1px solid var(--tint-brand-30)", fontSize: "0.6rem", color: "var(--color-brand-300)", whiteSpace: "nowrap" }}
           {...reveal(0.35, { x: -12 })}
         >

@@ -10,7 +10,7 @@ import providersJson from "@/assets/projectprovider.json"
 const baseUrl = import.meta.env.BASE_URL
 ---
 
-<SectionShell id="projects">
+<SectionShell id="projects" scrollable={false}>
   <!-- Section glow sits behind the content -->
   <div
     slot="backdrop"
@@ -21,7 +21,7 @@ const baseUrl = import.meta.env.BASE_URL
   </div>
 
   <!-- Heading pairs with a project count set beside it -->
-  <div class="flex flex-col sm:flex-row sm:items-end justify-between mb-16 gap-6">
+  <div class="flex flex-col sm:flex-row sm:items-end justify-between mb-4 gap-2 shrink-0">
     <SectionHeading
       client:idle
       eyebrow="03. featured_work.tsx"

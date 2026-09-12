@@ -152,7 +152,7 @@ export function ProjectCard({ project, index, taglist, roles, providers, baseUrl
       </div>
       <div
         className="p-5 relative overflow-hidden"
-        style={{ background: "var(--color-surface-base)", borderBottom: "1px solid var(--tint-white-05)", minHeight: "180px" }}
+        style={{ background: "var(--color-surface-base)", borderBottom: "1px solid var(--tint-white-05)", minHeight: "120px" }}
       >
         <div
           className={`absolute left-0 right-0 pointer-events-none${reduced ? "" : " scan-line"}`}
@@ -181,10 +181,10 @@ export function ProjectCard({ project, index, taglist, roles, providers, baseUrl
         </div>
         <div className="font-mono flex gap-3" style={{ fontSize: "0.72rem" }}>
           <div className="flex flex-col" style={{ color: "var(--color-chrome-line)", minWidth: "16px", textAlign: "right" }}>
-            {lines.map((l) => <span key={l.num} style={{ lineHeight: 1.7 }}>{l.num}</span>)}
+            {lines.map((l) => <span key={l.num} style={{ lineHeight: 1.55 }}>{l.num}</span>)}
           </div>
           <div className="flex-1 overflow-hidden">
-            {lines.map((l, i) => <div key={i} style={{ lineHeight: 1.7, color: "var(--color-ink-muted)", whiteSpace: "nowrap" }}>{l.code}</div>)}
+            {lines.map((l, i) => <div key={i} style={{ lineHeight: 1.55, color: "var(--color-ink-muted)", whiteSpace: "nowrap" }}>{l.code}</div>)}
           </div>
         </div>
         <div

@@ -476,6 +476,58 @@
   --blue-glow-lg: 0 0 40px var(--tint-brand-30);
 }
 
+/* ── Liquid glass ──
+   The nav is a floating pill rather than a full-width bar: a translucent
+   surface that samples the page through backdrop-filter, with saturation
+   pushed up so colour scrolling underneath bleeds through the way Apple's
+   material does. The highlight is two inset shadows -- a bright top edge and
+   a dim bottom one -- which is what reads as a curved piece of glass rather
+   than a flat panel. */
+:root {
+  --glass-bg: color-mix(in srgb, var(--color-surface-base) 62%, transparent);
+  --glass-border: rgb(255 255 255 / 0.55);
+  --glass-highlight: inset 0 1px 0 0 rgb(255 255 255 / 0.85);
+  --glass-lowlight: inset 0 -1px 0 0 rgb(15 23 42 / 0.06);
+  --glass-shadow: 0 8px 32px rgb(15 23 42 / 0.10), 0 2px 8px rgb(15 23 42 / 0.06);
+  --glass-blur: 20px;
+  --glass-saturate: 180%;
+}
+
+.dark {
+  --glass-bg: color-mix(in srgb, var(--color-surface-base) 55%, transparent);
+  --glass-border: rgb(255 255 255 / 0.12);
+  --glass-highlight: inset 0 1px 0 0 rgb(255 255 255 / 0.14);
+  --glass-lowlight: inset 0 -1px 0 0 rgb(0 0 0 / 0.30);
+  --glass-shadow: 0 8px 32px rgb(0 0 0 / 0.45), 0 2px 8px rgb(0 0 0 / 0.30);
+  --glass-blur: 22px;
+  --glass-saturate: 170%;
+}
+
+.glass-surface {
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-highlight), var(--glass-lowlight), var(--glass-shadow);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+  backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+}
+
+/* Where backdrop-filter is unavailable the pill would read as a flat wash, so
+   fall back to a more opaque surface that still separates from the page. */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .glass-surface {
+    background: color-mix(in srgb, var(--color-surface-base) 94%, transparent);
+  }
+}
+
+/* The moving pill behind the active tab. Sits under the labels (z-0 vs z-10)
+   and animates via left/width from the tab bar. */
+.glass-pill {
+  background: color-mix(in srgb, var(--color-brand) 14%, transparent);
+  border: 1px solid color-mix(in srgb, var(--color-brand) 30%, transparent);
+  box-shadow: inset 0 1px 0 0 rgb(255 255 255 / 0.25),
+              0 2px 10px color-mix(in srgb, var(--color-brand) 22%, transparent);
+}
+
 /* ── Wings of Light glow ──
    box-shadow takes no gradient, so the prismatic bloom is built from stacked
    shadows fanned out along x: each layer contributes one stop of the ramp and
@@ -820,11 +872,75 @@
   z-index: 1;
 }
 
-/* A panel shares the viewport with the fixed header and the footer, so it
-   claims the remaining height rather than all of it -- otherwise a panel whose
-   content fits still pushes the footer off-screen and forces a scroll. */
-.tabpanel.min-h-screen {
-  min-height: calc(100vh - var(--footer-h, 109px));
+/* ── Panel viewport ──
+   A panel is exactly one screen tall. The page itself never scrolls: the
+   footer is pinned below the panel and both together fill the viewport, so
+   the only thing that can scroll is a panel's own content region.
+
+   --nav-h is the floating pill plus its top offset; --footer-h the footer.
+   Both are reserved out of the panel's height. */
+:root {
+  /* Measured at runtime by the header island and written back onto <html>,
+     so a change to either chrome cannot silently break the panel height.
+     The literals here are the correct values for the current markup and only
+     matter for the first paint and the no-JS case. */
+  --nav-h: 66px;
+  --footer-h: 109px;
+  --panel-pad-y: clamp(0.75rem, 2.2vh, 1.75rem);
+  --panel-pad-x: clamp(1rem, 3vw, 2.5rem);
+}
+
+.panel-viewport {
+  height: calc(100svh - var(--footer-h));
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: calc(var(--nav-h) + var(--panel-pad-y)) var(--panel-pad-x) var(--panel-pad-y);
+  overflow: hidden;
+}
+
+.panel-inner {
+  /* A flex item's default min-height is auto, which lets content push it past
+     its parent -- the reason an overflow:auto descendant never scrolls. Both
+     this and the scroll region below must opt out explicitly. */
+  min-height: 0;
+  flex: 1 1 auto;
+  gap: clamp(0.75rem, 2vh, 1.5rem);
+}
+
+.panel-scroll {
+  min-height: 0;
+  flex: 1 1 auto;
+}
+
+/* The timeline rail scrolls sideways only when the cards outrun the width.
+   A thin scrollbar keeps it discoverable without eating vertical space. */
+.timeline-rail {
+  scrollbar-width: thin;
+  overscroll-behavior-x: contain;
+  padding-bottom: 4px;
+}
+.timeline-rail::-webkit-scrollbar { height: 4px; }
+.timeline-rail::-webkit-scrollbar-thumb {
+  background: var(--tint-brand-30);
+  border-radius: 4px;
+}
+.timeline-rail::-webkit-scrollbar-track { background: transparent; }
+
+/* Content taller than the space left over scrolls here rather than growing
+   the document. Padding keeps the last row clear of the fade at the bottom. */
+.panel-scroll {
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: thin;
+  padding-right: 2px;
+  overscroll-behavior: contain;
+}
+
+/* Short viewports: give the content back the space the heading was using. */
+@media (max-height: 700px) {
+  :root { --panel-pad-y: 0.5rem; }
 }
 
 /* Panels are toggled by the `hidden` attribute from the tab bar. Until the tab
