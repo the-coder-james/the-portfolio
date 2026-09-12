@@ -54,18 +54,18 @@ export function TimelineList({ items }: { items: TimelineItem[] }) {
   const spring = { type: "spring" as const, visualDuration: 0.35, bounce: 0.18 };
 
   return (
-    <div className="flex-1 min-h-0 grid lg:grid-cols-[minmax(180px,230px)_1fr] gap-5 xl:gap-8 items-start content-start my-auto">
+    <div className="min-h-0 grid lg:grid-cols-[max-content_1fr] gap-6 xl:gap-10 items-start content-start my-auto">
       {/* ── Rail ── */}
       <ol
-        className="timeline-rail relative flex lg:flex-col gap-1 list-none p-0 m-0 min-h-0 overflow-x-auto lg:overflow-x-visible lg:overflow-y-auto snap-x lg:snap-none"
+        className="timeline-rail relative flex lg:flex-col gap-0.5 list-none p-0 m-0 lg:pl-4 min-h-0 overflow-x-auto lg:overflow-x-visible lg:overflow-y-auto snap-x lg:snap-none"
         aria-label="Career timeline"
         ref={railRef}
       >
         {/* The spine behind the year dots. Hidden on the horizontal
             (small-screen) arrangement, where it would run the wrong way. */}
         <span
-          className="hidden lg:block absolute left-[19px] top-3 bottom-3 w-px pointer-events-none"
-          style={{ background: "linear-gradient(180deg, transparent, var(--tint-brand-30) 8%, var(--tint-brand-30) 92%, transparent)" }}
+          className="hidden lg:block absolute left-0 top-2 bottom-2 w-px pointer-events-none"
+          style={{ background: "linear-gradient(180deg, transparent, var(--tint-brand-30) 6%, var(--tint-brand-30) 94%, transparent)" }}
           aria-hidden="true"
         />
         {items.map((entry, i) => {
@@ -78,7 +78,7 @@ export function TimelineList({ items }: { items: TimelineItem[] }) {
                 onFocus={() => setActive(i)}
                 onMouseEnter={() => setActive(i)}
                 aria-current={selected ? "true" : undefined}
-                className="timeline-rail-item relative w-full text-left rounded-lg px-3 py-2.5 transition-colors"
+                className="timeline-rail-item relative w-full text-left rounded-lg px-2.5 py-2 transition-colors"
               >
                 {/* One shared element slides between entries instead of six
                     separate highlights fading in and out. */}
@@ -136,11 +136,11 @@ export function TimelineList({ items }: { items: TimelineItem[] }) {
       </ol>
 
       {/* ── Detail ── */}
-      <div className="relative min-h-0 min-w-0 flex flex-col">
+      <div className="relative min-h-0 min-w-0 flex flex-col justify-center items-start">
         <AnimatePresence mode="wait">
           <motion.article
             key={item.year + item.title}
-            className="timeline-detail-card w-full rounded-2xl p-5 xl:p-6 flex flex-col"
+            className="timeline-detail-card w-full max-w-xl rounded-2xl p-4 xl:p-5 flex flex-col"
             style={{
               background: "var(--color-card-surface)",
               border: `1px solid ${isPresent ? "var(--color-brand)" : "var(--color-card-border)"}`,
@@ -150,7 +150,7 @@ export function TimelineList({ items }: { items: TimelineItem[] }) {
             exit={reduced ? { opacity: 1 } : { opacity: 0, y: -8 }}
             transition={reduced ? { duration: 0 } : { duration: 0.24, ease: [0.22, 0.61, 0.36, 1] }}
           >
-            <div className="flex items-center gap-2 flex-wrap mb-3 shrink-0">
+            <div className="flex items-center gap-2 flex-wrap mb-2.5 shrink-0">
               <Badge
                 variant="outline"
                 className="font-mono rounded"
@@ -173,19 +173,19 @@ export function TimelineList({ items }: { items: TimelineItem[] }) {
             </div>
 
             <h3
-              style={{ fontSize: "1.4rem", fontWeight: 700, color: "var(--color-ink)", fontFamily: "'Space Grotesk', sans-serif", lineHeight: 1.2, marginBottom: "4px" }}
+              style={{ fontSize: "1.2rem", fontWeight: 700, color: "var(--color-ink)", fontFamily: "'Space Grotesk', sans-serif", lineHeight: 1.2, marginBottom: "2px" }}
             >
               {item.title}
             </h3>
             <p
-              style={{ fontSize: "0.9rem", color: "var(--color-brand)", fontFamily: "'Space Grotesk', sans-serif", marginBottom: "14px" }}
+              style={{ fontSize: "0.82rem", color: "var(--color-brand)", fontFamily: "'Space Grotesk', sans-serif", marginBottom: "10px" }}
             >
               {item.company}
             </p>
 
             <p
               className="min-h-0"
-              style={{ fontSize: "0.95rem", color: "var(--color-ink-dim)", lineHeight: 1.75, fontFamily: "'Space Grotesk', sans-serif", marginBottom: "16px", maxWidth: "62ch" }}
+              style={{ fontSize: "0.88rem", color: "var(--color-ink-dim)", lineHeight: 1.65, fontFamily: "'Space Grotesk', sans-serif", marginBottom: "12px", maxWidth: "58ch" }}
             >
               {item.description}
             </p>
