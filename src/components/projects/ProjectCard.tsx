@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { motion } from "motion/react";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { OptimizedImage } from "@/components/common/tsx/OptimizedImage";
@@ -53,57 +53,24 @@ const ACCENTS = [
 const tint = (accent: string, pct: number) =>
   `color-mix(in srgb, ${accent} ${pct}%, transparent)`;
 
-const CODE_PREVIEWS = [
-  [
-    { num: 1, code: <><span style={{color:"var(--color-syn-keyword)"}}>export</span> <span style={{color:"var(--color-syn-ident)"}}>function</span> <span style={{color:"var(--color-syn-fn)"}}>Page</span>() {"{"}</> },
-    { num: 2, code: <>&nbsp;&nbsp;<span style={{color:"var(--color-syn-keyword)"}}>return</span> &lt;<span style={{color:"var(--color-syn-ident)"}}>main</span>&gt;</> },
-    { num: 3, code: <>&nbsp;&nbsp;&nbsp;&nbsp;&lt;<span style={{color:"var(--color-syn-string)"}}>Hero</span> /&gt;</> },
-    { num: 4, code: <>&nbsp;&nbsp;&nbsp;&nbsp;&lt;<span style={{color:"var(--color-syn-string)"}}>Content</span> /&gt;</> },
-    { num: 5, code: <>&nbsp;&nbsp;&lt;/<span style={{color:"var(--color-syn-ident)"}}>main</span>&gt;</> },
-  ],
-  [
-    { num: 1, code: <><span style={{color:"var(--color-syn-keyword)"}}>const</span> query = <span style={{color:"var(--color-syn-string)"}}>`</span></> },
-    { num: 2, code: <>&nbsp;&nbsp;<span style={{color:"var(--color-syn-fn)"}}>SELECT</span> * <span style={{color:"var(--color-syn-fn)"}}>FROM</span> products</> },
-    { num: 3, code: <>&nbsp;&nbsp;<span style={{color:"var(--color-syn-fn)"}}>WHERE</span> active = <span style={{color:"var(--color-syn-number)"}}>true</span></> },
-    { num: 4, code: <>&nbsp;&nbsp;<span style={{color:"var(--color-syn-fn)"}}>ORDER BY</span> date <span style={{color:"var(--color-syn-fn)"}}>DESC</span></> },
-    { num: 5, code: <><span style={{color:"var(--color-syn-string)"}}>`</span>;</> },
-  ],
-  [
-    { num: 1, code: <><span style={{color:"var(--color-syn-keyword)"}}>function</span> <span style={{color:"var(--color-syn-fn)"}}>init</span>() {"{"}</> },
-    { num: 2, code: <>&nbsp;&nbsp;<span style={{color:"var(--color-syn-comment)"}}>// Bootstrap app</span></> },
-    { num: 3, code: <>&nbsp;&nbsp;<span style={{color:"var(--color-syn-ident)"}}>app</span>.<span style={{color:"var(--color-syn-fn)"}}>use</span>(middleware);</> },
-    { num: 4, code: <>&nbsp;&nbsp;<span style={{color:"var(--color-syn-ident)"}}>app</span>.<span style={{color:"var(--color-syn-fn)"}}>listen</span>(<span style={{color:"var(--color-syn-number)"}}>3000</span>);</> },
-    { num: 5, code: <>{"}"}</> },
-  ],
-  [
-    { num: 1, code: <><span style={{color:"var(--color-syn-keyword)"}}>class</span> <span style={{color:"var(--color-syn-ident)"}}>Controller</span> {"{"}</> },
-    { num: 2, code: <>&nbsp;&nbsp;<span style={{color:"var(--color-syn-fn)"}}>index</span>() {"{"}</> },
-    { num: 3, code: <>&nbsp;&nbsp;&nbsp;&nbsp;<span style={{color:"var(--color-syn-keyword)"}}>return</span> view(<span style={{color:"var(--color-syn-string)"}}>'home'</span>);</> },
-    { num: 4, code: <>&nbsp;&nbsp;{"}"}</> },
-    { num: 5, code: <>{"}"}</> },
-  ],
-  [
-    { num: 1, code: <><span style={{color:"var(--color-syn-keyword)"}}>import</span> <span style={{color:"var(--color-code-ink)"}}>WordPress</span> <span style={{color:"var(--color-syn-keyword)"}}>from</span> <span style={{color:"var(--color-syn-string)"}}>'@/cms'</span>;</> },
-    { num: 2, code: <></> },
-    { num: 3, code: <><span style={{color:"var(--color-syn-keyword)"}}>const</span> posts = <span style={{color:"var(--color-syn-keyword)"}}>await</span></> },
-    { num: 4, code: <>&nbsp;&nbsp;WordPress.<span style={{color:"var(--color-syn-fn)"}}>getPosts</span>();</> },
-    { num: 5, code: <><span style={{color:"var(--color-syn-keyword)"}}>return</span> {"{"} posts {"}"};</> },
-  ],
-  [
-    { num: 1, code: <><span style={{color:"var(--color-syn-keyword)"}}>const</span> router = <span style={{color:"var(--color-syn-fn)"}}>createRouter</span>();</> },
-    { num: 2, code: <></> },
-    { num: 3, code: <><span style={{color:"var(--color-syn-ident)"}}>router</span>.<span style={{color:"var(--color-syn-fn)"}}>get</span>(<span style={{color:"var(--color-syn-string)"}}>'/api'</span>,</> },
-    { num: 4, code: <>&nbsp;&nbsp;<span style={{color:"var(--color-syn-keyword)"}}>async</span> (req, res) =&gt; {"{"}</> },
-    { num: 5, code: <>&nbsp;&nbsp;&nbsp;&nbsp;res.<span style={{color:"var(--color-syn-fn)"}}>json</span>(data);</> },
-  ],
-];
-
 export function ProjectCard({ project, index, taglist, roles, providers, baseUrl }: ProjectCardProps) {
   const { ref, revealed } = useRevealed<HTMLDivElement>("-60px");
   const reduced = useReducedMotion();
   const [hovered, setHovered] = useState(false);
+  const [pressed, setPressed] = useState(false);
+  const [canHover, setCanHover] = useState(true);
+
+  useEffect(() => {
+    const mq = window.matchMedia("(hover: hover) and (pointer: fine)");
+    const sync = () => setCanHover(mq.matches);
+    sync();
+    mq.addEventListener("change", sync);
+    return () => mq.removeEventListener("change", sync);
+  }, []);
+
+  // Pointer devices reveal on hover/focus; touch devices while pressed.
+  const showDetail = canHover ? hovered : pressed;
   const accent = ACCENTS[index % ACCENTS.length];
-  const lines = CODE_PREVIEWS[index % CODE_PREVIEWS.length];
   const roleName = roles[String(project.role)]?.name;
   const providerName = providers[String(project.provider)]?.name;
 
@@ -120,6 +87,9 @@ export function ProjectCard({ project, index, taglist, roles, providers, baseUrl
       onMouseLeave={() => setHovered(false)}
       onFocus={() => setHovered(true)}
       onBlur={() => setHovered(false)}
+      onPointerDown={(e) => { if (e.pointerType !== "mouse") setPressed(true); }}
+      onPointerUp={() => setPressed(false)}
+      onPointerCancel={() => setPressed(false)}
       tabIndex={0}
       initial={reduced ? false : { opacity: 0, y: 50, scale: 0.95 }}
       animate={revealed ? { opacity: 1, y: 0, scale: 1 } : undefined}
@@ -127,8 +97,8 @@ export function ProjectCard({ project, index, taglist, roles, providers, baseUrl
       className="rounded-xl overflow-hidden flex flex-col"
       style={{
         background: "var(--color-card-surface)",
-        border: `1px solid ${hovered ? tint(accent, 55) : "var(--color-card-border)"}`,
-        boxShadow: hovered ? `0 0 30px ${tint(accent, 12)}, 0 12px 32px var(--shadow-black-40)` : "none",
+        border: `1px solid ${showDetail ? tint(accent, 55) : "var(--color-card-border)"}`,
+        boxShadow: showDetail ? `0 0 30px ${tint(accent, 12)}, 0 12px 32px var(--shadow-black-40)` : "none",
         transition: "border-color 0.3s ease, box-shadow 0.3s ease",
       }}
     >
@@ -150,10 +120,23 @@ export function ProjectCard({ project, index, taglist, roles, providers, baseUrl
         </span>
         <span className="w-[38px] shrink-0" aria-hidden="true" />
       </div>
+      {/* The screenshot is the card's face. Detail floats over it on hover
+          (pointer) or press (touch) -- see `revealed` below. */}
       <div
-        className="p-5 relative overflow-hidden"
-        style={{ background: "var(--color-surface-code)", borderBottom: "1px solid var(--color-card-border)", minHeight: "120px" }}
+        className="relative overflow-hidden shrink-0"
+        style={{ background: "var(--color-surface-code)", borderBottom: "1px solid var(--color-card-border)", aspectRatio: "16 / 10" }}
       >
+        <OptimizedImage
+          src={project.image.url}
+          alt={project.image.alt}
+          baseUrl={baseUrl}
+          className="w-full h-full object-cover"
+          style={{
+            transform: showDetail && !reduced ? "scale(1.04)" : "scale(1)",
+            transition: "transform 0.4s cubic-bezier(0.22, 1, 0.36, 1)",
+          }}
+        />
+
         <div
           className={`absolute left-0 right-0 pointer-events-none${reduced ? "" : " scan-line"}`}
           aria-hidden="true"
@@ -164,39 +147,67 @@ export function ProjectCard({ project, index, taglist, roles, providers, baseUrl
             zIndex: 2,
           }}
         />
+
+        {/* Floating detail. Hidden from assistive tech: everything in it is
+            already in the card body below, which is always present. */}
         <div
-          className="absolute inset-0 pointer-events-none overflow-hidden"
-          style={{ zIndex: 1, opacity: hovered ? 1 : 0, transition: "opacity 0.3s" }}
+          aria-hidden="true"
+          className="absolute inset-0 flex flex-col justify-end p-4"
+          style={{
+            zIndex: 3,
+            opacity: showDetail ? 1 : 0,
+            transition: "opacity 0.28s ease",
+            pointerEvents: "none",
+            background: `linear-gradient(180deg, var(--scrim-soft) 0%, var(--scrim-strong) 62%)`,
+          }}
         >
-          <OptimizedImage
-            src={project.image.url}
-            alt={project.image.alt}
-            baseUrl={baseUrl}
-            className="w-full h-full object-cover"
-          />
           <div
-            className="absolute inset-0"
-            style={{ background: `linear-gradient(180deg, var(--scrim-soft) 0%, var(--scrim-strong) 100%)` }}
-          />
-        </div>
-        <div className="font-mono flex gap-3" style={{ fontSize: "0.72rem" }}>
-          <div className="flex flex-col" style={{ color: "var(--color-chrome-line)", minWidth: "16px", textAlign: "right" }}>
-            {lines.map((l) => <span key={l.num} style={{ lineHeight: 1.55 }}>{l.num}</span>)}
+            className="rounded-lg p-3"
+            style={{
+              background: "var(--glass-bg)",
+              border: `1px solid ${tint(accent, 35)}`,
+              boxShadow: `var(--glass-shadow)`,
+              WebkitBackdropFilter: "blur(14px) saturate(160%)",
+              backdropFilter: "blur(14px) saturate(160%)",
+              transform: showDetail || reduced ? "translateY(0)" : "translateY(10px)",
+              transition: "transform 0.32s cubic-bezier(0.22, 1, 0.36, 1)",
+            }}
+          >
+            <p
+              style={{
+                fontSize: "0.76rem",
+                lineHeight: 1.6,
+                color: "var(--color-ink)",
+                fontFamily: "'Space Grotesk', sans-serif",
+              }}
+            >
+              {project.description}
+            </p>
+            <div className="flex flex-wrap gap-1 mt-2">
+              {roleName && (
+                <span className="font-mono" style={{ fontSize: "0.58rem", color: "var(--color-ink-dim)" }}>
+                  role: <span style={{ color: "var(--color-brand-text)" }}>{roleName}</span>
+                </span>
+              )}
+              {providerName && (
+                <span className="font-mono" style={{ fontSize: "0.58rem", color: "var(--color-ink-dim)", marginLeft: "8px" }}>
+                  via: <span style={{ color: "var(--color-syn-violet)" }}>{providerName}</span>
+                </span>
+              )}
+            </div>
           </div>
-          <div className="flex-1 overflow-hidden">
-            {lines.map((l, i) => <div key={i} style={{ lineHeight: 1.55, color: "var(--color-code-ink)", whiteSpace: "nowrap" }}>{l.code}</div>)}
-          </div>
         </div>
+
         <div
-          className="absolute top-4 right-4 flex flex-wrap gap-1 justify-end max-w-[60%]"
-          style={{ zIndex: 3 }}
+          className="absolute top-3 right-3 flex flex-wrap gap-1 justify-end max-w-[62%]"
+          style={{ zIndex: 4 }}
         >
           {project.tags.map((t) => (
             <Badge
               key={t}
               variant="outline"
               className="font-mono rounded-md"
-              style={{ fontSize: "0.6rem", color: accent, background: tint(accent, 9), border: `1px solid ${tint(accent, 19)}` }}
+              style={{ fontSize: "0.6rem", color: accent, background: tint(accent, 14), border: `1px solid ${tint(accent, 30)}`, backdropFilter: "blur(6px)" }}
             >
               {taglist[t]?.name || t}
             </Badge>
@@ -204,17 +215,17 @@ export function ProjectCard({ project, index, taglist, roles, providers, baseUrl
         </div>
       </div>
 
-      <div className="p-6 flex flex-col flex-1">
-        <h3 style={{ fontSize: "1.15rem", fontWeight: 700, color: "var(--color-ink)", fontFamily: "'Space Grotesk', sans-serif", marginBottom: "10px" }}>
+      <div className="p-4 flex flex-col flex-1 gap-2">
+        <h3 style={{ fontSize: "1rem", fontWeight: 700, color: "var(--color-ink)", fontFamily: "'Space Grotesk', sans-serif" }}>
           {project.title}
         </h3>
 
-        <div className="flex flex-wrap gap-1.5 mb-3">
+        <div className="flex flex-wrap gap-1.5">
           {roleName && (
             <Badge
               variant="outline"
               className="font-mono rounded gap-1"
-              style={{ fontSize: "0.6rem", color: "var(--color-brand-300)", background: "var(--tint-brand-07)", border: "1px solid var(--tint-brand-18)" }}
+              style={{ fontSize: "0.6rem", color: "var(--color-brand-text)", background: "var(--tint-brand-07)", border: "1px solid var(--tint-brand-18)" }}
             >
               <span style={{ color: "var(--color-ink-dim)" }}>role:</span> {roleName}
             </Badge>
@@ -230,44 +241,7 @@ export function ProjectCard({ project, index, taglist, roles, providers, baseUrl
           )}
         </div>
 
-        <Tooltip delayDuration={200}>
-          <TooltipTrigger asChild>
-            <p
-              style={{
-                fontSize: "0.85rem",
-                color: "var(--color-ink-dim)",
-                lineHeight: 1.7,
-                fontFamily: "'Space Grotesk', sans-serif",
-                marginBottom: "16px",
-                flex: 1,
-                display: "-webkit-box",
-                WebkitBoxOrient: "vertical",
-                WebkitLineClamp: 3,
-                overflow: "hidden",
-                cursor: "help",
-              }}
-            >
-              {project.description}
-            </p>
-          </TooltipTrigger>
-          <TooltipContent
-            side="top"
-            align="start"
-            className="max-w-sm font-[Space_Grotesk] leading-relaxed"
-            style={{
-              background: "var(--color-surface-code)",
-              border: `1px solid ${tint(accent, 25)}`,
-              color: "var(--color-code-ink)",
-              fontSize: "0.8rem",
-              padding: "10px 12px",
-              boxShadow: `0 8px 24px var(--shadow-black-50), 0 0 20px ${tint(accent, 8)}`,
-            }}
-          >
-            {project.description}
-          </TooltipContent>
-        </Tooltip>
-
-        <div className="flex items-center">
+        <div className="flex items-center mt-auto">
           {typeof project.siteurl !== "string" || !project.siteurl ? (
             <Tooltip delayDuration={200}>
               <TooltipTrigger asChild>
