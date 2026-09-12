@@ -986,21 +986,43 @@
   border: 2px solid var(--color-card-border);
   color: var(--color-ink-dim);
   transition: border-color 0.22s ease, color 0.22s ease,
-              background 0.22s ease, box-shadow 0.22s ease;
+              background 0.22s ease, box-shadow 0.22s ease,
+              transform 0.22s cubic-bezier(0.22, 1, 0.36, 1);
 }
+
+/* Unselected stages are outlined -- the run's history, present but quiet. */
 .pipeline-node[data-state="passed"] {
-  border-color: var(--color-brand);
+  border-color: var(--tint-brand-50);
   color: var(--color-brand-text);
 }
 .pipeline-node[data-state="running"] {
-  border-color: var(--color-success);
+  border-color: var(--tint-success-60);
   color: var(--color-success);
 }
+
+/* The selected stage inverts to a filled node. An outline-vs-fill difference
+   survives at a glance and in greyscale, which a ring at 15% opacity sitting
+   among five already-outlined nodes did not -- it read as "all six are
+   highlighted". Scale and a halo reinforce it without carrying the meaning. */
 .pipeline-node[data-selected] {
-  box-shadow: 0 0 0 4px var(--tint-brand-15);
+  transform: scale(1.18);
+}
+.pipeline-node[data-state="passed"][data-selected] {
+  background: var(--color-brand);
+  border-color: var(--color-brand);
+  color: var(--color-on-brand);
+  box-shadow: 0 0 0 5px var(--tint-brand-20), 0 4px 14px var(--tint-brand-40);
 }
 .pipeline-node[data-state="running"][data-selected] {
-  box-shadow: 0 0 0 4px var(--tint-success-20);
+  background: var(--color-success);
+  border-color: var(--color-success);
+  color: var(--color-surface-code);
+  box-shadow: 0 0 0 5px var(--tint-success-20), 0 4px 14px var(--tint-success-30);
+}
+
+/* The track up to and including the selected stage reads as the run so far. */
+.pipeline-stage[data-done] .pipeline-track {
+  background: var(--color-brand);
 }
 
 .pipeline-stage-btn {
@@ -1009,6 +1031,9 @@
 .pipeline-stage-btn:hover,
 .pipeline-stage-btn:focus-visible {
   background: var(--tint-brand-05);
+}
+.pipeline-stage-btn[aria-current="true"] {
+  background: var(--tint-brand-08);
 }
 .pipeline-stage-btn:focus-visible {
   outline: 2px solid var(--color-brand);

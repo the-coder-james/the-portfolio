@@ -74,6 +74,7 @@ export function TimelineList({ items }: { items: TimelineItem[] }) {
               key={`${entry.year}-${entry.title}`}
               data-index={i}
               className="pipeline-stage relative flex-1 min-w-[104px] snap-start"
+              data-done={i <= active ? "true" : undefined}
             >
               <button
                 type="button"
@@ -106,9 +107,10 @@ export function TimelineList({ items }: { items: TimelineItem[] }) {
                   <span
                     className="font-mono"
                     style={{
-                      fontSize: "0.8rem",
+                      fontSize: selected ? "0.88rem" : "0.8rem",
                       fontWeight: 700,
                       color: selected ? "var(--color-brand-text)" : "var(--color-ink-dim)",
+                      transition: "font-size 0.2s ease, color 0.2s ease",
                     }}
                   >
                     {entry.year}
@@ -117,6 +119,7 @@ export function TimelineList({ items }: { items: TimelineItem[] }) {
                     className="block truncate w-full text-center px-1"
                     style={{
                       fontSize: "0.7rem",
+                      fontWeight: selected ? 600 : 400,
                       color: selected ? "var(--color-ink)" : "var(--color-ink-faint)",
                       fontFamily: "'Space Grotesk', sans-serif",
                     }}
