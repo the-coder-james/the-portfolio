@@ -165,11 +165,11 @@
   --t-surface-base: #f8fafc;
   --t-surface-alt: #eef2f7;
   --t-surface-deep: #e2e8f0;
-  /* The terminal/editor chrome stays dark in BOTH themes: those cards are the
-     developer identity of this site, and a light code block reads as a docs
-     page. This is why the --t-syn-* ramp needs no light variant. */
-  --t-surface-code: #0f172a;
-  --t-surface-code-head: #1e293b;
+  /* Light editor chrome, in the spirit of GitHub Light. The terminal cards
+     used to stay dark in both themes; they now theme like everything else, so
+     the whole on-code ramp below has a light variant too. */
+  --t-surface-code: #f6f8fa;
+  --t-surface-code-head: #eaeef2;
 
   /* Destiny blue */
   --t-brand-900: #1e3a8a;             /* 8.6:1 */
@@ -208,7 +208,7 @@
   --t-chrome-red: #ef4444;
   --t-chrome-yellow: #eab308;
   --t-chrome-green: #22c55e;
-  --t-chrome-line: #8b98ad;           /* 6.1:1 on surface-code */
+  --t-chrome-line: #57606a;           /* 6.0:1 on surface-code */
 
   /* Project accents — each ≥4.5:1 on the light surfaces */
   --t-accent-1: #2563eb;
@@ -247,12 +247,34 @@
   --t-card: #ffffff;
   --t-card-foreground: #0b1220;
 
-  /* On-code text and syntax — shared by both themes, because the code surface
-     itself is dark in both (see --t-surface-code above). */
-  --t-code-ink: #e2e8f0;              /* 13.2:1 on #0f172a */
-  --t-code-ink-dim: #94a3b8;          /* 7.0:1  */
-  --t-code-ink-faint: #8b98ad;        /* 5.0-6.5:1 on the code surfaces */
-  --t-code-success: #4ade80;          /* 10.3:1 on surface-code */
+  /* On-code text and syntax for the light editor surface. Every value is
+     measured against --t-surface-code (#f6f8fa), not the page. */
+  --t-code-ink: #1f2328;              /* 14.8:1 */
+  --t-code-ink-dim: #4b535d;          /* 7.3:1  */
+  --t-code-ink-faint: #57606a;        /* 6.0:1 body, 5.5:1 titlebar */
+  --t-code-success: #116329;          /* 6.9:1  */
+
+  --t-syn-keyword: #cf222e;           /* 5.0:1  */
+  --t-syn-ident: #0550ae;             /* 7.1:1  */
+  --t-syn-fn: #6639ba;                /* 6.9:1  */
+  --t-syn-string: #0a3069;            /* 12.0:1 */
+  --t-syn-number: #0550ae;            /* 7.1:1  */
+  --t-syn-punct: #57606a;             /* 6.0:1  */
+  --t-syn-plain: #1f2328;             /* 14.8:1 */
+  --t-syn-comment: #656d76;           /* 4.9:1  */
+  --t-syn-attr: #0550ae;              /* 7.1:1  */
+  --t-syn-tag: #116329;               /* 6.9:1  */
+  --t-syn-violet: #6639ba;            /* 6.9:1  */
+}
+
+.dark {
+  /* On-code ramp and syntax for the dark editor surface (#0d1117). These
+     mirror the light set in :root -- both are measured against their own
+     --t-surface-code, never against the page. */
+  --t-code-ink: #e2e8f0;              /* 15.4:1 */
+  --t-code-ink-dim: #94a3b8;          /* 7.4:1  */
+  --t-code-ink-faint: #8b98ad;        /* 6.5:1  */
+  --t-code-success: #4ade80;          /* 12.1:1 */
 
   --t-syn-keyword: #c084fc;
   --t-syn-ident: #60a5fa;
@@ -265,14 +287,6 @@
   --t-syn-attr: #93c5fd;
   --t-syn-tag: #f9a8d4;
   --t-syn-violet: #c4b5fd;
-}
-
-.dark {
-  /* Identical to :root -- the code surface does not change between themes. */
-  --t-code-ink: #e2e8f0;
-  --t-code-ink-dim: #94a3b8;
-  --t-code-ink-faint: #8b98ad;
-  --t-code-success: #4ade80;
 
   color-scheme: dark;
 

@@ -19,7 +19,7 @@ export function TerminalCard({ name, since, professional, stackLabels }: Termina
   });
 
   const terminalLines = [
-    <><span style={{ color: "var(--color-brand-400)" }}>const</span> <span style={{ color: "var(--color-brand-300)" }}>developer</span> <span style={{ color: "var(--color-code-ink)" }}>=</span> <span style={{ color: "var(--color-syn-string)" }}>{`{`}</span></>,
+    <><span style={{ color: "var(--color-syn-keyword)" }}>const</span> <span style={{ color: "var(--color-syn-ident)" }}>developer</span> <span style={{ color: "var(--color-code-ink)" }}>=</span> <span style={{ color: "var(--color-syn-string)" }}>{`{`}</span></>,
     <>&nbsp;&nbsp;<span style={{ color: "var(--color-syn-fn)" }}>name</span><span style={{ color: "var(--color-code-ink)" }}>:</span> <span style={{ color: "var(--color-syn-tag)" }}>"{name}"</span><span style={{ color: "var(--color-code-ink-dim)" }}>,</span></>,
     <>&nbsp;&nbsp;<span style={{ color: "var(--color-syn-fn)" }}>since</span><span style={{ color: "var(--color-code-ink)" }}>:</span> <span style={{ color: "var(--color-syn-number)" }}>{since}</span><span style={{ color: "var(--color-code-ink-dim)" }}>,</span></>,
     <>&nbsp;&nbsp;<span style={{ color: "var(--color-syn-fn)" }}>professional</span><span style={{ color: "var(--color-code-ink)" }}>:</span> <span style={{ color: "var(--color-syn-number)" }}>{professional}</span><span style={{ color: "var(--color-code-ink-dim)" }}>,</span></>,
@@ -89,7 +89,7 @@ export function TerminalCard({ name, since, professional, stackLabels }: Termina
             transition={{ delay: 1.4, type: "spring", visualDuration: 0.5, bounce: 0.2 }}
           >
             <span style={{ color: "var(--color-code-success)" }}>❯</span>
-            <span style={{ color: "var(--color-brand-400)" }}>node</span>
+            <span style={{ color: "var(--color-syn-ident)" }}>node</span>
             <span style={{ color: "var(--color-code-ink)" }}> developer.config.ts</span>
           </motion.div>
           <motion.div

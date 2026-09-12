@@ -55,11 +55,11 @@ const tint = (accent: string, pct: number) =>
 
 const CODE_PREVIEWS = [
   [
-    { num: 1, code: <><span style={{color:"var(--color-syn-keyword)"}}>export</span> <span style={{color:"var(--color-brand-400)"}}>function</span> <span style={{color:"var(--color-syn-fn)"}}>Page</span>() {"{"}</> },
-    { num: 2, code: <>&nbsp;&nbsp;<span style={{color:"var(--color-syn-keyword)"}}>return</span> &lt;<span style={{color:"var(--color-brand-400)"}}>main</span>&gt;</> },
+    { num: 1, code: <><span style={{color:"var(--color-syn-keyword)"}}>export</span> <span style={{color:"var(--color-syn-ident)"}}>function</span> <span style={{color:"var(--color-syn-fn)"}}>Page</span>() {"{"}</> },
+    { num: 2, code: <>&nbsp;&nbsp;<span style={{color:"var(--color-syn-keyword)"}}>return</span> &lt;<span style={{color:"var(--color-syn-ident)"}}>main</span>&gt;</> },
     { num: 3, code: <>&nbsp;&nbsp;&nbsp;&nbsp;&lt;<span style={{color:"var(--color-syn-string)"}}>Hero</span> /&gt;</> },
     { num: 4, code: <>&nbsp;&nbsp;&nbsp;&nbsp;&lt;<span style={{color:"var(--color-syn-string)"}}>Content</span> /&gt;</> },
-    { num: 5, code: <>&nbsp;&nbsp;&lt;/<span style={{color:"var(--color-brand-400)"}}>main</span>&gt;</> },
+    { num: 5, code: <>&nbsp;&nbsp;&lt;/<span style={{color:"var(--color-syn-ident)"}}>main</span>&gt;</> },
   ],
   [
     { num: 1, code: <><span style={{color:"var(--color-syn-keyword)"}}>const</span> query = <span style={{color:"var(--color-syn-string)"}}>`</span></> },
@@ -71,12 +71,12 @@ const CODE_PREVIEWS = [
   [
     { num: 1, code: <><span style={{color:"var(--color-syn-keyword)"}}>function</span> <span style={{color:"var(--color-syn-fn)"}}>init</span>() {"{"}</> },
     { num: 2, code: <>&nbsp;&nbsp;<span style={{color:"var(--color-syn-comment)"}}>// Bootstrap app</span></> },
-    { num: 3, code: <>&nbsp;&nbsp;<span style={{color:"var(--color-brand-400)"}}>app</span>.<span style={{color:"var(--color-syn-fn)"}}>use</span>(middleware);</> },
-    { num: 4, code: <>&nbsp;&nbsp;<span style={{color:"var(--color-brand-400)"}}>app</span>.<span style={{color:"var(--color-syn-fn)"}}>listen</span>(<span style={{color:"var(--color-syn-number)"}}>3000</span>);</> },
+    { num: 3, code: <>&nbsp;&nbsp;<span style={{color:"var(--color-syn-ident)"}}>app</span>.<span style={{color:"var(--color-syn-fn)"}}>use</span>(middleware);</> },
+    { num: 4, code: <>&nbsp;&nbsp;<span style={{color:"var(--color-syn-ident)"}}>app</span>.<span style={{color:"var(--color-syn-fn)"}}>listen</span>(<span style={{color:"var(--color-syn-number)"}}>3000</span>);</> },
     { num: 5, code: <>{"}"}</> },
   ],
   [
-    { num: 1, code: <><span style={{color:"var(--color-syn-keyword)"}}>class</span> <span style={{color:"var(--color-brand-400)"}}>Controller</span> {"{"}</> },
+    { num: 1, code: <><span style={{color:"var(--color-syn-keyword)"}}>class</span> <span style={{color:"var(--color-syn-ident)"}}>Controller</span> {"{"}</> },
     { num: 2, code: <>&nbsp;&nbsp;<span style={{color:"var(--color-syn-fn)"}}>index</span>() {"{"}</> },
     { num: 3, code: <>&nbsp;&nbsp;&nbsp;&nbsp;<span style={{color:"var(--color-syn-keyword)"}}>return</span> view(<span style={{color:"var(--color-syn-string)"}}>'home'</span>);</> },
     { num: 4, code: <>&nbsp;&nbsp;{"}"}</> },
@@ -92,7 +92,7 @@ const CODE_PREVIEWS = [
   [
     { num: 1, code: <><span style={{color:"var(--color-syn-keyword)"}}>const</span> router = <span style={{color:"var(--color-syn-fn)"}}>createRouter</span>();</> },
     { num: 2, code: <></> },
-    { num: 3, code: <><span style={{color:"var(--color-brand-400)"}}>router</span>.<span style={{color:"var(--color-syn-fn)"}}>get</span>(<span style={{color:"var(--color-syn-string)"}}>'/api'</span>,</> },
+    { num: 3, code: <><span style={{color:"var(--color-syn-ident)"}}>router</span>.<span style={{color:"var(--color-syn-fn)"}}>get</span>(<span style={{color:"var(--color-syn-string)"}}>'/api'</span>,</> },
     { num: 4, code: <>&nbsp;&nbsp;<span style={{color:"var(--color-syn-keyword)"}}>async</span> (req, res) =&gt; {"{"}</> },
     { num: 5, code: <>&nbsp;&nbsp;&nbsp;&nbsp;res.<span style={{color:"var(--color-syn-fn)"}}>json</span>(data);</> },
   ],

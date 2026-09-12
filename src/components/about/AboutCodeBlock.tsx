@@ -38,9 +38,9 @@ function CodeLine({ line }: { line: CodeLineType }) {
   if (line.type === "keyword")       return (
     <div>
       <span style={{ color: "var(--color-syn-keyword)" }}>{line.content}</span>
-      <span style={{ color: "var(--color-brand-400)" }}> Developer</span>
+      <span style={{ color: "var(--color-syn-ident)" }}> Developer</span>
       <span style={{ color: "var(--color-code-ink-dim)" }}> extends </span>
-      <span style={{ color: "var(--color-brand-400)" }}>Human</span>
+      <span style={{ color: "var(--color-syn-ident)" }}>Human</span>
       <span style={{ color: "var(--color-code-ink)" }}> {"{"}</span>
     </div>
   );
@@ -71,7 +71,7 @@ export function AboutCodeBlock({ since, professional }: AboutCodeBlockProps) {
         headerRight={
           <span
             className="px-2 py-0.5 rounded font-mono"
-            style={{ background: "var(--tint-brand-15)", fontSize: "0.6rem", color: "var(--color-brand-400)" }}
+            style={{ background: "var(--tint-brand-15)", fontSize: "0.6rem", color: "var(--color-syn-ident)" }}
           >
             TypeScript
           </span>
