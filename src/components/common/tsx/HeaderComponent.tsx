@@ -84,6 +84,16 @@ export function HeaderComponent() {
       const isActive = id === active;
       el.hidden = !isActive;
       el.setAttribute("aria-hidden", String(!isActive));
+      // Re-triggers the entrance animation on every switch. The attribute has
+      // to be removed and re-added (with a reflow between) or the browser sees
+      // no change and the animation only ever plays once.
+      if (isActive) {
+        el.removeAttribute("data-entering");
+        void el.offsetWidth;
+        el.setAttribute("data-entering", "");
+      } else {
+        el.removeAttribute("data-entering");
+      }
     }
   }, [active]);
 

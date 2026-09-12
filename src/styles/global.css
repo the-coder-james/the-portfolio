@@ -914,91 +914,71 @@
   flex: 1 1 auto;
 }
 
-/* ── Timeline rail ──
-   One card is expanded at a time. Collapsed cards keep a readable minimum so
-   the year and title never truncate to nothing; the expanded one takes the
-   slack. Width is transitioned on the list item by flex-basis, so opening one
-   card closes the others in a single move. */
-.timeline-rail > li {
-  transition: flex-grow 0.38s cubic-bezier(0.22, 0.61, 0.36, 1),
-              flex-basis 0.38s cubic-bezier(0.22, 0.61, 0.36, 1);
-}
+/* ── Panel entrance ──
+   Panels are swapped by the tab bar, not scrolled to, so the reveal hooks that
+   depend on IntersectionObserver never re-fire after the first view. This runs
+   on the panel itself each time it becomes the active one: the section lifts in
+   and its immediate children follow in a short stagger, so a tab switch reads
+   as an arrival rather than a hard cut.
 
-@media (min-width: 1024px) {
-  /* Collapsed cards shrink to a spine wide enough for the year and a wrapped
-     title; the expanded one takes every remaining pixel. Basis 0 on the active
-     card with a large grow keeps the row exactly as wide as the rail, so the
-     last card can never be pushed off the right edge. */
-  .timeline-rail > li {
-    flex: 0 1 150px;
-    min-width: 0;
+   The stagger is driven by nth-child delays rather than JS, so it costs nothing
+   at runtime and cannot desync from the CSS. */
+@media (prefers-reduced-motion: no-preference) {
+  .tabpanel[data-entering] .panel-inner > * {
+    animation: panelRise 0.5s cubic-bezier(0.22, 1, 0.36, 1) backwards;
   }
-  .timeline-rail > li:has(> button[aria-expanded="true"]) {
-    flex: 1 1 0%;
-    min-width: 300px;
+  .tabpanel[data-entering] .panel-inner > *:nth-child(1) { animation-delay: 0.02s; }
+  .tabpanel[data-entering] .panel-inner > *:nth-child(2) { animation-delay: 0.10s; }
+  .tabpanel[data-entering] .panel-inner > *:nth-child(3) { animation-delay: 0.16s; }
+
+  /* The hero builds its own section, so it has no .panel-inner. */
+  .tabpanel[data-entering]#home > .relative {
+    animation: panelRise 0.5s cubic-bezier(0.22, 1, 0.36, 1) backwards;
   }
 }
 
-/* The detail block is present for assistive tech and find-in-page at every
-   size; only its visual height collapses. */
-.timeline-detail {
-  overflow: hidden;
-  transition: opacity 0.28s ease, max-height 0.38s cubic-bezier(0.22, 0.61, 0.36, 1);
-}
-.timeline-detail[data-open="false"] {
-  max-height: 0;
-  opacity: 0;
-  pointer-events: none;
-}
-.timeline-detail[data-open="true"] {
-  max-height: none;
-  opacity: 1;
+@keyframes panelRise {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
-/* Short viewports: the open card keeps every field but scrolls inside itself
-   rather than pushing past the panel. */
-@media (min-width: 1024px) and (max-height: 820px) {
-  .timeline-rail > li:has(> button[aria-expanded="true"]) .timeline-detail[data-open="true"] {
-    max-height: 44vh;
-    overflow-y: auto;
-    scrollbar-width: thin;
-  }
+/* ── Timeline (split view) ──
+   A rail of years on the left, the selected entry's detail on the right. The
+   entries here run 19-30 words, and a horizontal timeline stops working once
+   an entry needs more than roughly fifteen -- the columns get too narrow and
+   every description wraps into a thin ragged strip. Master-detail gives the
+   selected entry the full width instead. */
+.timeline-rail-item {
+  border: 1px solid transparent;
+}
+.timeline-rail-item:hover,
+.timeline-rail-item:focus-visible {
+  background: var(--tint-brand-05);
+}
+.timeline-rail-item:focus-visible {
+  outline: 2px solid var(--color-brand);
+  outline-offset: 2px;
 }
 
-.timeline-hint {
-  transition: opacity 0.2s ease;
-}
-/* A collapsed card is only as tall as its content needs. */
-.timeline-rail > li:not(:has(> button[aria-expanded="true"])) .timeline-hint {
-  margin-top: 0;
-}
-.timeline-hint[data-open="true"] { opacity: 0; height: 0; padding: 0; }
-
-/* Narrow screens have no room to fan the cards out, so every card shows its
-   detail and the rail scrolls sideways instead. */
-@media (max-width: 1023px) {
-  .timeline-detail[data-open="false"] { max-height: none; opacity: 1; pointer-events: auto; }
-  .timeline-hint { display: none; }
-  .timeline-rail > li { flex: 0 0 min(78vw, 280px); }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .timeline-rail > li,
-  .timeline-detail { transition: none; }
-}
-
-/* A thin scrollbar keeps the rail discoverable without eating vertical space. */
+/* The rail is a scroll container on both axes depending on breakpoint, so it
+   needs its own thin scrollbar rather than the page's. */
 .timeline-rail {
   scrollbar-width: thin;
-  overscroll-behavior-x: contain;
-  padding-bottom: 4px;
+  overscroll-behavior: contain;
 }
-.timeline-rail::-webkit-scrollbar { height: 4px; }
+.timeline-rail::-webkit-scrollbar { width: 4px; height: 4px; }
 .timeline-rail::-webkit-scrollbar-thumb {
   background: var(--tint-brand-30);
   border-radius: 4px;
 }
 .timeline-rail::-webkit-scrollbar-track { background: transparent; }
+
+/* The detail card owns its overflow so a long entry scrolls inside the panel
+   rather than pushing the layout past one viewport. */
+.timeline-detail-card {
+  overflow-y: auto;
+  scrollbar-width: thin;
+}
 
 /* Content taller than the space left over scrolls here rather than growing
    the document. Padding keeps the last row clear of the fade at the bottom. */
