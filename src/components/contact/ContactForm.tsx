@@ -108,7 +108,7 @@ export function ContactForm() {
             size="lg"
             className="btn-lift w-full text-on-brand rounded-xl border-0 gap-2"
             style={{
-              background: "linear-gradient(135deg, var(--color-brand-900), var(--color-brand))",
+              background: "linear-gradient(135deg, var(--color-brand-900), var(--color-brand-700))",
               boxShadow: "0 4px 20px var(--tint-brand-30)",
               fontFamily: "'Space Grotesk', sans-serif",
               fontWeight: 500,

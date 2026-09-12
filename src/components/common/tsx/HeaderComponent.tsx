@@ -34,6 +34,22 @@ export function HeaderComponent() {
   useLayoutEffect(() => {
     const fromHash = tabFromHash(window.location.hash);
     if (fromHash && fromHash !== active) setActive(fromHash);
+
+    // Landing on /#contact leaves the browser's sequential-focus start point
+    // at the hash target, so the first Tab lands inside the panel and the skip
+    // link and whole nav come last -- useless exactly when they are most
+    // needed (WCAG 2.4.3). Reset the start point to the top of the document.
+    // Focus is not moved anywhere visible: body is focused then immediately
+    // blurred, which is enough to restore document order without stealing the
+    // caret or scrolling.
+    if (fromHash) {
+      const body = document.body;
+      const hadTabIndex = body.hasAttribute("tabindex");
+      if (!hadTabIndex) body.setAttribute("tabindex", "-1");
+      body.focus({ preventScroll: true });
+      body.blur();
+      if (!hadTabIndex) body.removeAttribute("tabindex");
+    }
     // Only on mount: later hash changes are handled by the listener below.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
