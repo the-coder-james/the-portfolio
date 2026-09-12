@@ -239,7 +239,7 @@ export function ProjectsGrid({
             onClick={() => setVisible((v) => Math.min(v + step, filtered.length))}
             className="btn-soft inline-flex items-center gap-2 px-6 py-3 rounded-xl transition-all duration-200 active:scale-95 hover:scale-[1.03]"
             style={{
-              color: "var(--color-brand-300)",
+              color: "var(--color-brand-text)",
               fontFamily: "'Space Grotesk', sans-serif",
               fontSize: "0.9rem",
               fontWeight: 500,
@@ -249,7 +249,7 @@ export function ProjectsGrid({
             See more
             <span
               className="font-mono"
-              style={{ fontSize: "0.7rem", color: "var(--color-brand-400)", marginLeft: "4px" }}
+              style={{ fontSize: "0.7rem", color: "var(--color-brand-text)", marginLeft: "4px" }}
             >
               +{Math.min(step, remaining)}
             </span>

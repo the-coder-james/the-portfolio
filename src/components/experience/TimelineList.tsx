@@ -75,8 +75,6 @@ export function TimelineList({ items }: { items: TimelineItem[] }) {
               <button
                 type="button"
                 onClick={() => setActive(i)}
-                onFocus={() => setActive(i)}
-                onMouseEnter={() => setActive(i)}
                 aria-current={selected ? "true" : undefined}
                 className="timeline-rail-item relative w-full text-left rounded-lg px-2.5 py-2 transition-colors"
               >
@@ -154,7 +152,7 @@ export function TimelineList({ items }: { items: TimelineItem[] }) {
               <Badge
                 variant="outline"
                 className="font-mono rounded"
-                style={{ fontSize: "0.6rem", color: "var(--color-brand-400)", background: "var(--tint-brand-12)", border: "1px solid var(--tint-brand-20)" }}
+                style={{ fontSize: "0.6rem", color: "var(--color-brand-text)", background: "var(--tint-brand-12)", border: "1px solid var(--tint-brand-20)" }}
               >
                 {item.hash}
               </Badge>
@@ -205,7 +203,7 @@ export function TimelineList({ items }: { items: TimelineItem[] }) {
                   <Badge
                     variant="outline"
                     className="font-mono rounded"
-                    style={{ fontSize: "0.62rem", color: "var(--color-brand-400)", background: "var(--tint-brand-07)", border: "1px solid var(--tint-brand-12)" }}
+                    style={{ fontSize: "0.62rem", color: "var(--color-brand-text)", background: "var(--tint-brand-07)", border: "1px solid var(--tint-brand-12)" }}
                   >
                     {tag}
                   </Badge>

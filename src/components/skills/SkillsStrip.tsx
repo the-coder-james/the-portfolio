@@ -52,7 +52,7 @@ export function SkillsStrip({ techstack, extraSkills }: SkillsStripProps) {
       key={tech}
       variant="outline"
       className="skill-badge-interactive font-mono rounded-xl cursor-default whitespace-nowrap"
-      style={{ padding: "5px 11px", fontSize: "0.7rem", color: "var(--color-brand-300)" }}
+      style={{ padding: "5px 11px", fontSize: "0.7rem", color: "var(--color-brand-text)" }}
     >
       {tech}
     </Badge>
@@ -63,7 +63,7 @@ export function SkillsStrip({ techstack, extraSkills }: SkillsStripProps) {
       className="overflow-hidden rounded-xl py-3 px-5 shrink-0"
       style={{ background: "var(--color-card-surface)", border: "1px solid var(--color-card-border)" }}
     >
-      <p className="font-mono mb-2.5" style={{ fontSize: "0.65rem", color: "var(--color-brand-300)", textAlign: "center" }}>
+      <p className="font-mono mb-2.5" style={{ fontSize: "0.65rem", color: "var(--color-brand-text)", textAlign: "center" }}>
         // technologies I work with
       </p>
 

@@ -70,6 +70,11 @@
   --color-brand-400: var(--t-brand-400);
   --color-brand-300: var(--t-brand-300);
 
+  /* Brand blue at body-text size. The -300/-400 steps are tuned for glow and
+     large display type and fail AA as small text on the light surfaces, so
+     anything that is *read* rather than decorative points here instead. */
+  --color-brand-text: var(--t-brand-text);
+
   /* Destiny trim */
   --color-crimson: var(--t-crimson);
   --color-gold: var(--t-gold);
@@ -170,6 +175,7 @@
   --t-brand-300: #60a5fa;             /* decorative only */
 
   /* Trim */
+  --t-brand-text: #1d4ed8;            /* 6.9:1 on surface-base — AA at any size */
   --t-crimson: #be123c;               /* 5.9:1 — chest vents */
   --t-on-brand: #f8fafc;              /* 4.9:1 on --t-brand-700, the fill colour */
   --t-gold: #a16207;                  /* 4.9:1 — V-fin, AA on light */
@@ -279,6 +285,7 @@
   --t-brand-300: #93c5fd;             /* 11.4:1 */
 
   /* Trim */
+  --t-brand-text: #93c5fd;            /* 11.4:1 on surface-base */
   --t-crimson: #f43f5e;               /* 6.2:1 */
   --t-on-brand: #f8fafc;              /* 6.4:1 on --t-brand-700, the fill colour */
   --t-gold: #fbbf24;                  /* 11.1:1 */
@@ -605,7 +612,7 @@
 }
 .icon-btn:hover,
 .icon-btn:focus-visible {
-  color: var(--color-brand-300);
+  color: var(--color-brand-text);
 }
 
 /* Filter chip — `aria-pressed` drives the active look, so state is exposed
@@ -618,11 +625,11 @@
 }
 .filter-chip:hover,
 .filter-chip:focus-visible {
-  color: var(--color-brand-300);
+  color: var(--color-brand-text);
   border-color: var(--tint-brand-30);
 }
 .filter-chip[aria-pressed="true"] {
-  color: var(--color-brand-300);
+  color: var(--color-brand-text);
   border-color: var(--tint-brand-50);
   background: var(--tint-brand-15);
 }
@@ -649,7 +656,7 @@
   color: var(--color-ink-muted);
 }
 .nav-link[aria-current="true"] {
-  color: var(--color-brand-400);
+  color: var(--color-brand-text);
 }
 
 /* Primary submit button */

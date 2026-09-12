@@ -9,8 +9,8 @@ import { Label } from "@/components/ui/label";
 import { TrafficLights } from "@/components/common/tsx/TerminalShell";
 
 const fieldClass =
-  "bg-[var(--tint-white-03)] border-[var(--tint-white-08)] text-slate-200 " +
-  "placeholder:text-slate-600 rounded-[10px] " +
+  "bg-[var(--tint-white-03)] border-[var(--tint-white-08)] text-[var(--color-ink-muted)] " +
+  "placeholder:text-[var(--color-ink-faint)] rounded-[10px] " +
   "focus-visible:border-[var(--tint-brand-50)] focus-visible:bg-[var(--tint-brand-05)] " +
   "focus-visible:ring-0 focus-visible:ring-offset-0 " +
   "[font-family:'Space_Grotesk',sans-serif] text-[0.88rem]";

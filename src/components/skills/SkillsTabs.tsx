@@ -60,7 +60,7 @@ function SkillBadge({ skill }: { skill: string }) {
       <Badge
         variant="outline"
         className="skill-badge-interactive cursor-default select-none rounded-xl font-mono transition-transform hover:scale-105"
-        style={{ padding: "9px 16px", fontSize: "0.82rem", color: "var(--color-brand-300)" }}
+        style={{ padding: "9px 16px", fontSize: "0.82rem", color: "var(--color-brand-text)" }}
       >
         {skill}
       </Badge>
