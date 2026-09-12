@@ -18,7 +18,7 @@ export function SkillsMindset({ cards }: SkillsMindsetProps) {
         <WindowCard
           key={card.title}
           title={`${card.title.toLowerCase().replace(/\s+/g, "-")}.md`}
-          bodyClassName="flex items-start gap-4 p-5"
+          bodyClassName="flex items-start gap-3 p-3 sm:p-5"
         >
           <div
             className="w-10 h-10 rounded-lg flex items-center justify-center shrink-0"

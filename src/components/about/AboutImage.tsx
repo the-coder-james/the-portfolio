@@ -25,7 +25,7 @@ export function AboutImage({ name, imagePath, hoverImagePath, baseUrl }: AboutIm
   return (
     <motion.div
       ref={wrapperRef}
-      className="flex justify-center px-3 pt-6"
+      className="flex justify-center px-3 pt-6 [--portrait-size:120px] sm:[--portrait-size:170px]"
       initial={reduced ? false : { opacity: 0, scale: 0.85 }}
       animate={revealed ? { opacity: 1, scale: 1 } : undefined}
       transition={{ delay: 0.15, type: "spring", visualDuration: 0.6, bounce: 0.25 }}
@@ -47,7 +47,7 @@ export function AboutImage({ name, imagePath, hoverImagePath, baseUrl }: AboutIm
         />
         <motion.div
           className="relative rounded-full overflow-hidden"
-          style={{ width: "170px", height: "170px", border: "3px solid var(--tint-brand-60)", boxShadow: "0 0 30px var(--tint-brand-35)" }}
+          style={{ width: "var(--portrait-size, 170px)", height: "var(--portrait-size, 170px)", border: "3px solid var(--tint-brand-60)", boxShadow: "0 0 30px var(--tint-brand-35)" }}
           initial={reduced ? false : { rotate: -12 }}
           animate={revealed ? { rotate: 0 } : undefined}
           transition={{ delay: 0.25, type: "spring", visualDuration: 0.7, bounce: 0.05 }}

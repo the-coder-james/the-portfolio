@@ -1,8 +1,17 @@
 "use client";
 import { useState, useEffect, useLayoutEffect, useRef, useCallback } from "react";
 import { animateEl } from "@/lib/utils";
-import { Menu, Code2 } from "lucide-react";
-import { Sheet, SheetTrigger, SheetContent, SheetClose } from "@/components/ui/sheet";
+import { Code2, FolderGit2, GitCommitHorizontal, House, Mail, User, Wrench } from "lucide-react";
+
+/** One icon per tab, so mobile can show the whole bar without a drawer. */
+const TAB_ICONS: Record<string, typeof House> = {
+  home: House,
+  about: User,
+  skills: Wrench,
+  projects: FolderGit2,
+  experience: GitCommitHorizontal,
+  contact: Mail,
+};
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ThemeToggle } from "@/components/common/tsx/ThemeToggle";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
@@ -189,7 +198,7 @@ export function HeaderComponent() {
       style={{ opacity: 0 }}
       aria-label="Primary"
     >
-      <div className="glass-surface rounded-full px-3 sm:px-4 py-2 flex items-center justify-between gap-3 relative">
+      <div className="glass-surface rounded-full px-2 sm:px-4 py-2 flex items-center justify-between gap-1 sm:gap-3 relative">
         <button
           onClick={() => selectTab(DEFAULT_TAB)}
           className="flex items-center gap-2 group"
@@ -197,7 +206,7 @@ export function HeaderComponent() {
           <div className="w-8 h-8 rounded-lg bg-brand-700 flex items-center justify-center group-hover:bg-brand-900 transition-colors">
             <Code2 size={16} className="text-on-brand" />
           </div>
-          <span className="font-mono text-ink" style={{ fontSize: "0.9rem" }}>
+          <span className="font-mono text-ink hidden sm:inline" style={{ fontSize: "0.9rem" }}>
             <span className="text-brand">&lt;</span>james<span className="text-brand">/&gt;</span>
           </span>
         </button>
@@ -208,13 +217,13 @@ export function HeaderComponent() {
         <Tabs
           value={active}
           onValueChange={selectTab}
-          className="hidden md:block"
+          className="min-w-0 flex-1 md:flex-none"
           activationMode="manual"
         >
           <TabsList
             variant="line"
             aria-label="Sections"
-            className="relative h-auto gap-0.5 bg-transparent p-0 [&_[data-slot=tabs-trigger]]:after:hidden"
+            className="relative h-auto gap-0.5 bg-transparent p-0 w-full md:w-auto justify-between md:justify-start [&_[data-slot=tabs-trigger]]:after:hidden"
           >
             <div
               ref={indicatorRef}
@@ -233,67 +242,19 @@ export function HeaderComponent() {
                   ref={(el) => {
                     linkRefs.current[id] = el;
                   }}
-                  className="nav-link relative z-10 px-3.5 py-1.5 text-[0.7rem] font-mono uppercase tracking-wider rounded-full data-[state=active]:text-brand data-[state=active]:bg-transparent"
+                  aria-label={link.label}
+                  className="nav-link relative z-10 grid place-items-center md:block w-8 h-8 sm:w-9 sm:h-9 md:w-auto md:h-auto md:px-3.5 md:py-1.5 text-[0.7rem] font-mono uppercase tracking-wider rounded-full data-[state=active]:text-brand data-[state=active]:bg-transparent"
                 >
-                  {link.label}
+                  {(() => { const Icon = TAB_ICONS[id]; return Icon ? <Icon size={17} className="md:hidden" aria-hidden="true" /> : null; })()}
+                  <span className="hidden md:inline">{link.label}</span>
                 </TabsTrigger>
               );
             })}
           </TabsList>
         </Tabs>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center shrink-0">
           <ThemeToggle />
-          <Sheet>
-            <SheetTrigger className="md:hidden inline-flex w-9 h-9 items-center justify-center rounded-full text-ink hover:bg-[var(--tint-white-06)] transition-colors">
-              <Menu size={22} />
-            </SheetTrigger>
-            <SheetContent
-              side="right"
-              className="glass-surface w-[280px] flex flex-col gap-0 pt-16 border-y-0 border-r-0 rounded-l-2xl"
-            >
-              <div className="flex items-center gap-2 mb-8 px-2">
-                <div className="w-7 h-7 rounded-lg bg-brand-700 flex items-center justify-center">
-                  <Code2 size={14} className="text-on-brand" />
-                </div>
-                <span className="font-mono text-ink" style={{ fontSize: "0.85rem" }}>
-                  <span className="text-brand">&lt;</span>james<span className="text-brand">/&gt;</span>
-                </span>
-              </div>
-              <ThemeToggle withLabel className="mx-2 mb-4" />
-              {/* Plain buttons, not a second tablist: one set of tab semantics
-                  per page keeps assistive tech unambiguous. */}
-              <nav className="flex flex-col gap-1 flex-1" aria-label="Sections">
-                {navLinks.map((link) => {
-                  const id = link.href.slice(1);
-                  const isActive = active === id;
-                  return (
-                    <SheetClose
-                      key={link.label}
-                      onClick={() => selectTab(id)}
-                      aria-current={isActive ? "page" : undefined}
-                      className="text-left px-4 py-3 rounded-lg text-sm transition-colors"
-                      style={{
-                        color: isActive ? "var(--color-brand-400)" : "var(--color-ink-dim)",
-                        background: isActive ? "var(--tint-brand-10)" : "transparent",
-                        fontFamily: "'Space Grotesk', sans-serif",
-                      }}
-                    >
-                      <span className="text-brand font-mono mr-2">//</span>
-                      {link.label}
-                    </SheetClose>
-                  );
-                })}
-              </nav>
-              <SheetClose
-                onClick={() => selectTab("contact")}
-                className="m-4 inline-flex items-center justify-center rounded-xl px-4 py-2 text-sm text-ink border border-[var(--tint-brand-40)] bg-[var(--tint-brand-20)] hover:bg-[var(--tint-brand-35)] transition-colors"
-                style={{ fontFamily: "'Space Grotesk', sans-serif" }}
-              >
-                Hire Me
-              </SheetClose>
-            </SheetContent>
-          </Sheet>
         </div>
       </div>
     </nav>

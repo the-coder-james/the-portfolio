@@ -1143,6 +1143,16 @@
   :root { --panel-pad-y: 0.5rem; }
 }
 
+/* Phones: the panel gutters and the gap under the heading are the cheapest
+   vertical space to reclaim, and every panel pays them. */
+@media (max-width: 640px) {
+  :root {
+    --panel-pad-y: 0.5rem;
+    --panel-pad-x: 0.875rem;
+  }
+  .panel-inner { gap: 0.6rem; }
+}
+
 /* Panels are toggled by the `hidden` attribute from the tab bar. Until the tab
    bar has hydrated and marked the document, every panel stays visible, so the
    page still reads as a plain scrollable document without JS. */

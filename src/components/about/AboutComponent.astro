@@ -26,15 +26,15 @@ const renderBio = (text: string) =>
 
   <!-- Three columns rather than two: the portrait and bio used to stack in a
        single column, which made this panel the tallest on the site. -->
-  <div class="grid lg:grid-cols-12 gap-5 xl:gap-8 items-center">
+  <div class="grid lg:grid-cols-12 gap-4 xl:gap-8 items-center">
     <!-- Portrait + stats -->
-    <div class="lg:col-span-3 flex flex-col gap-4 min-w-0">
+    <div class="lg:col-span-3 flex flex-col gap-3 min-w-0">
       <AboutImage client:load name={name} imagePath={imagePath} hoverImagePath={hoverImagePath} baseUrl={baseUrl} />
       <AboutStats client:load stats={about.stats} />
     </div>
 
     <!-- Bio -->
-    <div class="lg:col-span-4 space-y-3 min-w-0">
+    <div class="lg:col-span-4 space-y-2.5 min-w-0">
       {about.bio.map((p) => (
         <p style="font-size: 0.92rem; color: var(--color-ink-dim); line-height: 1.7; font-family: 'Space Grotesk', sans-serif">
           {renderBio(p)}
@@ -43,7 +43,7 @@ const renderBio = (text: string) =>
     </div>
 
     <!-- Code block -->
-    <div class="lg:col-span-5 min-w-0">
+    <div class="hidden md:block lg:col-span-5 min-w-0">
       <AboutCodeBlock client:load since={user.since} professional={user.professional} />
     </div>
   </div>
