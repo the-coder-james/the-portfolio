@@ -70,7 +70,7 @@ const CODE_PREVIEWS = [
   ],
   [
     { num: 1, code: <><span style={{color:"var(--color-syn-keyword)"}}>function</span> <span style={{color:"var(--color-syn-fn)"}}>init</span>() {"{"}</> },
-    { num: 2, code: <>&nbsp;&nbsp;<span style={{color:"var(--color-ink-dim)"}}>// Bootstrap app</span></> },
+    { num: 2, code: <>&nbsp;&nbsp;<span style={{color:"var(--color-syn-comment)"}}>// Bootstrap app</span></> },
     { num: 3, code: <>&nbsp;&nbsp;<span style={{color:"var(--color-brand-400)"}}>app</span>.<span style={{color:"var(--color-syn-fn)"}}>use</span>(middleware);</> },
     { num: 4, code: <>&nbsp;&nbsp;<span style={{color:"var(--color-brand-400)"}}>app</span>.<span style={{color:"var(--color-syn-fn)"}}>listen</span>(<span style={{color:"var(--color-syn-number)"}}>3000</span>);</> },
     { num: 5, code: <>{"}"}</> },
@@ -83,7 +83,7 @@ const CODE_PREVIEWS = [
     { num: 5, code: <>{"}"}</> },
   ],
   [
-    { num: 1, code: <><span style={{color:"var(--color-syn-keyword)"}}>import</span> <span style={{color:"var(--color-ink-muted)"}}>WordPress</span> <span style={{color:"var(--color-syn-keyword)"}}>from</span> <span style={{color:"var(--color-syn-string)"}}>'@/cms'</span>;</> },
+    { num: 1, code: <><span style={{color:"var(--color-syn-keyword)"}}>import</span> <span style={{color:"var(--color-code-ink)"}}>WordPress</span> <span style={{color:"var(--color-syn-keyword)"}}>from</span> <span style={{color:"var(--color-syn-string)"}}>'@/cms'</span>;</> },
     { num: 2, code: <></> },
     { num: 3, code: <><span style={{color:"var(--color-syn-keyword)"}}>const</span> posts = <span style={{color:"var(--color-syn-keyword)"}}>await</span></> },
     { num: 4, code: <>&nbsp;&nbsp;WordPress.<span style={{color:"var(--color-syn-fn)"}}>getPosts</span>();</> },
@@ -152,7 +152,7 @@ export function ProjectCard({ project, index, taglist, roles, providers, baseUrl
       </div>
       <div
         className="p-5 relative overflow-hidden"
-        style={{ background: "var(--color-surface-base)", borderBottom: "1px solid var(--tint-white-05)", minHeight: "120px" }}
+        style={{ background: "var(--color-surface-code)", borderBottom: "1px solid var(--color-card-border)", minHeight: "120px" }}
       >
         <div
           className={`absolute left-0 right-0 pointer-events-none${reduced ? "" : " scan-line"}`}
@@ -184,7 +184,7 @@ export function ProjectCard({ project, index, taglist, roles, providers, baseUrl
             {lines.map((l) => <span key={l.num} style={{ lineHeight: 1.55 }}>{l.num}</span>)}
           </div>
           <div className="flex-1 overflow-hidden">
-            {lines.map((l, i) => <div key={i} style={{ lineHeight: 1.55, color: "var(--color-ink-muted)", whiteSpace: "nowrap" }}>{l.code}</div>)}
+            {lines.map((l, i) => <div key={i} style={{ lineHeight: 1.55, color: "var(--color-code-ink)", whiteSpace: "nowrap" }}>{l.code}</div>)}
           </div>
         </div>
         <div

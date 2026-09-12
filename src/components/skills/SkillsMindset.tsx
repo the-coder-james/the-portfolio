@@ -13,7 +13,7 @@ interface SkillsMindsetProps {
 
 export function SkillsMindset({ cards }: SkillsMindsetProps) {
   return (
-    <RevealGroup className="flex flex-col gap-3" preset="slide">
+    <RevealGroup className="grid sm:grid-cols-2 gap-3" preset="slide">
       {cards.map((card) => (
         <WindowCard
           key={card.title}

@@ -16,18 +16,15 @@ const extraSkills = user.extraSkills
   headline={skills.headline}
   headlineAccent={skills.headlineAccent}
 >
-  <!-- The two columns share the space above the strip, and the strip is a
-       fixed-height footer to the panel, so nothing spills past the fold. -->
-  <div class="grid lg:grid-cols-5 gap-5 items-start content-start shrink-0">
+  <!-- Stacked in a column: the skill categories read first at full width,
+       then the mindset cards as a 2x2 grid, with the marquee strip as the
+       panel's footer. -->
+  <div class="flex flex-col gap-5 shrink-0">
     <!-- Dynamic: tabbed skill badges -->
-    <div class="lg:col-span-3 min-h-0">
-      <SkillsTabs client:load techstack={techstack} extraSkills={extraSkills} />
-    </div>
+    <SkillsTabs client:load techstack={techstack} extraSkills={extraSkills} />
 
-    <!-- Dynamic: mindset cards -->
-    <div class="lg:col-span-2 min-h-0">
-      <SkillsMindset client:load cards={skills.mindset} />
-    </div>
+    <!-- Dynamic: mindset cards, 2x2 -->
+    <SkillsMindset client:load cards={skills.mindset} />
   </div>
 
   <!-- Dynamic: all-skills strip -->

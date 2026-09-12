@@ -88,12 +88,12 @@ export function TerminalCard({ name, since, professional, stackLabels }: Termina
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 1.4, type: "spring", visualDuration: 0.5, bounce: 0.2 }}
           >
-            <span style={{ color: "var(--color-success-strong)" }}>❯</span>
+            <span style={{ color: "var(--color-code-success)" }}>❯</span>
             <span style={{ color: "var(--color-brand-400)" }}>node</span>
             <span style={{ color: "var(--color-code-ink)" }}> developer.config.ts</span>
           </motion.div>
           <motion.div
-            style={{ color: "var(--color-success)", marginLeft: "18px" }}
+            style={{ color: "var(--color-code-success)", marginLeft: "18px" }}
             initial={reduced ? false : { opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 1.52, type: "spring", visualDuration: 0.5, bounce: 0.2 }}
@@ -101,7 +101,7 @@ export function TerminalCard({ name, since, professional, stackLabels }: Termina
             ✓ Ready to build something awesome!
           </motion.div>
           <div className="flex items-center gap-2 mt-1">
-            <span style={{ color: "var(--color-success-strong)" }}>❯</span>
+            <span style={{ color: "var(--color-code-success)" }}>❯</span>
             <span
               className="cursor-blink inline-block w-2 h-4 bg-brand-400"
               style={{ marginTop: "2px" }}
