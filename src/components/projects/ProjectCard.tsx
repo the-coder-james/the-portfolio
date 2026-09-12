@@ -26,6 +26,8 @@ interface Project {
   "siteurl-reason"?: string;
 }
 
+type CardView = "grid" | "list";
+
 interface ProjectCardProps {
   project: Project;
   index: number;
@@ -33,6 +35,8 @@ interface ProjectCardProps {
   roles: Record<string, { name: string }>;
   providers: Record<string, { name: string }>;
   baseUrl: string;
+  /** Grid shows a tall card; list a compact row. */
+  view?: CardView;
 }
 
 const ACCENTS = [
@@ -53,7 +57,8 @@ const ACCENTS = [
 const tint = (accent: string, pct: number) =>
   `color-mix(in srgb, ${accent} ${pct}%, transparent)`;
 
-export function ProjectCard({ project, index, taglist, roles, providers, baseUrl }: ProjectCardProps) {
+export function ProjectCard({ project, index, taglist, roles, providers, baseUrl, view = "grid" }: ProjectCardProps) {
+  const isList = view === "list";
   const { ref, revealed } = useRevealed<HTMLDivElement>("-60px");
   const reduced = useReducedMotion();
   const [hovered, setHovered] = useState(false);
@@ -94,7 +99,7 @@ export function ProjectCard({ project, index, taglist, roles, providers, baseUrl
       initial={reduced ? false : { opacity: 0, y: 50, scale: 0.95 }}
       animate={revealed ? { opacity: 1, y: 0, scale: 1 } : undefined}
       transition={{ delay: index * 0.07, type: "spring", visualDuration: 0.7, bounce: 0.2 }}
-      className="rounded-xl overflow-hidden flex flex-col"
+      className={`rounded-xl overflow-hidden flex ${isList ? "flex-row items-stretch" : "flex-col"}`}
       style={{
         background: "var(--color-card-surface)",
         border: `1px solid ${showDetail ? tint(accent, 55) : "var(--color-card-border)"}`,
@@ -103,9 +108,10 @@ export function ProjectCard({ project, index, taglist, roles, providers, baseUrl
       }}
     >
       {/* Window titlebar. The controls are decorative — not buttons, no
-          behaviour — so the whole bar is hidden from assistive tech. */}
+          behaviour — so the whole bar is hidden from assistive tech. The list
+          row is not dressed as a window, so it has none. */}
       <div
-        className="flex items-center gap-2 px-3 py-2 shrink-0"
+        className={`${isList ? "hidden" : "flex"} items-center gap-2 px-3 py-2 shrink-0`}
         style={{
           background: "var(--color-card-titlebar)",
           borderBottom: "1px solid var(--color-card-border)",
@@ -123,8 +129,13 @@ export function ProjectCard({ project, index, taglist, roles, providers, baseUrl
       {/* The screenshot is the card's face. Detail floats over it on hover
           (pointer) or press (touch) -- see `revealed` below. */}
       <div
-        className="relative overflow-hidden shrink-0"
-        style={{ background: "var(--color-surface-code)", borderBottom: "1px solid var(--color-card-border)", aspectRatio: "16 / 10" }}
+        className={`relative overflow-hidden shrink-0 ${isList ? "w-[104px] sm:w-[140px]" : ""}`}
+        style={{
+          background: "var(--color-surface-code)",
+          ...(isList
+            ? { borderRight: "1px solid var(--color-card-border)" }
+            : { borderBottom: "1px solid var(--color-card-border)", aspectRatio: "16 / 10" }),
+        }}
       >
         <OptimizedImage
           src={project.image.url}
@@ -152,7 +163,7 @@ export function ProjectCard({ project, index, taglist, roles, providers, baseUrl
             already in the card body below, which is always present. */}
         <div
           aria-hidden="true"
-          className="absolute inset-0 flex flex-col justify-end p-4"
+          className={`absolute inset-0 flex-col justify-end p-4 ${isList ? "hidden" : "flex"}`}
           style={{
             zIndex: 3,
             opacity: showDetail ? 1 : 0,
@@ -199,7 +210,7 @@ export function ProjectCard({ project, index, taglist, roles, providers, baseUrl
         </div>
 
         <div
-          className="absolute top-3 right-3 flex flex-wrap gap-1 justify-end max-w-[62%]"
+          className={`absolute top-3 right-3 ${isList ? "hidden" : "flex"} flex-wrap gap-1 justify-end max-w-[62%]`}
           style={{ zIndex: 4 }}
         >
           {project.tags.map((t) => (
@@ -215,10 +226,27 @@ export function ProjectCard({ project, index, taglist, roles, providers, baseUrl
         </div>
       </div>
 
-      <div className="p-4 flex flex-col flex-1 gap-2">
+      <div className={`flex flex-col flex-1 min-w-0 ${isList ? "px-4 py-2.5 gap-1.5" : "p-4 gap-2"}`}>
         <h3 style={{ fontSize: "1rem", fontWeight: 700, color: "var(--color-ink)", fontFamily: "'Space Grotesk', sans-serif" }}>
           {project.title}
         </h3>
+
+        {isList && (
+          <p
+            style={{
+              fontSize: "0.78rem",
+              color: "var(--color-ink-dim)",
+              lineHeight: 1.55,
+              fontFamily: "'Space Grotesk', sans-serif",
+              display: "-webkit-box",
+              WebkitBoxOrient: "vertical",
+              WebkitLineClamp: 2,
+              overflow: "hidden",
+            }}
+          >
+            {project.description}
+          </p>
+        )}
 
         <div className="flex flex-wrap gap-1.5">
           {roleName && (
@@ -241,7 +269,7 @@ export function ProjectCard({ project, index, taglist, roles, providers, baseUrl
           )}
         </div>
 
-        <div className="flex items-center mt-auto">
+        <div className={`flex items-center ${isList ? "" : "mt-auto"}`}>
           {typeof project.siteurl !== "string" || !project.siteurl ? (
             <Tooltip delayDuration={200}>
               <TooltipTrigger asChild>

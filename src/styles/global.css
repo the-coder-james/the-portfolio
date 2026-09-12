@@ -975,6 +975,43 @@
    an entry needs more than roughly fifteen -- the columns get too narrow and
    every description wraps into a thin ragged strip. Master-detail gives the
    selected entry the full width instead. */
+/* ── Project filters and view toggle ── */
+.filter-select {
+  color: var(--color-ink-dim);
+  background: var(--tint-white-03);
+  border: 1px solid var(--tint-white-08);
+  transition: color 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+}
+.filter-select:hover,
+.filter-select:focus-visible {
+  color: var(--color-brand-text);
+  border-color: var(--tint-brand-30);
+}
+.filter-select[data-active] {
+  color: var(--color-brand-text);
+  border-color: var(--tint-brand-50);
+  background: var(--tint-brand-10);
+}
+/* The options list is painted by the OS, so it needs real colours rather than
+   the translucent tints the closed control uses. */
+.filter-select option {
+  background: var(--color-card-surface);
+  color: var(--color-ink);
+}
+
+.view-toggle-btn {
+  color: var(--color-ink-dim);
+}
+.view-toggle-btn:hover,
+.view-toggle-btn:focus-visible {
+  color: var(--color-brand-text);
+}
+.view-toggle-btn[aria-pressed="true"] {
+  background: var(--color-card-surface);
+  color: var(--color-brand-text);
+  box-shadow: 0 1px 2px var(--shadow-black-40);
+}
+
 /* ── Career pipeline ──
    The timeline drawn as a CI/CD run: connected stage nodes, everything before
    the present marked passed, the present one still running. */
