@@ -188,7 +188,7 @@ export function HeaderComponent() {
           <TabsList
             variant="line"
             aria-label="Sections"
-            className="relative h-auto gap-0.5 bg-transparent p-0"
+            className="relative h-auto gap-0.5 bg-transparent p-0 [&_[data-slot=tabs-trigger]]:after:hidden"
           >
             <div
               ref={indicatorRef}
