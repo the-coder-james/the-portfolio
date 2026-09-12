@@ -967,6 +967,17 @@
   outline-offset: 2px;
 }
 
+/* Below lg the rail is a horizontal strip that can outrun the viewport, so the
+   cut edges are faded to read as "more this way". Above lg it is a vertical
+   list that fits, and the same mask would wrongly fade its first and last
+   entries -- hence the breakpoint. */
+@media (max-width: 1023px) {
+  .timeline-rail {
+    -webkit-mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
+    mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
+  }
+}
+
 /* The rail is a scroll container on both axes depending on breakpoint, so it
    needs its own thin scrollbar rather than the page's. */
 .timeline-rail {
@@ -988,13 +999,43 @@
 }
 
 /* Content taller than the space left over scrolls here rather than growing
-   the document. Padding keeps the last row clear of the fade at the bottom. */
+   the document.
+
+   Because the page itself never scrolls, a region that scrolls but does not
+   look scrollable reads as a frozen site, and whatever sits below the fold is
+   silently lost. The mask fades the last rows out so the cut reads as "there
+   is more"; `animation-timeline: scroll()` drops it once the reader reaches
+   the end, and browsers without scroll-driven animations just keep the fade,
+   which is the safe direction to fail in. */
 .panel-scroll {
   overflow-y: auto;
   overflow-x: hidden;
   scrollbar-width: thin;
   padding-right: 2px;
   overscroll-behavior: contain;
+  --scroll-fade: 2.25rem;
+  -webkit-mask-image: linear-gradient(to bottom, #000 calc(100% - var(--scroll-fade)), transparent);
+  mask-image: linear-gradient(to bottom, #000 calc(100% - var(--scroll-fade)), transparent);
+}
+
+/* Retire the fade once the reader reaches the end, where there is nothing
+   left to hint at. Browsers without scroll-driven animations keep the fade
+   permanently, which is the safe direction to fail in. */
+@property --scroll-fade {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 2.25rem;
+}
+
+@supports (animation-timeline: scroll()) {
+  .panel-scroll {
+    animation: panelScrollFade linear both;
+    animation-timeline: scroll(self block);
+    animation-range: calc(100% - 2.25rem) 100%;
+  }
+  @keyframes panelScrollFade {
+    to { --scroll-fade: 0rem; }
+  }
 }
 
 /* Short viewports: give the content back the space the heading was using. */

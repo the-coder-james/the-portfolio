@@ -41,12 +41,17 @@ export function TimelineList({ items }: { items: TimelineItem[] }) {
     const rail = railRef.current;
     const el = rail?.querySelector<HTMLElement>(`[data-index="${active}"]`);
     if (!rail || !el) return;
-    if (rail.scrollWidth <= rail.clientWidth && rail.scrollHeight <= rail.clientHeight) return;
-    el.scrollIntoView({
-      behavior: reduced ? "auto" : "smooth",
-      block: "nearest",
-      inline: "nearest",
+    // A frame later: on first mount the rail has not been laid out yet, so the
+    // guard above sees no overflow and the default (last) entry stays off the
+    // right edge of the narrow rail.
+    const raf = requestAnimationFrame(() => {
+      el.scrollIntoView({
+        behavior: reduced ? "auto" : "smooth",
+        block: "nearest",
+        inline: "nearest",
+      });
     });
+    return () => cancelAnimationFrame(raf);
   }, [active, reduced]);
   const item = items[active];
   const isPresent = item.type === "present";
@@ -54,7 +59,7 @@ export function TimelineList({ items }: { items: TimelineItem[] }) {
   const spring = { type: "spring" as const, visualDuration: 0.35, bounce: 0.18 };
 
   return (
-    <div className="min-h-0 grid lg:grid-cols-[max-content_max-content] gap-6 xl:gap-10 items-start content-start justify-center m-auto">
+    <div className="min-h-0 grid lg:grid-cols-[max-content_max-content] gap-6 xl:gap-10 items-start content-start justify-center mx-auto mt-0 mb-auto">
       {/* ── Rail ── */}
       <ol
         className="timeline-rail relative flex lg:flex-col gap-0.5 list-none p-0 m-0 lg:pl-4 min-h-0 overflow-x-auto lg:overflow-x-visible lg:overflow-y-auto snap-x lg:snap-none"

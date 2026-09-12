@@ -283,16 +283,20 @@ Apply the same swap at `SkillsStrip.tsx:55,66`, `ProjectsGrid.tsx:242,252`, and 
 
 ## 6. Prioritised action list
 
-- [ ] 1. `A11Y-001` — swap `text-slate-200`/`placeholder:text-slate-600` for ink tokens in `ContactForm.tsx`. One-line fix, unblocks the site's only conversion path.
-- [ ] 2. `A11Y-003` — delete `onFocus` / `onMouseEnter` from the timeline rail button. One-line fix, restores the documented intent.
-- [ ] 3. `A11Y-004` — add `--color-brand-text` and repoint the 6 label call-sites. Systemic; prevents recurrence.
-- [ ] 4. `A11Y-002` — reset the sequential-focus start point after hash canonicalisation in `HeaderComponent`.
-- [ ] 5. `A11Y-005` — darken the dark-theme CTA gradient stops.
-- [ ] 6. `UX-001` — add the bottom scroll fade that `global.css` already claims exists.
-- [ ] 7. `UX-002` — tighten skills spacing so the strip fits at ≥1280x900.
-- [ ] 8. `UX-003` — fade + fix `scrollIntoView` timing on the mobile timeline rail.
-- [ ] 9. `UX-004` — un-centre the experience timeline block.
-- [ ] 10. `UX-005` — correct the contact success copy and add a reset control.
+> **Status:** items 1-10 are done as of commit on `refactor/ui`; POLISH-001..004
+> are left for the author. Each fix was verified against the running preview,
+> not just applied. See the commits for measurements.
+
+- [x] 1. `A11Y-001` — swap `text-slate-200`/`placeholder:text-slate-600` for ink tokens in `ContactForm.tsx`. One-line fix, unblocks the site's only conversion path.
+- [x] 2. `A11Y-003` — delete `onFocus` / `onMouseEnter` from the timeline rail button. One-line fix, restores the documented intent.
+- [x] 3. `A11Y-004` — add `--color-brand-text` and repoint the 6 label call-sites. Systemic; prevents recurrence.
+- [x] 4. `A11Y-002` — reset the sequential-focus start point after hash canonicalisation in `HeaderComponent`.
+- [x] 5. `A11Y-005` — darken the dark-theme CTA gradient stops.
+- [x] 6. `UX-001` — add the bottom scroll fade that `global.css` already claims exists.
+- [x] 7. `UX-002` — tighten skills spacing so the strip fits at ≥1280x900.
+- [x] 8. `UX-003` — fade + fix `scrollIntoView` timing on the mobile timeline rail.
+- [x] 9. `UX-004` — un-centre the experience timeline block.
+- [x] 10. `UX-005` — correct the contact success copy and add a reset control.
 - [ ] 11. `POLISH-001..004` — discuss with the author; no action implied.
 
 ---
