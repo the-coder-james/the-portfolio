@@ -1007,6 +1007,36 @@
   box-shadow: 0 0 0 3px var(--tint-brand-25);
 }
 
+/* ── Next-section link ──
+   The onward step at the foot of each panel. Understated at rest so it does
+   not compete with the panel's own content, and it commits on hover. */
+.next-section-link {
+  border: 1px solid transparent;
+  transition: background 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+}
+.next-section-link:hover,
+.next-section-link:focus-visible {
+  background: var(--tint-brand-08);
+  border-color: var(--tint-brand-25);
+}
+.next-section-link:focus-visible {
+  outline: 2px solid var(--color-brand);
+  outline-offset: 2px;
+}
+
+.next-section-arrow {
+  transition: transform 0.2s ease;
+}
+.next-section-link:hover .next-section-arrow,
+.next-section-link:focus-visible .next-section-arrow {
+  transform: translateX(3px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .next-section-link,
+  .next-section-arrow { transition: none; }
+}
+
 /* ── Project filters and view toggle ── */
 .filter-select {
   color: var(--color-ink-dim);

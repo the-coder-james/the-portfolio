@@ -2,6 +2,7 @@
 import { ParticleCanvas } from "@/components/mainvisual/ParticleCanvas"
 import { TypingHeadline } from "@/components/mainvisual/TypingHeadline"
 import { TerminalCard } from "@/components/mainvisual/TerminalCard"
+import { NextSectionLink } from "@/components/common/tsx/NextSectionLink"
 import contactJson from "@/assets/contact.json"
 import dataJson from "@/assets/data.json"
 
@@ -134,6 +135,8 @@ const socials = contactJson
       />
     </div>
 
+    {/* The hero is not a SectionShell, so it carries its own onward link. */}
+    <NextSectionLink client:idle from="home" />
   </div>
 </section>
 

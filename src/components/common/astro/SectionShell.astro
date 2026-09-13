@@ -1,5 +1,6 @@
 ---
 import { SectionHeading } from "@/components/common/tsx/SectionHeading"
+import { NextSectionLink } from "@/components/common/tsx/NextSectionLink"
 
 /**
  * The shared frame for every tab panel.
@@ -24,6 +25,8 @@ interface Props {
   headingClass?: string;
   /** Let the content region scroll when it overflows the viewport. */
   scrollable?: boolean;
+  /** Show the "next section" link at the foot of the panel. */
+  showNext?: boolean;
 }
 
 const {
@@ -36,6 +39,7 @@ const {
   class: className = "",
   headingClass = "",
   scrollable = true,
+  showNext = true,
 } = Astro.props;
 
 const hasHeading = Boolean(eyebrow || headline);
@@ -67,5 +71,9 @@ const hasHeading = Boolean(eyebrow || headline);
     <div class:list={["flex-1 min-h-0 flex flex-col", scrollable ? "panel-scroll" : ""]}>
       <slot />
     </div>
+
+    {/* Outside the scroll region, so it reads as a panel footer rather than
+        something you have to scroll to find. */}
+    {showNext && <NextSectionLink client:idle from={id} />}
   </div>
 </section>
