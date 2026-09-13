@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useMemo, useState } from "react";
 import { LayoutGrid, List, Search, X } from "lucide-react";
 import { ProjectCard } from "@/components/projects/ProjectCard";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -27,8 +27,6 @@ interface ProjectsGridProps {
   roles: Record<string, { name: string }>;
   providers: Record<string, { name: string }>;
   baseUrl: string;
-  initialCount?: number;
-  step?: number;
 }
 
 function parseDate(d: string): number {
@@ -42,16 +40,12 @@ export function ProjectsGrid({
   roles,
   providers,
   baseUrl,
-  initialCount = 4,
-  step = 4,
 }: ProjectsGridProps) {
   const [query, setQuery] = useState("");
   const [activeTag, setActiveTag] = useState<string | null>(null);
   const [activeRole, setActiveRole] = useState<string | null>(null);
   const [activeProvider, setActiveProvider] = useState<string | null>(null);
-  const [visible, setVisible] = useState(initialCount);
   const [view, setView] = useState<"grid" | "list">("grid");
-  const sentinelRef = useRef<HTMLDivElement>(null);
 
   const sorted = useMemo(
     () => [...projects].sort((a, b) => parseDate(b.date) - parseDate(a.date)),
@@ -76,48 +70,8 @@ export function ProjectsGrid({
   const hasFilters = Boolean(activeTag || activeRole || activeProvider);
   const roleEntries = Object.entries(roles);
   const providerEntries = Object.entries(providers);
-  const displayed = filtered.slice(0, visible);
-  const hasMore = visible < filtered.length;
-  const remaining = filtered.length - visible;
 
-  // Extend as the sentinel scrolls into view -- but only once the reader has
-  // actually scrolled. The panel is sized so the first row fits exactly, so on
-  // a tall screen the sentinel starts in view and would chain-load the whole
-  // list before anyone touched the page.
-  //
-  // When the row fits exactly there is nothing to scroll and the observer can
-  // never fire, so the button below is the real affordance; the observer only
-  // helps once the grid has grown past the fold.
-  useEffect(() => {
-    const el = sentinelRef.current;
-    if (!el || !hasMore) return;
-    const root = el.closest<HTMLElement>(".panel-scroll") ?? null;
-    if (!root) return;
-
-    let armed = false;
-    const io = new IntersectionObserver(
-      (entries) => {
-        if (armed && entries.some((e) => e.isIntersecting)) {
-          setVisible((v) => Math.min(v + step, filtered.length));
-        }
-      },
-      { root, rootMargin: "120px 0px" },
-    );
-
-    const arm = () => {
-      armed = true;
-      io.observe(el);
-      root.removeEventListener("scroll", arm);
-    };
-    root.addEventListener("scroll", arm, { passive: true });
-
-    return () => {
-      io.disconnect();
-      root.removeEventListener("scroll", arm);
-    };
-  }, [hasMore, step, filtered.length]);
-
-  const resetVisible = () => setVisible(initialCount);
+  const resetVisible = () => {};  // kept so the filter handlers read the same
 
   return (
     <TooltipProvider delayDuration={200}>
@@ -246,8 +200,7 @@ export function ProjectsGrid({
         aria-live="polite"
         style={{ fontSize: "0.72rem", color: "var(--color-ink-dim)" }}
       >
-        // showing {displayed.length} of {filtered.length}
-        {filtered.length !== sorted.length && ` (${sorted.length} total)`}
+        // showing {filtered.length} of {sorted.length}
       </div>
 
       <div className="panel-scroll flex-1 min-h-0 -mr-1 pr-1">
@@ -274,7 +227,7 @@ export function ProjectsGrid({
               : "flex flex-col gap-2"
           }
         >
-          {displayed.map((project, i) => (
+          {filtered.map((project, i) => (
             <ProjectCard
               key={`${project.title}-${project.date}`}
               project={project}
@@ -291,27 +244,14 @@ export function ProjectsGrid({
 
       {/* The sentinel doubles as the control: it loads on scroll once the grid
           is taller than the panel, and is clickable when it is not. */}
-      {hasMore && (
-        <div ref={sentinelRef} className="flex justify-center py-2 shrink-0">
-          <button
-            type="button"
-            onClick={() => setVisible((v) => Math.min(v + step, filtered.length))}
-            className="btn-soft inline-flex items-center gap-2 px-4 py-1.5 rounded-full"
-            style={{
-              color: "var(--color-brand-text)",
-              fontFamily: "'Space Grotesk', sans-serif",
-              fontSize: "0.78rem",
-              fontWeight: 500,
-            }}
-          >
-            Show {Math.min(step, remaining)} more
-            <span className="font-mono" style={{ fontSize: "0.66rem", color: "var(--color-ink-faint)" }}>
-              +{remaining}
-            </span>
-          </button>
-        </div>
-      )}
       </div>
+
+      {filtered.length > 4 && (
+        <span className="scroll-hint" aria-hidden="true">
+          scroll for more
+          <span className="scroll-hint-arrow">↓</span>
+        </span>
+      )}
     </TooltipProvider>
   );
 }

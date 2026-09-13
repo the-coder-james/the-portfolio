@@ -916,6 +916,10 @@
   --footer-h: 109px;
   --panel-pad-y: clamp(0.75rem, 2.2vh, 1.75rem);
   --panel-pad-x: clamp(1rem, 3vw, 2.5rem);
+  /* Clearance between the floating nav and the first thing in a panel. Kept
+     separate from --panel-pad-y so tightening a short screen does not push the
+     eyebrow up under the pill. */
+  --panel-nav-gap: clamp(1.25rem, 3.5vh, 2.75rem);
 }
 
 .panel-viewport {
@@ -924,7 +928,7 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
-  padding: calc(var(--nav-h) + var(--panel-pad-y)) var(--panel-pad-x) var(--panel-pad-y);
+  padding: calc(var(--nav-h) + var(--panel-nav-gap)) var(--panel-pad-x) var(--panel-pad-y);
   overflow: hidden;
 }
 
@@ -1035,6 +1039,62 @@
 @media (prefers-reduced-motion: reduce) {
   .next-section-link,
   .next-section-arrow { transition: none; }
+}
+
+/* ── Scroll affordance ──
+   A region that scrolls but does not look scrollable reads as a frozen page,
+   and the page itself never scrolls here. The existing mask fades the last rows
+   out; this adds an explicit cue beneath it so "there is more" is stated rather
+   than implied. Both retire once the reader reaches the end. */
+.scroll-hint {
+  position: absolute;
+  left: 50%;
+  bottom: calc(var(--panel-pad-y) + 0.35rem);
+  transform: translateX(-50%);
+  z-index: 4;
+  pointer-events: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.25rem 0.7rem;
+  border-radius: 999px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.62rem;
+  color: var(--color-ink-dim);
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  -webkit-backdrop-filter: blur(10px) saturate(160%);
+  backdrop-filter: blur(10px) saturate(160%);
+  box-shadow: var(--glass-shadow);
+}
+
+.scroll-hint-arrow {
+  display: inline-block;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .scroll-hint-arrow { animation: scrollHintBob 1.6s ease-in-out infinite; }
+}
+
+@keyframes scrollHintBob {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(2px); }
+}
+
+/* Hidden once the region is scrolled to the end, so it never lies. */
+@supports (animation-timeline: scroll()) {
+  .scroll-hint {
+    animation: scrollHintFade linear both;
+    /* Named timeline: the hint is a sibling of the scroll region now, so
+       scroll(nearest) would find the page instead. */
+    animation-timeline: --panel-scroll-tl;
+    animation-range: 0 90px;
+  }
+  .panel-scroll { scroll-timeline: --panel-scroll-tl block; }
+  .tabpanel:has(> .panel-inner .panel-scroll) { timeline-scope: --panel-scroll-tl; }
+  @keyframes scrollHintFade {
+    to { opacity: 0; }
+  }
 }
 
 /* The card's media box. Declared here rather than inline so the short-viewport
@@ -1215,7 +1275,7 @@
    takes every em-based size with it, which is far more effective than chasing
    individual paddings. */
 @media (min-width: 641px) and (max-height: 900px) {
-  :root { --panel-pad-y: 0.6rem; }
+  :root { --panel-pad-y: 0.6rem; --panel-nav-gap: 1.5rem; }
   .panel-inner { gap: 0.6rem; }
   .tabpanel:not(#home) .panel-inner { font-size: 0.94em; }
   .tabpanel:not(#home) h2 { font-size: clamp(1.4rem, 3vw, 2rem) !important; }
@@ -1223,7 +1283,7 @@
 
 @media (min-width: 641px) and (max-height: 800px) {
   .tabpanel:not(#home) .panel-inner { font-size: 0.88em; }
-  :root { --panel-pad-y: 0.45rem; }
+  :root { --panel-pad-y: 0.45rem; --panel-nav-gap: 1.15rem; }
   .panel-inner { gap: 0.45rem; }
 }
 
@@ -1231,7 +1291,6 @@
    reach them. These are the ones that actually decide whether a panel fits. */
 @media (min-width: 641px) and (max-height: 860px) {
   /* Project thumbnails: the media box is the bulk of a card's height. */
-  #projects .project-media { aspect-ratio: 2 / 1; }
 
   /* Skills: the mindset cards and the marquee strip. */
   #skills .window-card > div:last-child { padding: 0.55rem 0.75rem; }
@@ -1252,27 +1311,20 @@
    fourth project card is one row's worth of extra. */
 @media (min-width: 641px) and (max-height: 780px) {
   #skills astro-island:has(.edge-fade-x) { display: none; }
-  #projects .project-media { aspect-ratio: 21 / 8; }
   #projects [tabindex="0"] > div:last-child { padding: 0.55rem 0.7rem; gap: 0.3rem; }
 }
 
 /* Shortest laptops: the row itself is the last thing to give. Three cards fit
    where four do not, and "Show more" still reaches the rest. */
 @media (min-width: 641px) and (max-height: 740px) {
-  #projects [tabindex="0"]:nth-child(n + 4) { display: none; }
-  #projects .panel-scroll > div:last-child { padding-block: 0.15rem; }
-  #projects .btn-soft { padding-block: 0.3rem; font-size: 0.72rem; }
   #projects .grid { gap: 0.5rem; }
-  #projects [tabindex="0"] > div:first-child { padding-block: 0.25rem; }
 }
 
 /* 700px-tall laptops: two cards is the honest fit. Shrinking further would
    make the thumbnails useless, and "Show more" still reaches the rest. */
 @media (min-width: 641px) and (max-height: 710px) {
-  #projects [tabindex="0"]:nth-child(n + 3) { display: none; }
-  #projects .project-media { aspect-ratio: 3 / 1; }
   #skills .panel-inner { font-size: 0.85em; }
-  :root { --panel-pad-y: 0.35rem; }
+  :root { --panel-pad-y: 0.35rem; --panel-nav-gap: 1rem; }
   .panel-inner { gap: 0.35rem; }
 }
 
@@ -1282,6 +1334,7 @@
   :root {
     --panel-pad-y: 0.5rem;
     --panel-pad-x: 0.875rem;
+    --panel-nav-gap: 0.9rem;
   }
   .panel-inner {
     gap: 0.6rem;
