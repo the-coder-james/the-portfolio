@@ -91,10 +91,10 @@ export function ContactForm() {
       ) : (
         <form
           onSubmit={handleSubmit}
-          className="rounded-2xl p-8 space-y-5"
+          className="rounded-2xl p-5 space-y-3.5"
           style={{ background: "var(--color-card-surface)", border: "1px solid var(--color-card-border)" }}
         >
-          <div className="flex items-center gap-2 mb-2">
+          <div className="flex items-center gap-2 mb-1">
             <TrafficLights />
             <span className="font-mono ml-2" style={{ fontSize: "0.68rem", color: "var(--color-ink-faint)" }}>
               send_message.ts

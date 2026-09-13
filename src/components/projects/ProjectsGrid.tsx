@@ -42,8 +42,8 @@ export function ProjectsGrid({
   roles,
   providers,
   baseUrl,
-  initialCount = 8,
-  step = 8,
+  initialCount = 4,
+  step = 4,
 }: ProjectsGridProps) {
   const [query, setQuery] = useState("");
   const [activeTag, setActiveTag] = useState<string | null>(null);
@@ -78,26 +78,44 @@ export function ProjectsGrid({
   const providerEntries = Object.entries(providers);
   const displayed = filtered.slice(0, visible);
   const hasMore = visible < filtered.length;
+  const remaining = filtered.length - visible;
 
-  // Extend as the sentinel scrolls into view. The panel scrolls internally, so
-  // the observer's root is that region rather than the viewport -- against the
-  // viewport the sentinel would never intersect and nothing would ever load.
+  // Extend as the sentinel scrolls into view -- but only once the reader has
+  // actually scrolled. The panel is sized so the first row fits exactly, so on
+  // a tall screen the sentinel starts in view and would chain-load the whole
+  // list before anyone touched the page.
+  //
+  // When the row fits exactly there is nothing to scroll and the observer can
+  // never fire, so the button below is the real affordance; the observer only
+  // helps once the grid has grown past the fold.
   useEffect(() => {
     const el = sentinelRef.current;
     if (!el || !hasMore) return;
     const root = el.closest<HTMLElement>(".panel-scroll") ?? null;
+    if (!root) return;
+
+    let armed = false;
     const io = new IntersectionObserver(
       (entries) => {
-        if (entries.some((e) => e.isIntersecting)) {
+        if (armed && entries.some((e) => e.isIntersecting)) {
           setVisible((v) => Math.min(v + step, filtered.length));
         }
       },
-      { root, rootMargin: "200px 0px" },
+      { root, rootMargin: "120px 0px" },
     );
-    io.observe(el);
-    return () => io.disconnect();
+
+    const arm = () => {
+      armed = true;
+      io.observe(el);
+      root.removeEventListener("scroll", arm);
+    };
+    root.addEventListener("scroll", arm, { passive: true });
+
+    return () => {
+      io.disconnect();
+      root.removeEventListener("scroll", arm);
+    };
   }, [hasMore, step, filtered.length]);
-  const remaining = filtered.length - visible;
 
   const resetVisible = () => setVisible(initialCount);
 
@@ -271,18 +289,26 @@ export function ProjectsGrid({
         </div>
       )}
 
-      {/* Sentinel: loads the next page as it comes into view, so the grid
-          extends by scrolling rather than by a button press. Kept in the DOM
-          with a live region so screen-reader and keyboard users are told the
-          count changed -- infinite scroll is silent otherwise. */}
+      {/* The sentinel doubles as the control: it loads on scroll once the grid
+          is taller than the panel, and is clickable when it is not. */}
       {hasMore && (
-        <div ref={sentinelRef} className="flex justify-center py-4" aria-hidden="true">
-          <span
-            className="font-mono"
-            style={{ fontSize: "0.7rem", color: "var(--color-ink-faint)" }}
+        <div ref={sentinelRef} className="flex justify-center py-2 shrink-0">
+          <button
+            type="button"
+            onClick={() => setVisible((v) => Math.min(v + step, filtered.length))}
+            className="btn-soft inline-flex items-center gap-2 px-4 py-1.5 rounded-full"
+            style={{
+              color: "var(--color-brand-text)",
+              fontFamily: "'Space Grotesk', sans-serif",
+              fontSize: "0.78rem",
+              fontWeight: 500,
+            }}
           >
-            loading {Math.min(step, remaining)} more...
-          </span>
+            Show {Math.min(step, remaining)} more
+            <span className="font-mono" style={{ fontSize: "0.66rem", color: "var(--color-ink-faint)" }}>
+              +{remaining}
+            </span>
+          </button>
         </div>
       )}
       </div>

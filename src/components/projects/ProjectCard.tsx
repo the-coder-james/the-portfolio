@@ -129,12 +129,12 @@ export function ProjectCard({ project, index, taglist, roles, providers, baseUrl
       {/* The screenshot is the card's face. Detail floats over it on hover
           (pointer) or press (touch) -- see `revealed` below. */}
       <div
-        className={`relative overflow-hidden shrink-0 ${isList ? "w-[104px] sm:w-[140px]" : ""}`}
+        className={`relative overflow-hidden shrink-0 ${isList ? "w-[104px] sm:w-[140px]" : "project-media"}`}
         style={{
           background: "var(--color-surface-code)",
           ...(isList
             ? { borderRight: "1px solid var(--color-card-border)" }
-            : { borderBottom: "1px solid var(--color-card-border)", aspectRatio: "16 / 10" }),
+            : { borderBottom: "1px solid var(--color-card-border)" }),
         }}
       >
         <OptimizedImage
@@ -230,8 +230,8 @@ export function ProjectCard({ project, index, taglist, roles, providers, baseUrl
         </div>
       </div>
 
-      <div className={`flex flex-col flex-1 min-w-0 ${isList ? "px-4 py-2.5 gap-1.5" : "p-4 gap-2"}`}>
-        <h3 style={{ fontSize: "1rem", fontWeight: 700, color: "var(--color-ink)", fontFamily: "'Space Grotesk', sans-serif" }}>
+      <div className={`flex flex-col flex-1 min-w-0 ${isList ? "px-4 py-2.5 gap-1.5" : "p-3 gap-1.5"}`}>
+        <h3 style={{ fontSize: "0.92rem", fontWeight: 700, color: "var(--color-ink)", fontFamily: "'Space Grotesk', sans-serif" }}>
           {project.title}
         </h3>
 

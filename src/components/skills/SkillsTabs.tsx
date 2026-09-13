@@ -80,7 +80,7 @@ export function SkillsTabs({ techstack, extraSkills }: SkillsTabsProps) {
       >
         <TabsList
           aria-label="Skill category"
-          className="h-auto p-1 mb-3 sm:mb-5 flex-wrap justify-start gap-1"
+          className="h-auto p-1 mb-2.5 sm:mb-3.5 flex-wrap justify-start gap-1"
           style={{ background: "var(--tint-white-03)", border: "1px solid var(--tint-white-07)", borderRadius: "12px" }}
         >
           {categories.map((cat) => (
@@ -98,10 +98,10 @@ export function SkillsTabs({ techstack, extraSkills }: SkillsTabsProps) {
         {categories.map((cat) => (
           <TabsContent key={cat.id} value={cat.id}>
             <div
-              className="rounded-2xl p-3 sm:p-5"
+              className="rounded-2xl p-3 sm:p-4"
               style={{ background: "var(--tint-white-02)", border: "1px solid var(--tint-white-06)" }}
             >
-              <div className="flex items-center gap-2 mb-4">
+              <div className="flex items-center gap-2 mb-3">
                 <span className="text-xl" aria-hidden="true">{cat.icon}</span>
                 <span style={{ fontSize: "1rem", color: "var(--color-ink-muted)", fontWeight: 600, fontFamily: "'Space Grotesk', sans-serif" }}>
                   {cat.label}
