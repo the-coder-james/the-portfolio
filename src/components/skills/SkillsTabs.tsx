@@ -59,8 +59,8 @@ function SkillBadge({ skill }: { skill: string }) {
     <div style={{ display: "inline-block" }}>
       <Badge
         variant="outline"
-        className="skill-badge-interactive cursor-default select-none rounded-xl font-mono transition-transform hover:scale-105"
-        style={{ padding: "9px 16px", fontSize: "0.82rem", color: "var(--color-brand-text)" }}
+        className="skill-badge-lg skill-badge-interactive cursor-default select-none rounded-xl font-mono transition-transform hover:scale-105"
+        style={{ color: "var(--color-brand-text)" }}
       >
         {skill}
       </Badge>
@@ -97,17 +97,14 @@ export function SkillsTabs({ techstack, extraSkills }: SkillsTabsProps) {
         </TabsList>
         {categories.map((cat) => (
           <TabsContent key={cat.id} value={cat.id}>
+            {/* No category heading here: the active pill directly above already
+                names the category, icon and all. Repeating it cost a line of
+                vertical space to say nothing new. */}
             <div
-              className="rounded-2xl p-3 sm:p-4"
+              className="skills-badge-box rounded-2xl p-2.5 sm:p-4"
               style={{ background: "var(--tint-white-02)", border: "1px solid var(--tint-white-06)" }}
             >
-              <div className="flex items-center gap-2 mb-3">
-                <span className="text-xl" aria-hidden="true">{cat.icon}</span>
-                <span style={{ fontSize: "1rem", color: "var(--color-ink-muted)", fontWeight: 600, fontFamily: "'Space Grotesk', sans-serif" }}>
-                  {cat.label}
-                </span>
-              </div>
-              <AnimatedGroup className="flex flex-wrap gap-3" preset="scale">
+              <AnimatedGroup className="flex flex-wrap gap-2 sm:gap-3" preset="scale">
                 {cat.skills.map((skill) => <SkillBadge key={skill} skill={skill} />)}
               </AnimatedGroup>
             </div>

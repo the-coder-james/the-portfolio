@@ -22,13 +22,27 @@ Requires Node >= 18.20.8 (Astro 5). No linting or unit-test scripts are configur
 `https://alejandrejames.github.io/the-portfolio/` (base path `/the-portfolio/`).
 Static output — there is no server at runtime.
 
-### Page structure: one page, six tabs
+### Page structure: one page, four tabs
 
-`src/pages/index.astro` renders six sibling `<section>` panels inside `<main>`:
-`#home`, `#about`, `#skills`, `#projects`, `#experience`, `#contact`.
+`src/pages/index.astro` renders four sibling `<section>` panels inside `<main>`:
+`#home`, `#about`, `#projects`, `#contact`.
 
 Only one is visible at a time. `HeaderComponent` owns the tab state and toggles
 the native `hidden` attribute on each section by id.
+
+**About is itself three sub-tabs** — Profile, Arsenal, Journey — which is where
+the former `#skills` and `#experience` panels went. `AboutTabs` toggles
+`#about-profile` / `#about-arsenal` / `#about-journey` by `hidden`, exactly the
+way the header toggles panels, and for the same reason: each sub-panel contains
+islands of its own, so passing them in as slots would nest those islands. Old
+`#skills` and `#experience` links resolve to `#about` via `MERGED_TABS` in
+`HeaderComponent` and the hash is canonicalised, so nothing dead-ends.
+
+The merge also removed duplicated content: the skills marquee (`SkillsStrip`)
+re-listed every badge the category tabs already showed, the bio narrated the
+career arc the Journey pipeline draws stage by stage, two stats restated two of
+those stages, and the timeline tags repeated the arsenal's technologies. If you
+add content to one sub-tab, check the other two do not already say it.
 
 **Panels are deliberately NOT passed into a React tab component as slots.**
 Astro's React adapter hands slot content to React as an opaque HTML string via
@@ -92,7 +106,8 @@ if you change a surface.
 
 Content lives in `src/assets/*.json`:
 
-- `data.json` — nav (the tab list), user profile, hero, about and skills copy
+- `data.json` — nav (the tab list), user profile, hero, about copy (including
+  `about.tabs`, the sub-tab labels) and skills copy
 - `projectlist.json` — project entries; integer ids reference `taglist.json`,
   `roles.json`, `techs.json`, `projectprovider.json`
 - `experience.json`, `contact.json`
@@ -105,9 +120,12 @@ Components import these directly.
   `common/astro/SectionShell.astro`, which supplies the tabpanel semantics.
   `#home` (`mainvisual/`) builds its own section.
 - `src/components/*/*.tsx` — the interactive islands.
-- `src/components/ui/` — shadcn/ui. `tabs.tsx` is used by both the page tab bar
-  and the Skills category tabs; they are DOM siblings, not nested, so their
-  roving tabindexes cannot trap each other. Keep them visually distinct.
+- `src/components/ui/` — shadcn/ui. `tabs.tsx` drives three tablists: the page
+  tab bar, the About sub-tabs, and the Skills category tabs inside Arsenal. All
+  three are DOM siblings rather than nested, so their roving tabindexes cannot
+  trap each other. Keep them visually distinct — the page bar is a floating
+  glass pill, the About sub-tabs an inline segmented control, the Skills tabs
+  filled pills.
 
 ### Path alias
 

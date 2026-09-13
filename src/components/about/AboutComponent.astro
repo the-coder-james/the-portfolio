@@ -3,18 +3,20 @@ import SectionShell from "@/components/common/astro/SectionShell.astro"
 import { AboutImage } from "@/components/about/AboutImage"
 import { AboutStats } from "@/components/about/AboutStats"
 import { AboutCodeBlock } from "@/components/about/AboutCodeBlock"
+import { AboutTabs } from "@/components/about/AboutTabs"
+import { SkillsTabs } from "@/components/skills/SkillsTabs"
+import { SkillsMindset } from "@/components/skills/SkillsMindset"
+import { TimelineList } from "@/components/experience/TimelineList"
 import dataJson from "@/assets/data.json"
+import experienceJson from "@/assets/experience.json"
 
 const baseUrl = import.meta.env.BASE_URL
-const { user, about } = dataJson
+const { user, about, skills } = dataJson
 const name = user.nameDisplay
 const imagePath = user.image.path
 const hoverImagePath = user.image.hoverpath
-
-const renderBio = (text: string) =>
-  text
-    .replace("{{since}}", String(user.since))
-    .replace("{{professional}}", String(user.professional))
+const techstack = user.techstack
+const extraSkills = user.extraSkills
 ---
 
 <SectionShell
@@ -31,21 +33,71 @@ const renderBio = (text: string) =>
     <AboutCodeBlock client:load since={user.since} professional={user.professional} />
   </div>
 
-  <div class="grid lg:grid-cols-12 gap-5 xl:gap-8 items-center max-w-3xl lg:max-w-5xl mx-auto my-auto">
-    <!-- Portrait -->
-    <div class="lg:col-span-4 flex justify-center min-w-0 w-full">
-      <AboutImage client:load name={name} imagePath={imagePath} hoverImagePath={hoverImagePath} baseUrl={baseUrl} />
+  {/*
+    About, Skills and Experience are one panel now, split into three sub-tabs.
+
+    The sub-panels are plain Astro siblings, NOT slots passed into AboutTabs:
+    each holds islands of its own, and the React adapter hands slot content to
+    React through StaticHtml (dangerouslySetInnerHTML, shouldComponentUpdate
+    false), which would nest those islands under a hydrating ancestor. AboutTabs
+    toggles these by id instead -- same design as the page tabs, same reason.
+  */}
+  <div class="about-subtab-bar shrink-0 flex justify-center">
+    <AboutTabs client:load tabs={about.tabs} />
+  </div>
+
+  <div class="about-panes flex-1 min-h-0 flex flex-col">
+
+    <!-- ── Profile: who he is ── -->
+    <div
+      id="about-profile"
+      class="about-pane"
+      role="tabpanel"
+      aria-labelledby="subtab-profile"
+      tabindex="-1"
+    >
+      <div class="grid lg:grid-cols-12 gap-5 xl:gap-8 items-center max-w-3xl lg:max-w-5xl mx-auto w-full">
+        <div class="lg:col-span-4 flex justify-center min-w-0 w-full">
+          <AboutImage client:load name={name} imagePath={imagePath} hoverImagePath={hoverImagePath} baseUrl={baseUrl} />
+        </div>
+
+        <div class="lg:col-span-8 flex flex-col gap-4 min-w-0 w-full">
+          {about.bio.map((p) => (
+            <p style="font-size: 0.92rem; color: var(--color-ink-dim); line-height: 1.7; font-family: 'Space Grotesk', sans-serif">
+              {p}
+            </p>
+          ))}
+          <!-- The two counts the Journey pipeline cannot show. -->
+          <AboutStats client:load stats={about.stats} />
+        </div>
+      </div>
     </div>
 
-    <!-- Bio + stats -->
-    <div class="lg:col-span-8 flex flex-col gap-4 min-w-0 w-full">
-      {about.bio.map((p) => (
-        <p style="font-size: 0.92rem; color: var(--color-ink-dim); line-height: 1.7; font-family: 'Space Grotesk', sans-serif">
-          {renderBio(p)}
-        </p>
-      ))}
-      <AboutStats client:load stats={about.stats} />
+    <!-- ── Arsenal: what he works with ── -->
+    <div
+      id="about-arsenal"
+      class="about-pane"
+      role="tabpanel"
+      aria-labelledby="subtab-arsenal"
+      tabindex="-1"
+    >
+      <div class="flex flex-col gap-3.5 max-w-4xl mx-auto w-full">
+        <SkillsTabs client:load techstack={techstack} extraSkills={extraSkills} />
+        <SkillsMindset client:load cards={skills.mindset} />
+      </div>
     </div>
+
+    <!-- ── Journey: how he got here ── -->
+    <div
+      id="about-journey"
+      class="about-pane"
+      role="tabpanel"
+      aria-labelledby="subtab-journey"
+      tabindex="-1"
+    >
+      <TimelineList client:load items={experienceJson} />
+    </div>
+
   </div>
 
 </SectionShell>

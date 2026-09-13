@@ -58,7 +58,7 @@ export function TimelineList({ items }: { items: TimelineItem[] }) {
   const isPresent = item.type === "present";
 
   return (
-    <div className="min-h-0 flex flex-col gap-5 xl:gap-6 w-full max-w-4xl mx-auto mt-0 mb-auto">
+    <div className="min-h-0 flex flex-col gap-5 xl:gap-6 w-full max-w-4xl mx-auto">
       {/* ── Pipeline ── */}
       <ol
         className="pipeline relative flex list-none p-0 m-0 gap-0 shrink-0 overflow-x-auto"

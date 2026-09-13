@@ -1352,6 +1352,152 @@ html[data-tabs-ready] .tabpanel[hidden] {
   display: none;
 }
 
+/* ── About sub-tabs ──
+   About, Skills and Experience are one panel split three ways. The sub-panels
+   are toggled by the same `hidden` mechanism as the page tabs and gated the
+   same way, so without JS all three stack into a readable document.
+
+   Distinct from the page tab bar on purpose: that one is mono/uppercase in a
+   floating glass pill at the top of the viewport, this one is a small inline
+   segmented control inside the panel. Two tablists that looked alike would
+   read as one broken control. */
+html[data-subtabs-ready] .about-pane[hidden] {
+  display: none;
+}
+
+.about-subtab-bar {
+  margin-bottom: clamp(0.6rem, 1.6vh, 1.1rem);
+}
+
+.about-subtabs {
+  background: var(--tint-white-03);
+  border: 1px solid var(--tint-white-07);
+  border-radius: 999px;
+}
+
+.about-subtab {
+  color: var(--color-ink-dim);
+  transition: color 0.2s ease, background-color 0.2s ease;
+}
+
+.about-subtab:hover {
+  color: var(--color-ink-muted);
+}
+
+/* The active pill. The page tab bar animates a shared indicator; there are
+   only three stops here and they never reflow, so a plain background is
+   steadier than a second spring chasing the first. */
+.about-subtab[data-state="active"] {
+  background: color-mix(in srgb, var(--color-brand) 14%, transparent);
+  /* Full-strength brand, not a 30% mix. The border is one of only two things
+     marking the active sub-tab, so it is a UI component boundary under
+     SC 1.4.11 and needs 3:1 against the page -- the mix measured 2.10:1 on
+     light and 1.01:1 on dark. --color-brand clears it in both. */
+  border: 1px solid var(--color-brand);
+  color: var(--color-brand-text);
+}
+
+/* Each pane owns the remaining height, so switching sub-tabs does not make the
+   panel jump: all three occupy the same box.
+
+   align-items: center, not the default stretch -- Arsenal and Journey both wrap
+   their content in a max-width box, which stretch pins to the left edge of a
+   much wider pane while Profile (a grid with mx-auto) centres. The two sat
+   visibly out of line with each other. */
+.about-pane {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  /* Top-aligned inside the pane; the centring happens one level up on
+     .about-panes, which is what keeps the three views sharing a common top
+     edge instead of each floating in its own box. */
+  justify-content: flex-start;
+  align-items: center;
+  overflow-y: auto;
+  scrollbar-width: thin;
+}
+
+/* The panes centre in the space under the heading, but that space grows with
+   the viewport: at 1920x1080 pure centring left ~270px between the headline and
+   the content while the panel's own padding held the rest. Capping the pane's
+   height keeps the group tied to the heading on tall screens and lets it fall
+   back to plain centring on short ones, where there is no slack to give. */
+.about-panes {
+  justify-content: center;
+}
+
+/* The three views share one box so switching sub-tabs never shifts the heading
+   or the content's top edge.
+
+   Only a *cap*, never a floor: an earlier fixed height tied to vh clipped the
+   taller views on short and narrow screens, where there is no slack to give.
+   The pane takes the space it has and simply stops growing past the cap, which
+   is what keeps a 1080p viewport from stranding the content ~270px below the
+   headline. */
+.about-pane {
+  flex: 1;
+  max-height: 420px;
+}
+
+/* Below the desktop breakpoint the views stack taller (the Profile grid goes
+   one column), so the cap would clip rather than tidy. */
+@media (max-width: 1023px), (max-height: 780px) {
+  .about-pane { max-height: none; }
+}
+
+/* Direct children still need the full width to lay out inside. */
+.about-pane > * {
+  width: 100%;
+}
+
+/* The mindset icon tile, sized down with the card on narrow screens. */
+.mindset-icon {
+  width: 2rem;
+  height: 2rem;
+  font-size: 0.95rem;
+}
+@media (min-width: 640px) {
+  .mindset-icon {
+    width: 2.5rem;
+    height: 2.5rem;
+    font-size: 1.1rem;
+  }
+}
+
+/* Mindset card copy. Sized in CSS rather than inline so the narrow-screen
+   rules below can actually win -- an inline style outranks any stylesheet rule,
+   media query or not. */
+.mindset-title { font-size: 0.9rem; }
+.mindset-desc  { font-size: 0.8rem; }
+
+/* Arsenal badges. Sized in CSS, not inline, so the narrow rules below apply. */
+.skill-badge-lg {
+  padding: 9px 16px;
+  font-size: 0.82rem;
+}
+@media (max-width: 400px) {
+  .skill-badge-lg {
+    padding: 6px 11px;
+    font-size: 0.74rem;
+  }
+}
+
+/* Below ~400px the four mindset cards are the tallest thing in the Arsenal
+   view. Trimming the copy to two lines keeps the pane inside the panel without
+   dropping a card, which would hide content rather than fit it. */
+@media (max-width: 400px) {
+  .mindset-title { font-size: 0.82rem; }
+  .mindset-desc {
+    font-size: 0.72rem;
+    line-height: 1.35;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+}
+
 /* ── Reduced motion ──
    Nothing in this codebase honoured prefers-reduced-motion before this. The
    JS animations are gated per-component via useReducedMotion; this covers the

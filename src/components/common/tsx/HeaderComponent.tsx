@@ -1,15 +1,13 @@
 "use client";
 import { useState, useEffect, useLayoutEffect, useRef, useCallback } from "react";
 import { animateEl } from "@/lib/utils";
-import { Code2, FolderGit2, GitCommitHorizontal, House, Mail, User, Wrench } from "lucide-react";
+import { Code2, FolderGit2, House, Mail, User } from "lucide-react";
 
 /** One icon per tab, so mobile can show the whole bar without a drawer. */
 const TAB_ICONS: Record<string, typeof House> = {
   home: House,
   about: User,
-  skills: Wrench,
   projects: FolderGit2,
-  experience: GitCommitHorizontal,
   contact: Mail,
 };
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -21,10 +19,19 @@ const navLinks = dataJson.nav;
 const TAB_IDS = navLinks.map((l) => l.href.slice(1));
 const DEFAULT_TAB = TAB_IDS[0];
 
+/** Hashes that used to be their own tabs. Skills and Experience are sub-tabs
+ *  of About now, so old links still land somewhere sensible instead of being
+ *  treated as unknown and bounced to Home. */
+const MERGED_TABS: Record<string, string> = {
+  skills: "about",
+  experience: "about",
+};
+
 /** Resolve a location hash to a tab id, or null if it names something else. */
 function tabFromHash(hash: string): string | null {
   const id = hash.replace(/^#/, "");
-  return TAB_IDS.includes(id) ? id : null;
+  if (TAB_IDS.includes(id)) return id;
+  return MERGED_TABS[id] ?? null;
 }
 
 export function HeaderComponent() {
@@ -124,8 +131,12 @@ export function HeaderComponent() {
 
   // Canonicalise an empty or unrecognised hash without adding a history entry.
   useEffect(() => {
-    if (!tabFromHash(window.location.hash)) {
-      history.replaceState(null, "", `#${DEFAULT_TAB}`);
+    const resolved = tabFromHash(window.location.hash);
+    const target = resolved ?? DEFAULT_TAB;
+    // Covers both an unknown hash and a merged one (#skills -> #about), so the
+    // address bar never keeps a hash that no longer names a panel.
+    if (window.location.hash !== `#${target}`) {
+      history.replaceState(null, "", `#${target}`);
     }
   }, []);
 
