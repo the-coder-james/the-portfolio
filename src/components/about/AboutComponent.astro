@@ -24,27 +24,27 @@ const renderBio = (text: string) =>
   headlineAccent={about.headlineAccent}
 >
 
-  <!-- The portrait moves to the backdrop slot: at full strength it competed
-       with the copy for attention, and it is decoration, not information. The
-       remaining content centres in the space it leaves. -->
-  <div slot="backdrop" class="about-portrait-backdrop" aria-hidden="true">
-    <AboutImage client:load name={name} imagePath={imagePath} hoverImagePath={hoverImagePath} baseUrl={baseUrl} />
+  <!-- The code block is the backdrop: it is a decorative sample, not content
+       anyone reads line by line, and at full strength it dominated the panel.
+       The portrait and copy sit in front of it. -->
+  <div slot="backdrop" class="about-code-backdrop" aria-hidden="true">
+    <AboutCodeBlock client:load since={user.since} professional={user.professional} />
   </div>
 
-  <div class="grid lg:grid-cols-9 gap-5 xl:gap-8 items-center justify-items-center lg:justify-items-stretch max-w-5xl lg:max-w-none mx-auto">
+  <div class="grid lg:grid-cols-12 gap-5 xl:gap-8 items-center max-w-3xl lg:max-w-5xl mx-auto my-auto">
+    <!-- Portrait -->
+    <div class="lg:col-span-4 flex justify-center min-w-0 w-full">
+      <AboutImage client:load name={name} imagePath={imagePath} hoverImagePath={hoverImagePath} baseUrl={baseUrl} />
+    </div>
+
     <!-- Bio + stats -->
-    <div class="lg:col-span-4 flex flex-col gap-4 min-w-0 w-full">
+    <div class="lg:col-span-8 flex flex-col gap-4 min-w-0 w-full">
       {about.bio.map((p) => (
         <p style="font-size: 0.92rem; color: var(--color-ink-dim); line-height: 1.7; font-family: 'Space Grotesk', sans-serif">
           {renderBio(p)}
         </p>
       ))}
       <AboutStats client:load stats={about.stats} />
-    </div>
-
-    <!-- Code block -->
-    <div class="hidden md:block lg:col-span-5 min-w-0 w-full">
-      <AboutCodeBlock client:load since={user.since} professional={user.professional} />
     </div>
   </div>
 

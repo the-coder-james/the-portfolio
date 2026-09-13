@@ -59,19 +59,17 @@ export function SectionHeading({
           style={{
             fontSize: "clamp(1.8rem, 4vw, 2.8rem)",
             fontWeight: 700,
-            color: "var(--color-ink)",
             fontFamily: "'Space Grotesk', sans-serif",
             lineHeight: 1.2,
           }}
           {...step(1)}
         >
-          {headline}
-          {headlineAccent && (
-            <>
-              {" "}
-              <span className="gradient-text">{headlineAccent}</span>
-            </>
-          )}
+          {/* The gradient spans the whole heading rather than the accent alone,
+              so the Wings ramp travels the full line instead of a fragment. */}
+          <span className="gradient-text">
+            {headline}
+            {headlineAccent ? ` ${headlineAccent}` : ""}
+          </span>
         </motion.h2>
       )}
       {sub && (

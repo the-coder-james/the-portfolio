@@ -201,7 +201,9 @@ export function HeaderComponent() {
       <div className="glass-surface rounded-full px-2.5 sm:px-4 py-2.5 sm:py-2 flex items-center justify-between gap-1 sm:gap-3 relative">
         <button
           onClick={() => selectTab(DEFAULT_TAB)}
-          className="flex items-center gap-2 group"
+          aria-label="Home"
+          aria-current={active === DEFAULT_TAB ? "true" : undefined}
+          className="logo-home flex items-center gap-2 group rounded-full shrink-0"
         >
           <div className="w-8 h-8 rounded-full bg-brand-700 flex items-center justify-center group-hover:bg-brand-900 transition-colors">
             <Code2 size={16} className="text-on-brand" />
@@ -231,7 +233,7 @@ export function HeaderComponent() {
               style={{ left: 0, width: 0, opacity: 0 }}
               aria-hidden="true"
             />
-            {navLinks.map((link) => {
+            {navLinks.filter((l) => l.href.slice(1) !== DEFAULT_TAB).map((link) => {
               const id = link.href.slice(1);
               return (
                 <TabsTrigger

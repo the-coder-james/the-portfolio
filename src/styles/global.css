@@ -976,29 +976,36 @@
    an entry needs more than roughly fifteen -- the columns get too narrow and
    every description wraps into a thin ragged strip. Master-detail gives the
    selected entry the full width instead. */
-/* The About portrait as backdrop: large, offset and dimmed so it reads as
-   texture behind the panel rather than a third column competing with the copy.
-   Hidden on phones, where there is no room to spend on decoration. */
-.about-portrait-backdrop {
+/* The About code block as backdrop: a decorative sample rather than something
+   read line by line, so it sits behind the content, offset and dimmed. Hidden
+   below lg, where there is no room to spend on decoration. */
+.about-code-backdrop {
   position: absolute;
-  right: 3%;
-  bottom: 8%;
+  right: -4%;
+  top: 50%;
+  transform: translateY(-50%) rotate(-2deg);
+  width: min(560px, 52%);
   z-index: 0;
   pointer-events: none;
-  opacity: 0.14;
-  filter: saturate(0.65) blur(1px);
-  --portrait-size: 300px;
+  opacity: 0.18;
   display: none;
-  -webkit-mask-image: radial-gradient(circle at 50% 50%, #000 55%, transparent 78%);
-  mask-image: radial-gradient(circle at 50% 50%, #000 55%, transparent 78%);
+  -webkit-mask-image: linear-gradient(to left, #000 40%, transparent 100%);
+  mask-image: linear-gradient(to left, #000 40%, transparent 100%);
 }
 @media (min-width: 1024px) {
-  .about-portrait-backdrop { display: block; }
+  .about-code-backdrop { display: block; }
 }
-@media (min-width: 1536px) {
-  .about-portrait-backdrop { --portrait-size: 380px; }
+.dark .about-code-backdrop { opacity: 0.24; }
+
+/* The logo doubles as the Home control, so it needs the same active and focus
+   affordances the tabs have. */
+.logo-home:focus-visible {
+  outline: 2px solid var(--color-brand);
+  outline-offset: 3px;
 }
-.dark .about-portrait-backdrop { opacity: 0.2; }
+.logo-home[aria-current="true"] > div {
+  box-shadow: 0 0 0 3px var(--tint-brand-25);
+}
 
 /* ── Project filters and view toggle ── */
 .filter-select {
