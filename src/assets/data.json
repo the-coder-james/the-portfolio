@@ -221,23 +221,6 @@
         "value": "∞",
         "icon": "☕"
       }
-    ],
-    "tabs": [
-      {
-        "id": "profile",
-        "label": "Profile",
-        "icon": "👤"
-      },
-      {
-        "id": "arsenal",
-        "label": "Arsenal",
-        "icon": "⚙️"
-      },
-      {
-        "id": "journey",
-        "label": "Journey",
-        "icon": "📈"
-      }
     ]
   },
   "skills": {

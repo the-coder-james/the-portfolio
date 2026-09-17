@@ -53,13 +53,27 @@ The flow is `home -> about -> projects -> contact`, carried by `FlowLink.astro`:
 a plain `<a href="#panel">`, which switches tabs on desktop (via `hashchange`)
 and scrolls on mobile without knowing which mode it is in.
 
-**About is itself three sub-tabs** — Profile, Arsenal, Journey — which is where
-the former `#skills` and `#experience` panels went. `AboutTabs` toggles
-`#about-profile` / `#about-arsenal` / `#about-journey` by `hidden`, exactly the
-way the header toggles panels, and for the same reason: each sub-panel contains
-islands of its own, so passing them in as slots would nest those islands. Old
-`#skills` and `#experience` links resolve to `#about` via `MERGED_TABS` in
-`HeaderComponent` and the hash is canonicalised, so nothing dead-ends.
+**About shows all three blocks at once** — Profile, Arsenal, Journey — which is
+where the former `#skills` and `#experience` panels went. They were sub-tabs
+briefly; they are now one `.about-grid`: Profile and Arsenal share the top row,
+Journey spans below. The three were never short of vertical room so much as
+*width* — each was capped near 896px inside a 1280px panel, leaving ~380px
+unused while the stack ran past the fold. Old `#skills` and `#experience` links
+resolve to `#about` via `MERGED_TABS` in `HeaderComponent` and the hash is
+canonicalised, so nothing dead-ends.
+
+It fits one viewport at 900px tall and up; below that the panel's own region
+scrolls, which is deliberate — the alternative was shrinking copy past reading
+size. Two things to know before adjusting it:
+
+- Blocks use `min-height: auto`, not `0`. At `0` the grid squeezed a block below
+  its content and the content spilled out of its box (the mindset cards landed
+  on top of the pipeline at 768px).
+- `TimelineList` and `AboutImage` render inside `<astro-island>`, which is
+  `display: contents`, so `>` selectors from `.about-block-*` do not reach them.
+  Match a class the component actually renders, and check the match — a loose
+  `[class*="flex-col"]` hit nodes inside the detail card and made the block
+  taller rather than shorter.
 
 The merge also removed duplicated content: the skills marquee (`SkillsStrip`)
 re-listed every badge the category tabs already showed, the bio narrated the
@@ -129,8 +143,8 @@ if you change a surface.
 
 Content lives in `src/assets/*.json`:
 
-- `data.json` — nav (the tab list), user profile, hero, about copy (including
-  `about.tabs`, the sub-tab labels) and skills copy
+- `data.json` — nav (the tab list), user profile, hero, about copy, skills copy,
+  and `flow` (the forward step out of each section)
 - `projectlist.json` — project entries; integer ids reference `taglist.json`,
   `roles.json`, `techs.json`, `projectprovider.json`
 - `experience.json`, `contact.json`
@@ -143,12 +157,13 @@ Components import these directly.
   `common/astro/SectionShell.astro`, which supplies the tabpanel semantics.
   `#home` (`mainvisual/`) builds its own section.
 - `src/components/*/*.tsx` — the interactive islands.
-- `src/components/ui/` — shadcn/ui. `tabs.tsx` drives three tablists: the page
-  tab bar, the About sub-tabs, and the Skills category tabs inside Arsenal. All
-  three are DOM siblings rather than nested, so their roving tabindexes cannot
-  trap each other. Keep them visually distinct — the page bar is a floating
-  glass pill, the About sub-tabs an inline segmented control, the Skills tabs
-  filled pills.
+- `src/components/ui/` — shadcn/ui. `tabs.tsx` drives two tablists: the page tab
+  bar and the Skills category tabs inside Arsenal. They are DOM siblings rather
+  than nested, so their roving tabindexes cannot trap each other. Keep them
+  visually distinct — the page bar is a floating glass pill, the Skills tabs
+  filled pills. `variant="line"` also draws its own `::after` bar at
+  `bottom:-5px` in `bg-foreground`; suppress it with `after:hidden` on any bar
+  that is not meant to have a rule under it.
 
 ### Path alias
 

@@ -3,7 +3,6 @@ import SectionShell from "@/components/common/astro/SectionShell.astro"
 import { AboutImage } from "@/components/about/AboutImage"
 import { AboutStats } from "@/components/about/AboutStats"
 import { AboutCodeBlock } from "@/components/about/AboutCodeBlock"
-import { AboutTabs } from "@/components/about/AboutTabs"
 import { SkillsTabs } from "@/components/skills/SkillsTabs"
 import { SkillsMindset } from "@/components/skills/SkillsMindset"
 import { TimelineList } from "@/components/experience/TimelineList"
@@ -35,89 +34,67 @@ const extraSkills = user.extraSkills
   </div>
 
   {/*
-    About, Skills and Experience are one panel now, split into three sub-tabs.
+    One section, no sub-tabs.
 
-    The sub-panels are plain Astro siblings, NOT slots passed into AboutTabs:
-    each holds islands of its own, and the React adapter hands slot content to
-    React through StaticHtml (dangerouslySetInnerHTML, shouldComponentUpdate
-    false), which would nest those islands under a hydrating ancestor. AboutTabs
-    toggles these by id instead -- same design as the page tabs, same reason.
+    The three views were never short of room -- they were short of *width*.
+    Each was capped near 896px inside a 1280px panel, so ~380px sat unused
+    while the stack ran ~190px past the fold. Profile and Arsenal now share the
+    top row, which is what buys the height back; Journey keeps the full width
+    below because the pipeline is horizontal by nature and splitting it would
+    re-create the cramped rail this timeline was rebuilt to escape.
+
+    Each block keeps its own labelled heading: with everything visible at once,
+    the labels are what stop it reading as one undifferentiated slab.
   */}
-  <div class="about-subtab-bar shrink-0 flex justify-center">
-    <AboutTabs client:load tabs={about.tabs} />
-  </div>
-
-  <div class="about-panes flex-1 min-h-0 flex flex-col">
+  <div class="about-grid">
 
     <!-- ── Profile: who he is ── -->
-    <div
-      id="about-profile"
-      class="about-pane"
-      role="tabpanel"
-      aria-labelledby="subtab-profile"
-      tabindex="-1"
-    >
-      <!-- Mobile drops the sub-tab bar, so each pane names itself instead;
-           without a label the three run together as one block. -->
-      <p class="about-pane-label" aria-hidden="true">
-        <span>👤</span>Profile
-      </p>
-      <div class="grid lg:grid-cols-12 gap-5 xl:gap-8 items-center max-w-3xl lg:max-w-5xl mx-auto w-full">
-        <div class="lg:col-span-4 flex justify-center min-w-0 w-full">
+    <section class="about-block about-block-profile" aria-labelledby="about-h-profile">
+      <h3 class="about-block-label" id="about-h-profile">
+        <span aria-hidden="true">👤</span>Profile
+      </h3>
+
+      <div class="about-profile-body">
+        <div class="about-portrait">
           <AboutImage client:load name={name} imagePath={imagePath} hoverImagePath={hoverImagePath} baseUrl={baseUrl} />
         </div>
 
-        <div class="lg:col-span-8 flex flex-col gap-4 min-w-0 w-full">
+        <div class="flex flex-col gap-3 min-w-0 w-full">
           {about.bio.map((p) => (
-            <p style="font-size: 0.92rem; color: var(--color-ink-dim); line-height: 1.7; font-family: 'Space Grotesk', sans-serif">
-              {p}
-            </p>
+            <p class="about-bio">{p}</p>
           ))}
           <!-- The two counts the Journey pipeline cannot show. -->
           <AboutStats client:load stats={about.stats} />
         </div>
       </div>
-    </div>
+    </section>
 
     <!-- ── Arsenal: what he works with ── -->
-    <div
-      id="about-arsenal"
-      class="about-pane"
-      role="tabpanel"
-      aria-labelledby="subtab-arsenal"
-      tabindex="-1"
-    >
-      <!-- Mobile drops the sub-tab bar, so each pane names itself instead;
-           without a label the three run together as one block. -->
-      <p class="about-pane-label" aria-hidden="true">
-        <span>⚙️</span>Arsenal
-      </p>
-      <div class="flex flex-col gap-3.5 max-w-4xl mx-auto w-full">
+    <section class="about-block about-block-arsenal" aria-labelledby="about-h-arsenal">
+      <h3 class="about-block-label" id="about-h-arsenal">
+        <span aria-hidden="true">⚙️</span>Arsenal
+      </h3>
+
+      <div class="flex flex-col gap-2.5 min-w-0 w-full">
         <SkillsTabs client:load techstack={techstack} extraSkills={extraSkills} />
         <SkillsMindset client:load cards={skills.mindset} />
       </div>
-    </div>
+    </section>
 
     <!-- ── Journey: how he got here ── -->
-    <div
-      id="about-journey"
-      class="about-pane"
-      role="tabpanel"
-      aria-labelledby="subtab-journey"
-      tabindex="-1"
-    >
-      <!-- Mobile drops the sub-tab bar, so each pane names itself instead;
-           without a label the three run together as one block. -->
-      <p class="about-pane-label" aria-hidden="true">
-        <span>📈</span>Journey
-      </p>
+    <section class="about-block about-block-journey" aria-labelledby="about-h-journey">
+      <h3 class="about-block-label" id="about-h-journey">
+        <span aria-hidden="true">📈</span>Journey
+      </h3>
+
       <TimelineList client:load items={experienceJson} />
-    </div>
+    </section>
 
   </div>
 
-  <!-- Forward step in the flow: about -> projects. -->
-  <div class="flow-row">
+  <!-- Forward step in the flow: about -> projects. In the footer slot so it is
+       pinned below the scroll region instead of scrolling up over the timeline. -->
+  <div slot="footer" class="flow-row">
     <FlowLink label={flow.about.label} href={flow.about.href} />
   </div>
 
