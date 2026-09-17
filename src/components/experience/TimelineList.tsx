@@ -39,16 +39,24 @@ export function TimelineList({ items }: { items: TimelineItem[] }) {
 
   // The pipeline scrolls sideways on narrow screens and the default selection
   // is the last stage, so it would otherwise start off the right edge.
+  //
+  // Scroll the rail directly rather than calling el.scrollIntoView(): that walks
+  // every scrollable ancestor, so on a desktop where the rail itself does not
+  // overflow it found the panel section instead -- which overflows by ~66px --
+  // and dragged the whole About column sideways as the reader clicked between
+  // stages. Writing rail.scrollLeft can only ever move the rail.
   useEffect(() => {
     const rail = railRef.current;
     const el = rail?.querySelector<HTMLElement>(`[data-index="${active}"]`);
     if (!rail || !el) return;
     // A frame later: on first mount the rail has not been laid out yet.
     const raf = requestAnimationFrame(() => {
-      el.scrollIntoView({
+      const max = rail.scrollWidth - rail.clientWidth;
+      if (max <= 0) return; // nothing to scroll; leave every ancestor alone
+      const target = el.offsetLeft - (rail.clientWidth - el.offsetWidth) / 2;
+      rail.scrollTo({
+        left: Math.max(0, Math.min(target, max)),
         behavior: reduced ? "auto" : "smooth",
-        block: "nearest",
-        inline: "center",
       });
     });
     return () => cancelAnimationFrame(raf);

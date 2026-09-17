@@ -203,7 +203,7 @@
     ]
   },
   "about": {
-    "eyebrow": "01. whoami",
+    "eyebrow": "whoami",
     "headline": "The Human Behind",
     "headlineAccent": "the Code",
     "bio": [
@@ -241,7 +241,7 @@
     ]
   },
   "skills": {
-    "eyebrow": "02. skills.config.ts",
+    "eyebrow": "skills.config.ts",
     "headline": "My Tech",
     "headlineAccent": "Arsenal",
     "mindset": [
