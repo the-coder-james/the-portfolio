@@ -82,7 +82,13 @@ export function AboutTabs({ tabs }: { tabs: TabDef[] }) {
       <TabsList
         aria-label="About sections"
         variant="line"
-        className="about-subtabs h-auto p-1 flex-wrap justify-center gap-1 mx-auto"
+        /* after:hidden kills the line variant's own ::after bar. It is 2px of
+           bg-foreground pinned at bottom:-5px, so it hangs outside the glass
+           track -- in dark mode that is a near-black rule under the pill, which
+           is the opposite of borderless. The active state is carried by the
+           inset brand underline in .about-subtab instead, which is also the bar
+           that meets SC 1.4.11. The header tab bar suppresses it the same way. */
+        className="about-subtabs h-auto p-1 flex-wrap justify-center gap-1 mx-auto [&_[data-slot=tabs-trigger]]:after:hidden"
       >
         {tabs.map((t) => (
           <TabsTrigger
