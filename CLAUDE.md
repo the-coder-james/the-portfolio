@@ -22,13 +22,36 @@ Requires Node >= 18.20.8 (Astro 5). No linting or unit-test scripts are configur
 `https://alejandrejames.github.io/the-portfolio/` (base path `/the-portfolio/`).
 Static output — there is no server at runtime.
 
-### Page structure: one page, four tabs
+### Page structure: tabs on desktop, one scroll on mobile
 
 `src/pages/index.astro` renders four sibling `<section>` panels inside `<main>`:
 `#home`, `#about`, `#projects`, `#contact`.
 
-Only one is visible at a time. `HeaderComponent` owns the tab state and toggles
-the native `hidden` attribute on each section by id.
+**Above 640px** only one is visible at a time. `HeaderComponent` owns the tab
+state and toggles the native `hidden` attribute on each section by id.
+
+**At 640px and below** the page becomes one scrolling document: `HeaderComponent`
+sets `data-scroll-mode` on `<html>`, stops hiding panels (and actively clears
+`hidden`, or a panel left over from a resize would stay invisible), the nav
+pills scroll to their panel instead of switching, and an IntersectionObserver
+moves the active pill to whatever section is on screen. `AboutTabs` drops its
+sub-tab bar there and each pane labels itself instead.
+
+Two things that mode has to fight:
+
+- `html { scroll-behavior: smooth }` turns every scroll correction into an
+  animation. Entering scroll mode roughly doubles the document while the browser
+  is still resolving the landing `#hash` against the old layout, so a plain
+  `/#home` load drifted ~1200px over about 900ms. The mount effect suspends
+  `scroll-behavior`, reasserts the position across several frames, then hands it
+  back. An explicit `/#home` is the slow case and needs the longest hold.
+- Tailwind's `sm:` is `min-width: 640px`, exactly the width scroll mode still
+  treats as mobile. A `sm:` layout variant on a wide row overflows there; use
+  `md:` for anything that must not fire while the page is phone-width.
+
+The flow is `home -> about -> projects -> contact`, carried by `FlowLink.astro`:
+a plain `<a href="#panel">`, which switches tabs on desktop (via `hashchange`)
+and scrolls on mobile without knowing which mode it is in.
 
 **About is itself three sub-tabs** — Profile, Arsenal, Journey — which is where
 the former `#skills` and `#experience` panels went. `AboutTabs` toggles

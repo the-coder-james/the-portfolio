@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useLayoutEffect, useMemo, useState } from "react";
 import { LayoutGrid, List, Search, X } from "lucide-react";
 import { ProjectCard } from "@/components/projects/ProjectCard";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -20,6 +20,9 @@ interface Project {
   siteurl: string | boolean;
   "siteurl-reason"?: string;
 }
+
+/** Cards per batch on mobile, where the page itself is the scroller. */
+const MOBILE_PAGE = 8;
 
 interface ProjectsGridProps {
   projects: Project[];
@@ -52,6 +55,21 @@ export function ProjectsGrid({
     [projects],
   );
 
+  // Mobile is one scrolling page, so the grid is not in a scroll container of
+  // its own: all 40 cards would stack into a single column ~18000px tall. There
+  // the list pages in batches instead. On desktop the grid scrolls inside the
+  // panel and everything renders, which is what the scroll hint points at.
+  const [scrollMode, setScrollMode] = useState(false);
+  const [shown, setShown] = useState(MOBILE_PAGE);
+
+  useLayoutEffect(() => {
+    const mq = window.matchMedia("(max-width: 640px)");
+    const sync = () => setScrollMode(mq.matches);
+    sync();
+    mq.addEventListener("change", sync);
+    return () => mq.removeEventListener("change", sync);
+  }, []);
+
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
     return sorted.filter((p) => {
@@ -65,6 +83,13 @@ export function ProjectsGrid({
       );
     });
   }, [sorted, query, activeTag, activeRole, activeProvider]);
+
+  // A filter that narrows the list must not leave a stale offset behind, or the
+  // count reads "showing 8 of 40" over three results.
+  useEffect(() => { setShown(MOBILE_PAGE); }, [filtered]);
+
+  // Desktop renders everything and lets the panel scroll; mobile pages.
+  const visible = scrollMode ? filtered.slice(0, shown) : filtered;
 
   const tagEntries = Object.entries(taglist);
   const hasFilters = Boolean(activeTag || activeRole || activeProvider);
@@ -119,7 +144,11 @@ export function ProjectsGrid({
             )}
           </div>
 
-          <div className="flex items-center gap-2 flex-wrap sm:flex-nowrap sm:shrink-0">
+          {/* md:, not sm: -- Tailwind's sm is min-width:640px, which is exactly the
+            width scroll mode still treats as mobile, so at 640 the row went
+            no-wrap while the page was still phone-width and pushed 34px past
+            the edge. */}
+        <div className="flex items-center gap-2 flex-wrap md:flex-nowrap md:shrink-0">
             <FilterSelect
               label="tag"
               value={activeTag}
@@ -200,7 +229,10 @@ export function ProjectsGrid({
         aria-live="polite"
         style={{ fontSize: "0.72rem", color: "var(--color-ink-dim)" }}
       >
-        // showing {filtered.length} of {sorted.length}
+        {/* Against the filtered total, not the catalogue: with a filter applied
+            "8 of 40" describes neither what is on screen nor what matched. */}
+        // showing {visible.length} of {filtered.length}
+        {filtered.length !== sorted.length && ` (filtered from ${sorted.length})`}
       </div>
 
       <div className="panel-scroll flex-1 min-h-0 -mr-1 pr-1">
@@ -227,7 +259,7 @@ export function ProjectsGrid({
               : "flex flex-col gap-2"
           }
         >
-          {filtered.map((project, i) => (
+          {visible.map((project, i) => (
             <ProjectCard
               key={`${project.title}-${project.date}`}
               project={project}
@@ -246,11 +278,26 @@ export function ProjectsGrid({
           is taller than the panel, and is clickable when it is not. */}
       </div>
 
-      {filtered.length > 4 && (
+      {!scrollMode && filtered.length > 4 && (
         <span className="scroll-hint" aria-hidden="true">
           scroll for more
           <span className="scroll-hint-arrow">↓</span>
         </span>
+      )}
+
+      {scrollMode && shown < filtered.length && (
+        <div className="flex justify-center mt-4">
+          <button
+            type="button"
+            onClick={() => setShown((n) => n + MOBILE_PAGE)}
+            className="flow-link"
+          >
+            <span>Show more</span>
+            <span className="font-mono" style={{ fontSize: "0.72rem", opacity: 0.75 }}>
+              {filtered.length - shown} left
+            </span>
+          </button>
+        </div>
       )}
     </TooltipProvider>
   );

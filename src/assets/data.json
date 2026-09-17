@@ -168,8 +168,8 @@
         "variant": "primary"
       },
       {
-        "label": "Get In Touch",
-        "href": "#contact",
+        "label": "Know Me More",
+        "href": "#about",
         "variant": "outline"
       }
     ],
@@ -266,5 +266,15 @@
         "desc": "Exploring new technologies every single day."
       }
     ]
+  },
+  "flow": {
+    "about": {
+      "label": "See My Works",
+      "href": "#projects"
+    },
+    "projects": {
+      "label": "Interested? Contact Me",
+      "href": "#contact"
+    }
   }
 }

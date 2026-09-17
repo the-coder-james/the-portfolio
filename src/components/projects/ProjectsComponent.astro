@@ -6,8 +6,11 @@ import projectlistJson from "@/assets/projectlist.json"
 import taglistJson from "@/assets/taglist.json"
 import rolesJson from "@/assets/roles.json"
 import providersJson from "@/assets/projectprovider.json"
+import FlowLink from "@/components/common/astro/FlowLink.astro"
+import dataJson from "@/assets/data.json"
 
 const baseUrl = import.meta.env.BASE_URL
+const { flow } = dataJson
 ---
 
 <SectionShell id="projects" scrollable={false} maxWidth="max-w-[1600px]">
@@ -28,9 +31,15 @@ const baseUrl = import.meta.env.BASE_URL
       headline="Things I've"
       headlineAccent="Built"
     />
-    <span style="font-size: 0.85rem; color: var(--color-ink-dim); font-family: 'Space Grotesk', sans-serif">
-      {projectlistJson.length}+ projects shipped
-    </span>
+    <!-- The flow step rides in the heading row rather than below the grid:
+         the grid fills the panel and owns the bottom edge, where its scroll
+         hint sits. A second element down there would fight it. -->
+    <div class="flex items-center gap-3 shrink-0">
+      <span style="font-size: 0.85rem; color: var(--color-ink-dim); font-family: 'Space Grotesk', sans-serif">
+        {projectlistJson.length}+ projects shipped
+      </span>
+      <FlowLink label={flow.projects.label} href={flow.projects.href} />
+    </div>
   </div>
 
   <!-- Dynamic: grid + "See more" pagination island -->

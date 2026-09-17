@@ -1,0 +1,24 @@
+---
+/**
+ * The forward step in the site's flow: home -> about -> projects -> contact.
+ *
+ * A plain <a href="#panel">, deliberately. On desktop the header listens for
+ * hashchange and switches tabs, so this needs to know nothing about the tab
+ * state; on mobile every panel is in flow and the same href scrolls to it.
+ * One element, both behaviours, no JS of its own.
+ */
+interface Props {
+  label: string;
+  href: string;
+  class?: string;
+}
+const { label, href, class: className = "" } = Astro.props;
+---
+
+<a href={href} class:list={["flow-link", className]}>
+  <span>{label}</span>
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+       stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <path d="M5 12h14M13 6l6 6-6 6" />
+  </svg>
+</a>

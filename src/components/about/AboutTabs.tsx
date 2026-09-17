@@ -32,22 +32,45 @@ interface TabDef {
  */
 export function AboutTabs({ tabs }: { tabs: TabDef[] }) {
   const [active, setActive] = useState(tabs[0]?.id ?? "profile");
+  // Mobile drops the sub-tabs along with the page tabs: the whole page is one
+  // scroll there, so hiding two thirds of About behind a control the reader
+  // has to find works against that.
+  const [scrollMode, setScrollMode] = useState(false);
+
+  useLayoutEffect(() => {
+    const mq = window.matchMedia("(max-width: 640px)");
+    const sync = () => setScrollMode(mq.matches);
+    sync();
+    mq.addEventListener("change", sync);
+    return () => mq.removeEventListener("change", sync);
+  }, []);
 
   // Before paint, so a second sub-panel is never briefly visible. Gated on
   // data-subtabs-ready the same way the page tabs are: without JS all three
   // stay in flow and the panel degrades to a readable stack.
   useLayoutEffect(() => {
-    document.documentElement.setAttribute("data-subtabs-ready", "");
+    document.documentElement.toggleAttribute("data-subtabs-ready", !scrollMode);
     for (const t of tabs) {
       const el = document.getElementById(`about-${t.id}`);
       if (!el) continue;
+      if (scrollMode) {
+        // Cleared, not just ignored: a pane left hidden from a resize out of
+        // tab mode would stay invisible with no control left to restore it.
+        el.hidden = false;
+        el.removeAttribute("aria-hidden");
+        continue;
+      }
       const isActive = t.id === active;
       el.hidden = !isActive;
       el.setAttribute("aria-hidden", String(!isActive));
     }
-  }, [active, tabs]);
+  }, [active, tabs, scrollMode]);
 
   const select = useCallback((id: string) => setActive(id), []);
+
+  // With every pane in flow the tablist controls nothing, and leaving it would
+  // present three buttons that visibly do not switch anything.
+  if (scrollMode) return null;
 
   return (
     <Tabs

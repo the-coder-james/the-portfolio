@@ -34,6 +34,10 @@ function tabFromHash(hash: string): string | null {
   return MERGED_TABS[id] ?? null;
 }
 
+/** Below this width the page stops being tabs and becomes one scrolling
+ *  document. Matches the 640px breakpoint the panel CSS uses. */
+const SCROLL_MODE_QUERY = "(max-width: 640px)";
+
 export function HeaderComponent() {
   const navRef = useRef<HTMLElement>(null);
   const indicatorRef = useRef<HTMLDivElement>(null);
@@ -45,7 +49,26 @@ export function HeaderComponent() {
   // aria-selected) stuck on the default. Start from the default to match the
   // server, then correct in a layout effect before paint.
   const [active, setActive] = useState<string>(DEFAULT_TAB);
+  // Mobile shows every panel at once and scrolls between them. Starts false to
+  // match the server render, then corrected before paint by the effect below.
+  const [scrollMode, setScrollMode] = useState(false);
   const reduced = useReducedMotion();
+
+  // Kept in a ref as well: the scroll listener and selectTab both need the
+  // current value without being torn down and rebuilt on every change.
+  const scrollModeRef = useRef(scrollMode);
+  scrollModeRef.current = scrollMode;
+
+  useLayoutEffect(() => {
+    const mq = window.matchMedia(SCROLL_MODE_QUERY);
+    const sync = () => {
+      setScrollMode(mq.matches);
+      document.documentElement.toggleAttribute("data-scroll-mode", mq.matches);
+    };
+    sync();
+    mq.addEventListener("change", sync);
+    return () => mq.removeEventListener("change", sync);
+  }, []);
 
   useLayoutEffect(() => {
     const fromHash = tabFromHash(window.location.hash);
@@ -69,6 +92,58 @@ export function HeaderComponent() {
     // Only on mount: later hash changes are handled by the listener below.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // Scroll mode: the browser resolves the landing #hash as a fragment and
+  // scrolls to that panel itself. That happens before the loading screen has
+  // cleared and before the islands below have their final height, so the
+  // position it lands on is measured against a layout that no longer exists --
+  // a plain /#home load came to rest ~1200px down the page. Re-resolve it once
+  // the layout has settled: the top for #home, the panel for anything else.
+  useEffect(() => {
+    if (!scrollMode) return;
+    const id = tabFromHash(window.location.hash) ?? DEFAULT_TAB;
+    const root = document.documentElement;
+
+    // The landing position has to be corrected *and* held. Entering scroll mode
+    // unhides three panels and roughly doubles the document, and the browser is
+    // still resolving the landing #hash against the old layout while that
+    // happens -- a plain /#home load drifted to ~1220px over about 900ms.
+    //
+    // It drifts rather than jumps because html{scroll-behavior:smooth} turns
+    // every correction into an animation, including this one: a single
+    // scrollTo here would be overtaken by the one already in flight. So the
+    // smooth behaviour is suspended for the settling window, the position is
+    // reasserted across a few frames, and only then is it handed back.
+    const prev = root.style.scrollBehavior;
+    root.style.scrollBehavior = "auto";
+
+    const place = () => {
+      if (id === DEFAULT_TAB) window.scrollTo(0, 0);
+      else document.getElementById(id)?.scrollIntoView({ behavior: "auto", block: "start" });
+    };
+
+    place();
+    const frames = [
+      requestAnimationFrame(place),
+      window.setTimeout(place, 60),
+      window.setTimeout(place, 180),
+      // An explicit /#home is the slow case: the browser re-resolves that
+      // fragment against the grown document after the earlier corrections have
+      // run, so #home alone needs the window held open longer. Any other hash
+      // resolves to the same place the browser was already heading.
+      window.setTimeout(place, 420),
+      window.setTimeout(place, 700),
+      window.setTimeout(() => { root.style.scrollBehavior = prev; }, 780),
+    ];
+
+    return () => {
+      cancelAnimationFrame(frames[0] as number);
+      frames.slice(1).forEach((t) => clearTimeout(t as number));
+      root.style.scrollBehavior = prev;
+    };
+    // Mount of scroll mode only; later navigation goes through selectTab.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [scrollMode]);
 
   useEffect(() => {
     if (!navRef.current) return;
@@ -113,6 +188,15 @@ export function HeaderComponent() {
     for (const id of TAB_IDS) {
       const el = document.getElementById(id);
       if (!el) continue;
+      // Scroll mode: every panel is in flow, so nothing is hidden and the
+      // attributes are actively cleared -- a panel left hidden from a resize
+      // out of tab mode would stay invisible with no way to bring it back.
+      if (scrollModeRef.current) {
+        el.hidden = false;
+        el.removeAttribute("aria-hidden");
+        el.removeAttribute("data-entering");
+        continue;
+      }
       const isActive = id === active;
       el.hidden = !isActive;
       el.setAttribute("aria-hidden", String(!isActive));
@@ -127,7 +211,7 @@ export function HeaderComponent() {
         el.removeAttribute("data-entering");
       }
     }
-  }, [active]);
+  }, [active, scrollMode]);
 
   // Canonicalise an empty or unrecognised hash without adding a history entry.
   useEffect(() => {
@@ -165,21 +249,79 @@ export function HeaderComponent() {
         history.pushState(null, "", `#${id}`);
       }
       setActive(id);
-      window.scrollTo({ top: 0, behavior: reduced ? "auto" : "smooth" });
+
+      const el = document.getElementById(id);
+
+      if (scrollModeRef.current) {
+        // Every panel is on the page, so this scrolls to one instead of
+        // swapping. scroll-margin-top on the panel keeps it clear of the
+        // floating nav.
+        el?.scrollIntoView({ behavior: reduced ? "auto" : "smooth", block: "start" });
+      } else {
+        window.scrollTo({ top: 0, behavior: reduced ? "auto" : "smooth" });
+      }
+
       // Move focus into the panel, or keyboard and screen-reader users stay
-      // parked in the header after switching.
-      requestAnimationFrame(() => document.getElementById(id)?.focus());
+      // parked in the header after switching. preventScroll in scroll mode:
+      // focus() would otherwise jump straight there and cancel the smooth
+      // scroll that just started.
+      requestAnimationFrame(() =>
+        el?.focus({ preventScroll: scrollModeRef.current })
+      );
     },
     [reduced]
   );
 
+  // Scroll mode: the active pill follows the section the reader is actually
+  // looking at. An IntersectionObserver with a band across the upper-middle of
+  // the viewport picks the section occupying it, which is steadier than
+  // measuring offsets on every scroll event.
+  useEffect(() => {
+    if (!scrollMode) return;
+
+    const panels = TAB_IDS
+      .map((id) => document.getElementById(id))
+      .filter((el): el is HTMLElement => !!el);
+    if (!panels.length) return;
+
+    const visible = new Map<string, number>();
+    const io = new IntersectionObserver(
+      (entries) => {
+        for (const e of entries) {
+          if (e.isIntersecting) visible.set(e.target.id, e.intersectionRatio);
+          else visible.delete(e.target.id);
+        }
+        let best: string | null = null;
+        let bestRatio = 0;
+        for (const [id, ratio] of visible) {
+          if (ratio > bestRatio) { best = id; bestRatio = ratio; }
+        }
+        // Only the pill moves. Writing the hash here would push a history
+        // entry per section and hijack the back button while scrolling.
+        if (best) setActive(best);
+      },
+      { rootMargin: "-20% 0px -55% 0px", threshold: [0, 0.25, 0.5, 0.75, 1] }
+    );
+    panels.forEach((p) => io.observe(p));
+    return () => io.disconnect();
+  }, [scrollMode]);
+
   // Slide the underline to the active tab.
   useEffect(() => {
     const indicator = indicatorRef.current;
-    const activeBtn = linkRefs.current[active];
-    if (!indicator || !activeBtn) return;
+    if (!indicator) return;
     const parent = indicator.parentElement;
     if (!parent) return;
+
+    // Home has no trigger in the tablist -- the logo is its control -- so there
+    // is nothing for the pill to sit on. Returning early left it parked on
+    // whichever tab it highlighted last, which read as that section being
+    // active while the hero was on screen. Fade it out instead.
+    const activeBtn = linkRefs.current[active];
+    if (!activeBtn) {
+      indicator.style.opacity = "0";
+      return;
+    }
     const parentRect = parent.getBoundingClientRect();
     const btnRect = activeBtn.getBoundingClientRect();
     const to = {
