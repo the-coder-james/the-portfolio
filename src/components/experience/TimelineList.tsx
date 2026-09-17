@@ -192,12 +192,9 @@ export function TimelineList({ items }: { items: TimelineItem[] }) {
               {item.company}
             </p>
 
-            {/* Sized in CSS, not inline: an inline style outranks every
-                stylesheet rule regardless of media query, so the short-viewport
-                trims could never reach it here. */}
             <p
-              className="min-h-0 timeline-desc"
-              style={{ color: "var(--color-ink-dim)", fontFamily: "'Space Grotesk', sans-serif", maxWidth: "62ch" }}
+              className="min-h-0"
+              style={{ fontSize: "0.88rem", color: "var(--color-ink-dim)", lineHeight: 1.65, fontFamily: "'Space Grotesk', sans-serif", marginBottom: "12px", maxWidth: "62ch" }}
             >
               {item.description}
             </p>

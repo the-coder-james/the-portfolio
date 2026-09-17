@@ -1399,7 +1399,8 @@
      the scroll-driven fade go with them, or a region that no longer scrolls
      would keep a permanent fade over its last rows. */
   html[data-scroll-mode] .panel-inner,
-  html[data-scroll-mode] .panel-scroll {
+  html[data-scroll-mode] .panel-scroll,
+  html[data-scroll-mode] .about-pane {
     overflow: visible;
     max-height: none;
     height: auto;
@@ -1408,7 +1409,18 @@
     animation: none;
   }
 
-  /* The panel no longer needs to fill a viewport it is not confined to. */
+  html[data-scroll-mode] .about-pane {
+    flex: none;
+    /* The desktop pane centres itself in a capped box so the three views share
+       a top edge. Stacked on one scrolling page there is nothing to line up
+       with, and the centring just opened a large blank band above each pane. */
+    justify-content: flex-start;
+    align-items: stretch;
+  }
+
+  /* Same reason: the panel no longer needs to fill a viewport it is not
+     confined to. */
+  html[data-scroll-mode] .about-panes,
   html[data-scroll-mode] .panel-viewport {
     justify-content: flex-start;
   }
@@ -1418,10 +1430,22 @@
     display: none;
   }
 
-  /* The About blocks are stacked on one page here, so they need more air
-     between them than the fitted desktop grid allows. */
-  html[data-scroll-mode] .about-grid {
-    gap: clamp(1.5rem, 4.5vh, 2.5rem);
+  /* Each About pane names itself now that the sub-tab bar is gone. */
+  html[data-scroll-mode] .about-pane-label {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    margin-bottom: 0.75rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--color-brand-text);
+  }
+
+  /* Panes are stacked on one page now, so they need air between them. */
+  html[data-scroll-mode] .about-panes {
+    gap: clamp(1.75rem, 5vh, 2.75rem);
   }
 
   /* The entrance animation fires on tab switch, which no longer happens. */
@@ -1495,292 +1519,68 @@ html[data-tabs-ready] .tabpanel[hidden] {
   display: none;
 }
 
-/* ── About: one section ──
-   Profile, Arsenal and Journey were sub-tabs; they are all visible at once now.
+/* ── About sub-tabs ──
+   About, Skills and Experience are one panel split three ways. The sub-panels
+   are toggled by the same `hidden` mechanism as the page tabs and gated the
+   same way, so without JS all three stack into a readable document.
 
-   The three were never short of vertical room so much as *width*: each was
-   capped near 896px inside a 1280px panel, leaving ~380px unused while the
-   stack ran ~190px past the fold. Profile and Arsenal share the top row, which
-   is where the height comes back from, and Journey spans below -- the pipeline
-   is horizontal by nature, and splitting it would rebuild the cramped rail the
-   timeline was redrawn to escape. */
-.about-grid {
-  display: grid;
-  grid-template-columns: minmax(0, 0.92fr) minmax(0, 1.08fr);
-  grid-template-areas:
-    "profile arsenal"
-    "journey journey";
-  gap: clamp(0.85rem, 2.2vh, 1.6rem) clamp(1.25rem, 2.5vw, 2.5rem);
-  align-content: start;
-  min-height: 0;
-  width: 100%;
+   Distinct from the page tab bar on purpose: that one is mono/uppercase in a
+   floating glass pill at the top of the viewport, this one is a small inline
+   segmented control inside the panel. Two tablists that looked alike would
+   read as one broken control. */
+html[data-subtabs-ready] .about-pane[hidden] {
+  display: none;
 }
 
-.about-block-profile { grid-area: profile; }
-.about-block-arsenal { grid-area: arsenal; }
-.about-block-journey { grid-area: journey; }
-
-/* The timeline carries a max-w-4xl from when it was a tab panel of its own,
-   and renders its own wrapper, so the child selector never reached it. Spanning
-   the full grid is the whole point of putting it on its own row -- it is the one
-   block that gets wider rather than shorter. */
-.about-block-journey [class*="max-w-4xl"] {
-  max-width: none;
+.about-subtab-bar {
+  margin-bottom: clamp(0.6rem, 1.6vh, 1.1rem);
 }
 
-.about-block {
-  display: flex;
-  flex-direction: column;
-  min-width: 0;
-  /* min-height: auto, not 0. At 0 the grid squeezed a block below its content
-     and the content spilled out of its own box -- at 768px the mindset cards
-     landed on top of the pipeline. A block is now at least as tall as what is
-     in it, and a viewport with no room for all three scrolls the panel's own
-     region instead of overlapping them. */
-  min-height: auto;
+/* Shown only in mobile scroll mode, where the sub-tab bar is gone. */
+.about-pane-label {
+  display: none;
 }
 
-/* Each block names itself. With all three on screen at once these labels are
-   what keep it from reading as one undifferentiated slab -- they do the job
-   the sub-tab bar used to. */
-.about-block-label {
-  display: flex;
-  align-items: center;
-  gap: 0.4rem;
-  margin: 0 0 0.6rem;
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 0.68rem;
-  font-weight: 500;
-  text-transform: uppercase;
-  letter-spacing: 0.09em;
-  color: var(--color-brand-text);
+/* Liquid glass, borderless. The track is the same material as the nav pill --
+   blur plus saturation over whatever is behind it -- with the 1px outline
+   traded for the inner highlight/lowlight pair, which reads as a lit edge
+   rather than a drawn one. */
+.about-subtabs {
+  background: var(--glass-bg);
+  border: none;
+  border-radius: 999px;
+  box-shadow: var(--glass-highlight), var(--glass-lowlight), var(--glass-shadow);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+  backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
 }
 
-.about-block-label::after {
-  content: "";
-  flex: 1;
-  height: 1px;
-  background: linear-gradient(to right, var(--tint-brand-25), transparent);
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .about-subtabs {
+    background: color-mix(in srgb, var(--color-surface-base) 94%, transparent);
+  }
 }
 
-/* Profile: portrait beside the copy. Below the two-column breakpoint the
-   portrait leads and the copy follows. */
-.about-profile-body {
-  display: grid;
-  grid-template-columns: minmax(0, auto) minmax(0, 1fr);
-  gap: clamp(0.85rem, 1.8vw, 1.5rem);
-  align-items: center;
-  min-width: 0;
-}
-
-.about-portrait {
-  display: flex;
-  justify-content: center;
-  min-width: 0;
-}
-
-/* The portrait is sized in px by its own component, so it is the first thing to
-   cost a short viewport its fit. Drive AboutImage's own --portrait-size rather
-   than the wrapper's width: the component's rings and glow are absolutely
-   positioned off that variable, so shrinking only the wrapper left them at full
-   size and they hung ~28px past the left edge of the panel. */
-.about-portrait > * {
-  --portrait-size: clamp(104px, 13vh, 170px) !important;
-}
-
-.timeline-desc {
-  font-size: 0.88rem;
-  line-height: 1.65;
-  margin-bottom: 12px;
-}
-
-.about-bio {
-  font-size: clamp(0.78rem, 1.55vh, 0.92rem);
+.about-subtab {
   color: var(--color-ink-dim);
-  line-height: 1.6;
-  font-family: 'Space Grotesk', sans-serif;
-  margin: 0;
+  border: none;
+  transition: color 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease;
 }
 
-/* One column below the desktop breakpoint: two 460px columns would each be too
-   narrow for the badge rows and the bio to read. */
-@media (max-width: 1023px) {
-  .about-grid {
-    grid-template-columns: minmax(0, 1fr);
-    grid-template-areas:
-      "profile"
-      "arsenal"
-      "journey";
-  }
+.about-subtab:hover {
+  color: var(--color-ink-muted);
+  background: var(--tint-white-05);
 }
 
-@media (max-width: 520px) {
-  .about-profile-body {
-    grid-template-columns: minmax(0, 1fr);
-    justify-items: center;
-    text-align: left;
-  }
-}
-
-/* Arsenal is the tallest of the three and sets whether the section fits: the
-   badge box and a 2x2 mindset grid stacked in a half-width column wanted 478px
-   against a 217px row. The cards go 1x4 in that column instead -- they are short
-   enough to sit in a row, and one row of four costs a quarter of the height two
-   rows of two did. */
-@media (min-width: 1024px) {
-  .about-block-arsenal .skills-mindset {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 0.5rem;
-  }
-
-  /* At a quarter width the card is too narrow for an icon beside the text. */
-  .about-block-arsenal .skills-mindset .mindset-icon {
-    display: none;
-  }
-
-  .about-block-arsenal .mindset-title {
-    font-size: 0.76rem;
-    line-height: 1.25;
-  }
-
-  .about-block-arsenal .mindset-desc {
-    font-size: 0.68rem;
-    line-height: 1.35;
-    display: -webkit-box;
-    -webkit-line-clamp: 3;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-  }
-
-  /* The window titlebar is chrome; at this size it is most of the card. */
-  .about-block-arsenal .skills-mindset .window-card > div:first-child {
-    display: none;
-  }
-}
-
-/* Short desktop viewports: About is the densest panel and the last to fit.
-   Journey is what is left over once Arsenal's cards go 1x4 -- its rail is a
-   fixed ~92px and the detail card below it wants ~132px, against a row that
-   only has ~217px for both. These trims are the difference between the section
-   fitting and the region scrolling; they touch chrome and spacing, never the
-   copy itself. */
-/* 900px-tall laptops are a common size and land ~34px over. The trim is small
-   and comes out of spacing, so it is worth taking to make the section fit
-   rather than scroll there. */
-@media (min-width: 1024px) and (max-height: 1010px) {
-  .about-grid {
-    gap: 0.45rem 1.75rem;
-  }
-
-  /* The gap between the pipeline rail and its detail card is 24px from the
-     timeline's own layout, sized for when it had a panel to itself. The root
-     sits inside an <astro-island> (display: contents), so a direct-child
-     selector does not reach it -- match the rail's own parent instead, which is
-     the only element that needs the smaller gap. A looser [class*=flex-col]
-     also matched nodes inside the card and made the block taller, not shorter. */
-  .about-block-journey .pipeline:first-child {
-    margin-bottom: -0.8rem;
-  }
-
-  /* The detail card's own padding, likewise sized for a full panel. */
-  .about-block-journey .timeline-detail-card {
-    padding: 0.7rem 1rem;
-  }
-
-  /* The badge box around the skill pills. */
-  .about-block-arsenal .skills-badge-box {
-    padding: 0.55rem 0.7rem;
-  }
-
-  .about-block-arsenal [data-slot="tabs-list"] {
-    margin-bottom: 0.5rem;
-  }
-
-  .about-block-label {
-    margin-bottom: 0.4rem;
-  }
-
-  .about-block-journey .window-card > div:last-child {
-    padding: 0.7rem 0.95rem;
-  }
-
-  .about-block-journey .timeline-desc {
-    margin-bottom: 8px;
-    font-size: 0.82rem;
-    line-height: 1.55;
-  }
-}
-
-@media (min-width: 1024px) and (max-height: 820px) {
-  .about-grid {
-    gap: 0.6rem 1.5rem;
-  }
-
-  .about-block-label {
-    margin-bottom: 0.35rem;
-    font-size: 0.62rem;
-  }
-
-  /* The pipeline rail: tighter nodes and labels. */
-  .about-block-journey .pipeline-stage-btn {
-    padding-top: 0.25rem;
-    padding-bottom: 0.25rem;
-    gap: 0.35rem;
-  }
-
-  .about-block-journey .pipeline {
-    font-size: 0.92em;
-  }
-
-  /* The detail card under the rail. */
-  .about-block-journey .window-card > div:last-child {
-    padding: 0.6rem 0.85rem;
-  }
-
-  .about-block-arsenal .skills-mindset .window-card > div:last-child {
-    padding: 0.5rem 0.6rem;
-  }
-
-  .about-portrait > * {
-    --portrait-size: clamp(96px, 11vh, 140px) !important;
-  }
-
-  /* The stage description is the tallest single element left in Journey. Three
-     lines still carries the entry; the full text is a scroll away on any
-     viewport that can show it. */
-  .about-block-journey .timeline-desc {
-    font-size: 0.78rem;
-    line-height: 1.5;
-    margin-bottom: 8px;
-    display: -webkit-box;
-    -webkit-line-clamp: 3;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-  }
-}
-
-/* The tightest desktop tier. Everything above still applies; these are the last
-   few dozen pixels, taken from chrome and the pipeline's own spacing rather
-   than from any copy. */
-@media (min-width: 1024px) and (max-height: 740px) {
-  .about-grid {
-    gap: 0.45rem 1.25rem;
-  }
-
-  .about-block-journey .timeline-desc {
-    -webkit-line-clamp: 2;
-    font-size: 0.74rem;
-  }
-
-  /* The tag row under the stage description restates the pipeline's own
-     labels closely enough to yield first on the shortest screens. */
-  .about-block-journey .window-card > div:last-child > div:last-child {
-    display: none;
-  }
-
-  .about-block-arsenal .skills-mindset .mindset-desc {
-    -webkit-line-clamp: 2;
-  }
+/* The active stop. Losing the border cost the only non-text marker that met
+   SC 1.4.11, so the state is now carried by a solid brand underline instead --
+   a 2px bar of --color-brand, which measures the same 4.94:1 (light) and
+   5.45:1 (dark) the border did. The fill stays a soft glass tint; it is
+   reinforcement, not the signal. */
+.about-subtab[data-state="active"] {
+  background: color-mix(in srgb, var(--color-brand) 12%, transparent);
+  color: var(--color-brand-text);
+  box-shadow: inset 0 -2px 0 0 var(--color-brand),
+              inset 0 1px 0 0 rgb(255 255 255 / 0.18);
 }
 
 /* ── Flow link ──
@@ -1839,27 +1639,67 @@ html[data-tabs-ready] .tabpanel[hidden] {
   display: flex;
   justify-content: center;
   flex-shrink: 0;
-  margin-top: clamp(0.35rem, 1.2vh, 1rem);
-}
-
-/* The flow link is pinned below the scroll region, so every pixel it takes is
-   a pixel the content loses. Trimmed on the viewports where About is tight. */
-@media (max-height: 1010px) {
-  .flow-row {
-    margin-top: 0.3rem;
-  }
-
-  .flow-link {
-    padding: 0.4rem 0.9rem;
-    min-height: 2rem;
-    font-size: 0.78rem;
-  }
+  margin-top: clamp(0.6rem, 1.8vh, 1.25rem);
 }
 
 @media (prefers-reduced-motion: reduce) {
   .flow-link,
   .flow-link svg { transition: none; }
   .flow-link:hover svg { transform: none; }
+}
+
+/* Each pane owns the remaining height, so switching sub-tabs does not make the
+   panel jump: all three occupy the same box.
+
+   align-items: center, not the default stretch -- Arsenal and Journey both wrap
+   their content in a max-width box, which stretch pins to the left edge of a
+   much wider pane while Profile (a grid with mx-auto) centres. The two sat
+   visibly out of line with each other. */
+.about-pane {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  /* Top-aligned inside the pane; the centring happens one level up on
+     .about-panes, which is what keeps the three views sharing a common top
+     edge instead of each floating in its own box. */
+  justify-content: flex-start;
+  align-items: center;
+  overflow-y: auto;
+  scrollbar-width: thin;
+}
+
+/* The panes centre in the space under the heading, but that space grows with
+   the viewport: at 1920x1080 pure centring left ~270px between the headline and
+   the content while the panel's own padding held the rest. Capping the pane's
+   height keeps the group tied to the heading on tall screens and lets it fall
+   back to plain centring on short ones, where there is no slack to give. */
+.about-panes {
+  justify-content: center;
+}
+
+/* The three views share one box so switching sub-tabs never shifts the heading
+   or the content's top edge.
+
+   Only a *cap*, never a floor: an earlier fixed height tied to vh clipped the
+   taller views on short and narrow screens, where there is no slack to give.
+   The pane takes the space it has and simply stops growing past the cap, which
+   is what keeps a 1080p viewport from stranding the content ~270px below the
+   headline. */
+.about-pane {
+  flex: 1;
+  max-height: 420px;
+}
+
+/* Below the desktop breakpoint the views stack taller (the Profile grid goes
+   one column), so the cap would clip rather than tidy. */
+@media (max-width: 1023px), (max-height: 780px) {
+  .about-pane { max-height: none; }
+}
+
+/* Direct children still need the full width to lay out inside. */
+.about-pane > * {
+  width: 100%;
 }
 
 /* The mindset icon tile, sized down with the card on narrow screens. */

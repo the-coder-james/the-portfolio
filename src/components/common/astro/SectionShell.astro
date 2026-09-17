@@ -68,11 +68,5 @@ const hasHeading = Boolean(eyebrow || headline);
       <slot />
     </div>
 
-    {/* Outside the scroll region on purpose: anything in the `footer` slot is
-        pinned below the content rather than scrolling with it. The About flow
-        link lived inside the region and rode up over the timeline whenever the
-        content was taller than the panel. */}
-    <slot name="footer" />
-
   </div>
 </section>
