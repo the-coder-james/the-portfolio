@@ -1555,7 +1555,74 @@ html[data-subtabs-ready] .about-pane[hidden] {
    measure. The block still starts at the headline's left edge; only the prose
    is held to a readable width. */
 .about-profile-grid > div:last-child {
-  max-width: 62ch;
+  /* 68ch, not 62. The cap is in ch, so it shrank in pixels when the bio type
+     grew -- the copy wrapped earlier than before and left slack to its right.
+     68ch keeps the measure inside the readable range at the larger size. */
+  max-width: 68ch;
+}
+
+/* ── Profile sizing ──
+   Everything here was tuned when Profile was a cramped full-viewport panel. As
+   one sub-tab of a shared panel it has room to spare: the grid measured 204px
+   in a 420px pane, with the portrait at 170px inside a 405px column. These
+   scale with the viewport instead of sitting at the old fixed minimums. */
+
+.about-bio {
+  font-size: clamp(0.92rem, 0.75rem + 0.45vw, 1.08rem);
+  color: var(--color-ink-dim);
+  line-height: 1.7;
+  font-family: 'Space Grotesk', sans-serif;
+  margin: 0;
+}
+
+/* The portrait drives its own rings and glow off --portrait-size, so that is
+   the variable to set -- shrinking or growing the wrapper alone leaves the
+   decorations at their original size. */
+.about-pane [class*="portrait-size"] {
+  --portrait-size: clamp(170px, 9rem + 6vw, 260px) !important;
+}
+
+/* Two stats, so two columns: the old grid-cols-4 left each card a quarter of
+   the row while half the row sat empty. */
+.stats-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  max-width: 30rem;
+}
+
+.stat-card {
+  padding: clamp(0.6rem, 0.4rem + 0.5vw, 1rem) clamp(0.5rem, 0.3rem + 0.5vw, 0.9rem);
+}
+
+.stat-icon {
+  font-size: clamp(1.15rem, 0.9rem + 0.6vw, 1.6rem);
+  margin-bottom: 0.3rem;
+}
+
+.stat-value {
+  font-size: clamp(1.25rem, 1rem + 0.8vw, 1.85rem);
+  font-weight: 700;
+  line-height: 1.1;
+  font-family: 'Space Grotesk', sans-serif;
+}
+
+.stat-label {
+  font-size: clamp(0.68rem, 0.6rem + 0.2vw, 0.8rem);
+  color: var(--color-ink-dim);
+  margin-top: 3px;
+  line-height: 1.25;
+  font-family: 'Space Grotesk', sans-serif;
+}
+
+/* Short viewports keep the old compact end of each range: the panel has no
+   spare height there and Profile has to fit alongside the heading and tabs. */
+@media (max-height: 760px) {
+  .about-pane [class*="portrait-size"] {
+    --portrait-size: clamp(150px, 8rem + 4vw, 195px) !important;
+  }
+  .about-bio { font-size: clamp(0.86rem, 0.75rem + 0.3vw, 0.98rem); }
+  .stat-value { font-size: clamp(1.1rem, 0.95rem + 0.5vw, 1.45rem); }
+  .stat-icon  { font-size: 1.1rem; margin-bottom: 0.2rem; }
+  .stat-card  { padding: 0.5rem 0.5rem; }
 }
 
 .about-subtab-bar {
@@ -1701,6 +1768,15 @@ html[data-subtabs-ready] .about-pane[hidden] {
 /* Direct children still need the full width to lay out inside. */
 .about-pane > * {
   width: 100%;
+}
+
+/* Arsenal and Journey fill the shared box, so top-aligning them keeps a common
+   top edge across sub-tabs. Profile is shorter than the box by design -- it is
+   a portrait and two paragraphs -- and top-aligned it left a visible band of
+   nothing underneath. Centring only this pane spends that space on both sides
+   of the content instead of dumping it all below. */
+#about-profile {
+  justify-content: center;
 }
 
 /* The mindset icon tile, sized down with the card on narrow screens. */

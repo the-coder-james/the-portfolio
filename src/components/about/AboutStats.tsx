@@ -68,23 +68,24 @@ export function AboutStats({ stats }: AboutStatsProps) {
 
   return (
     <div ref={ref}>
-      <RevealGroup className="grid grid-cols-4 gap-1.5 sm:gap-2" preset="scale" margin="-80px">
+      {/* Columns follow the count. grid-cols-4 dates from when there were four
+          stats; with two it left each card at a quarter width and the pair
+          floating in a third of the row. */}
+      <RevealGroup className="stats-grid grid gap-2 sm:gap-2.5" preset="scale" margin="-80px">
         {stats.map((stat) => (
           <div
             key={stat.label}
-            className="card-glow rounded-xl px-1 py-2 sm:px-2 sm:py-2.5 text-center"
+            className="stat-card card-glow rounded-xl text-center"
             style={{ background: "var(--color-card-surface)", border: "1px solid var(--color-card-border)" }}
           >
-            <div className="text-base leading-none mb-1" aria-hidden="true">{stat.icon}</div>
-            <div
-              className="gradient-text"
-              style={{ fontSize: "0.95rem", fontWeight: 700, lineHeight: 1.1, fontFamily: "'Space Grotesk', sans-serif" }}
-            >
+            {/* Sized in CSS, not inline: an inline style outranks every
+                stylesheet rule regardless of media query, so a per-viewport
+                scale could never reach these here. */}
+            <div className="stat-icon leading-none" aria-hidden="true">{stat.icon}</div>
+            <div className="stat-value gradient-text">
               <StatValue value={stat.value} start={revealed} />
             </div>
-            <div style={{ fontSize: "0.56rem", color: "var(--color-ink-dim)", marginTop: "2px", lineHeight: 1.2, fontFamily: "'Space Grotesk', sans-serif" }}>
-              {stat.label}
-            </div>
+            <div className="stat-label">{stat.label}</div>
           </div>
         ))}
       </RevealGroup>

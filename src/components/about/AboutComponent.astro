@@ -69,9 +69,7 @@ const extraSkills = user.extraSkills
 
         <div class="lg:col-span-8 flex flex-col gap-4 min-w-0 w-full">
           {about.bio.map((p) => (
-            <p style="font-size: 0.92rem; color: var(--color-ink-dim); line-height: 1.7; font-family: 'Space Grotesk', sans-serif">
-              {p}
-            </p>
+            <p class="about-bio">{p}</p>
           ))}
           <!-- The two counts the Journey pipeline cannot show. -->
           <AboutStats client:load stats={about.stats} />
