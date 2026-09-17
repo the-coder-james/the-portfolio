@@ -550,7 +550,12 @@
    and animates via left/width from the tab bar. */
 .glass-pill {
   background: color-mix(in srgb, var(--color-brand) 14%, transparent);
-  border: 1px solid color-mix(in srgb, var(--color-brand) 30%, transparent);
+  /* Full-strength brand, not a 30% mix. The pill is the only thing marking
+     which tab is active, so its edge is a UI component boundary under
+     SC 1.4.11 and needs 3:1 against what it sits on -- the mix measured
+     1.54:1 on light and 1.44:1 on dark. Shared by the page tab bar and the
+     About sub-tabs, so this fixes both. */
+  border: 1px solid var(--color-brand);
   box-shadow: inset 0 1px 0 0 rgb(255 255 255 / 0.25),
               0 2px 10px color-mix(in srgb, var(--color-brand) 22%, transparent);
 }
@@ -1541,46 +1546,21 @@ html[data-subtabs-ready] .about-pane[hidden] {
   display: none;
 }
 
-/* Liquid glass, borderless. The track is the same material as the nav pill --
-   blur plus saturation over whatever is behind it -- with the 1px outline
-   traded for the inner highlight/lowlight pair, which reads as a lit edge
-   rather than a drawn one. */
+/* Built like the page tab bar: a transparent track, with one .glass-pill
+   sliding behind the labels. The pill carries both the active fill and the
+   non-text contrast (SC 1.4.11) via its own brand border, so the triggers
+   themselves need no background, border or underline of their own -- the
+   earlier filled-track version had to invent an underline to replace the
+   border it dropped. Colours come from .nav-link, shared with the header. */
 .about-subtabs {
-  background: var(--glass-bg);
+  background: transparent;
   border: none;
-  border-radius: 999px;
-  box-shadow: var(--glass-highlight), var(--glass-lowlight), var(--glass-shadow);
-  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
-  backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
-}
-
-@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
-  .about-subtabs {
-    background: color-mix(in srgb, var(--color-surface-base) 94%, transparent);
-  }
+  padding: 0;
 }
 
 .about-subtab {
-  color: var(--color-ink-dim);
   border: none;
-  transition: color 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease;
-}
-
-.about-subtab:hover {
-  color: var(--color-ink-muted);
-  background: var(--tint-white-05);
-}
-
-/* The active stop. Losing the border cost the only non-text marker that met
-   SC 1.4.11, so the state is now carried by a solid brand underline instead --
-   a 2px bar of --color-brand, which measures the same 4.94:1 (light) and
-   5.45:1 (dark) the border did. The fill stays a soft glass tint; it is
-   reinforcement, not the signal. */
-.about-subtab[data-state="active"] {
-  background: color-mix(in srgb, var(--color-brand) 12%, transparent);
-  color: var(--color-brand-text);
-  box-shadow: inset 0 -2px 0 0 var(--color-brand),
-              inset 0 1px 0 0 rgb(255 255 255 / 0.18);
+  transition: color 0.2s ease;
 }
 
 /* ── Flow link ──

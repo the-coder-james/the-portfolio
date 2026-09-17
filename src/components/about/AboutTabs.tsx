@@ -1,6 +1,8 @@
 "use client";
-import { useState, useLayoutEffect, useCallback } from "react";
+import { useState, useLayoutEffect, useEffect, useCallback, useRef } from "react";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { animateEl } from "@/lib/utils";
+import { useReducedMotion } from "@/hooks/useReducedMotion";
 
 interface TabDef {
   id: string;
@@ -32,6 +34,9 @@ interface TabDef {
  */
 export function AboutTabs({ tabs }: { tabs: TabDef[] }) {
   const [active, setActive] = useState(tabs[0]?.id ?? "profile");
+  const indicatorRef = useRef<HTMLDivElement>(null);
+  const triggerRefs = useRef<Record<string, HTMLButtonElement | null>>({});
+  const reduced = useReducedMotion();
   // Mobile drops the sub-tabs along with the page tabs: the whole page is one
   // scroll there, so hiding two thirds of About behind a control the reader
   // has to find works against that.
@@ -68,6 +73,33 @@ export function AboutTabs({ tabs }: { tabs: TabDef[] }) {
 
   const select = useCallback((id: string) => setActive(id), []);
 
+  // Slide the pill to the active tab -- the same mechanism as the page tab bar,
+  // so the two controls behave identically and not just look alike.
+  useEffect(() => {
+    if (scrollMode) return;
+    const indicator = indicatorRef.current;
+    const btn = triggerRefs.current[active];
+    if (!indicator || !btn) return;
+    const parent = indicator.parentElement;
+    if (!parent) return;
+    const pr = parent.getBoundingClientRect();
+    const br = btn.getBoundingClientRect();
+    const to = { left: br.left - pr.left, width: br.width, opacity: 1 };
+    if (reduced) {
+      Object.assign(indicator.style, {
+        left: `${to.left}px`,
+        width: `${to.width}px`,
+        opacity: "1",
+      });
+      return;
+    }
+    animateEl(indicator as Element, to, {
+      type: "spring",
+      visualDuration: 0.3,
+      bounce: 0.1,
+    });
+  }, [active, reduced, scrollMode]);
+
   // With every pane in flow the tablist controls nothing, and leaving it would
   // present three buttons that visibly do not switch anything.
   if (scrollMode) return null;
@@ -79,24 +111,32 @@ export function AboutTabs({ tabs }: { tabs: TabDef[] }) {
       className="gap-0 shrink-0"
       activationMode="manual"
     >
+      {/* Built like the page tab bar: a transparent track with one glass pill
+          sliding behind the labels, rather than a filled track with a styled
+          active stop. after:hidden kills the line variant's own ::after bar --
+          2px of bg-foreground at bottom:-5px, which hangs below the control and
+          reads near-black in dark mode. The header suppresses it the same way. */}
       <TabsList
-        aria-label="About sections"
         variant="line"
-        /* after:hidden kills the line variant's own ::after bar. It is 2px of
-           bg-foreground pinned at bottom:-5px, so it hangs outside the glass
-           track -- in dark mode that is a near-black rule under the pill, which
-           is the opposite of borderless. The active state is carried by the
-           inset brand underline in .about-subtab instead, which is also the bar
-           that meets SC 1.4.11. The header tab bar suppresses it the same way. */
-        className="about-subtabs h-auto p-1 flex-wrap justify-center gap-1 mx-auto [&_[data-slot=tabs-trigger]]:after:hidden"
+        aria-label="About sections"
+        className="about-subtabs relative h-auto gap-0.5 bg-transparent p-0 mx-auto [&_[data-slot=tabs-trigger]]:after:hidden"
       >
+        <div
+          ref={indicatorRef}
+          className="glass-pill absolute top-0 bottom-0 rounded-full pointer-events-none z-0"
+          style={{ left: 0, width: 0, opacity: 0 }}
+          aria-hidden="true"
+        />
         {tabs.map((t) => (
           <TabsTrigger
             key={t.id}
             value={t.id}
             id={`subtab-${t.id}`}
             aria-controls={`about-${t.id}`}
-            className="about-subtab gap-1.5 rounded-full px-3.5 py-1.5 font-mono text-[0.72rem] uppercase tracking-wider data-[state=active]:shadow-none"
+            ref={(el) => {
+              triggerRefs.current[t.id] = el;
+            }}
+            className="about-subtab nav-link relative z-10 gap-1.5 px-3.5 py-1.5 font-mono text-[0.7rem] uppercase tracking-wider rounded-full data-[state=active]:text-brand data-[state=active]:bg-transparent data-[state=active]:shadow-none"
           >
             <span aria-hidden="true">{t.icon}</span>
             {t.label}

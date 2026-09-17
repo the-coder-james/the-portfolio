@@ -2,7 +2,11 @@
 const year = new Date().getFullYear()
 ---
 
-<footer class="relative py-3 sm:py-8" style="background: var(--color-surface-deep); border-top: 1px solid var(--tint-brand-10)">
+<!-- py-4 on desktop, not py-8. Every pixel here is taken off the panel above
+     it: --footer-h is measured at runtime and subtracted from .panel-viewport,
+     so a tall footer directly shrinks the one section the reader is looking at.
+     The footer is three short lines of chrome and does not need the height. -->
+<footer class="relative py-3 sm:py-4" style="background: var(--color-surface-deep); border-top: 1px solid var(--tint-brand-10)">
   <div class="max-w-7xl mx-auto px-4 sm:px-6">
     <div class="flex flex-row items-center justify-between gap-3 sm:gap-4">
       <div class="flex items-center gap-2">
