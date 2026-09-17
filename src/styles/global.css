@@ -1537,6 +1537,27 @@ html[data-subtabs-ready] .about-pane[hidden] {
   display: none;
 }
 
+/* The panes carry max-widths from when each was a full-viewport panel of its
+   own -- Profile at 5xl, Arsenal and Journey at 4xl -- so their content stopped
+   ~250-380px short of the headline above them. Inside one shared panel the
+   headline's own max-w-7xl is already the measure; anything narrower just reads
+   as a misalignment. TimelineList sets its 4xl internally and renders inside an
+   <astro-island> (display: contents), so it is unset here rather than in the
+   markup. */
+.about-pane [class*="max-w-4xl"] {
+  max-width: none;
+}
+
+/* Profile is the exception to the full-width rule. Arsenal and Journey are
+   grids and rails that genuinely use the extra room, but Profile is a portrait
+   plus two paragraphs: at 1280px the 4-column portrait drifted far from the
+   copy and the bio ran to ~95 characters a line, well past a comfortable
+   measure. The block still starts at the headline's left edge; only the prose
+   is held to a readable width. */
+.about-profile-grid > div:last-child {
+  max-width: 62ch;
+}
+
 .about-subtab-bar {
   margin-bottom: clamp(0.6rem, 1.6vh, 1.1rem);
 }

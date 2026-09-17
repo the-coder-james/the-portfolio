@@ -62,7 +62,7 @@ const extraSkills = user.extraSkills
       <p class="about-pane-label" aria-hidden="true">
         <span>👤</span>Profile
       </p>
-      <div class="grid lg:grid-cols-12 gap-5 xl:gap-8 items-center max-w-3xl lg:max-w-5xl mx-auto w-full">
+      <div class="about-profile-grid grid lg:grid-cols-12 gap-5 xl:gap-8 items-center max-w-3xl lg:max-w-none mx-auto w-full">
         <div class="lg:col-span-4 flex justify-center min-w-0 w-full">
           <AboutImage client:load name={name} imagePath={imagePath} hoverImagePath={hoverImagePath} baseUrl={baseUrl} />
         </div>
@@ -92,7 +92,7 @@ const extraSkills = user.extraSkills
       <p class="about-pane-label" aria-hidden="true">
         <span>⚙️</span>Arsenal
       </p>
-      <div class="flex flex-col gap-3.5 max-w-4xl mx-auto w-full">
+      <div class="flex flex-col gap-3.5 w-full">
         <SkillsTabs client:load techstack={techstack} extraSkills={extraSkills} />
         <SkillsMindset client:load cards={skills.mindset} />
       </div>
