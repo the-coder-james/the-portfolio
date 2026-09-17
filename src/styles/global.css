@@ -1244,6 +1244,28 @@
   mask-image: linear-gradient(to bottom, #000 calc(100% - var(--scroll-fade)), transparent);
 }
 
+/* Run the scrolling content out through the panel's bottom padding instead of
+   stopping short of it.
+
+   The panel reserves padding below the scroll region, so the last visible row
+   was cut by the region's own edge and then followed by a band of empty panel
+   before the footer -- the cut read as the end of the grid rather than as more
+   content continuing past it. Pulling the region into that padding puts the cut
+   at the panel's real bottom edge, where the fade and the hint sit, so the last
+   row is visibly mid-card. The padding is given back inside the region so the
+   final row still clears the footer when scrolled to the end. */
+.panel-scroll {
+  margin-bottom: calc(-1 * var(--panel-pad-y));
+}
+
+/* The last row needs clearance from the panel edge when scrolled to the end,
+   but padding on the scroll region itself becomes scrollable empty space --
+   a whole blank screen after the final card. Put it on the content instead,
+   where it is part of the last row rather than a region below it. */
+.panel-scroll > * {
+  padding-bottom: var(--panel-pad-y);
+}
+
 /* Retire the fade once the reader reaches the end, where there is nothing
    left to hint at. Browsers without scroll-driven animations keep the fade
    permanently, which is the safe direction to fail in. */

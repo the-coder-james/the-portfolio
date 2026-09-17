@@ -98,7 +98,12 @@ export function ProjectCard({ project, index, taglist, roles, providers, baseUrl
       tabIndex={0}
       initial={reduced ? false : { opacity: 0, y: 50, scale: 0.95 }}
       animate={revealed ? { opacity: 1, y: 0, scale: 1 } : undefined}
-      transition={{ delay: index * 0.07, type: "spring", visualDuration: 0.7, bounce: 0.2 }}
+      /* The stagger is capped rather than unbounded: at index * 0.07 the 40th
+         card started animating 2.8s after the grid revealed, so scrolling
+         straight to the end of the list showed a row of half-faded cards and
+         one still fully invisible. Nine steps is enough to read as a cascade
+         in the rows actually on screen; past that the delay is flat. */
+      transition={{ delay: Math.min(index, 9) * 0.07, type: "spring", visualDuration: 0.7, bounce: 0.2 }}
       className={`rounded-xl overflow-hidden flex ${isList ? "flex-row items-stretch" : "flex-col"}`}
       style={{
         background: "var(--color-card-surface)",
