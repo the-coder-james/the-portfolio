@@ -89,7 +89,10 @@ export function ProjectsGrid({
   useEffect(() => { setShown(MOBILE_PAGE); }, [filtered]);
 
   // Desktop renders everything and lets the panel scroll; mobile pages.
-  const visible = scrollMode ? filtered.slice(0, shown) : filtered;
+  // The rail holds every card in one track -- it is swiped, not scrolled past --
+  // so paging only applies to the mobile list view, where cards still stack.
+  const paged = scrollMode && view === "list";
+  const visible = paged ? filtered.slice(0, shown) : filtered;
 
   const tagEntries = Object.entries(taglist);
   const hasFilters = Boolean(activeTag || activeRole || activeProvider);
@@ -254,9 +257,16 @@ export function ProjectsGrid({
       ) : (
         <div
           className={
-            view === "grid"
-              ? "grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2.5 sm:gap-3"
-              : "flex flex-col gap-2"
+            // Mobile grid view is a horizontal snap rail: 40 cards stacked one
+            // per row made the section the longest scroll on the page, and a
+            // phone-width card is already full-bleed, so a vertical list gained
+            // nothing a swipe does not. List view stays a list -- that is what
+            // the toggle is for.
+            scrollMode && view === "grid"
+              ? "projects-rail"
+              : view === "grid"
+                ? "grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2.5 sm:gap-3"
+                : "flex flex-col gap-2"
           }
         >
           {visible.map((project, i) => (
@@ -285,7 +295,7 @@ export function ProjectsGrid({
         </span>
       )}
 
-      {scrollMode && shown < filtered.length && (
+      {paged && shown < filtered.length && (
         <div className="flex justify-center mt-4">
           <button
             type="button"

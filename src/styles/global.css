@@ -1561,6 +1561,139 @@ html[data-subtabs-ready] .about-pane[hidden] {
   max-width: 68ch;
 }
 
+/* ── Contact ──
+   The heading carried a flat mb-16 (64px). On desktop that is deliberate air
+   under a short heading; on a phone, where the section sizes to its content in
+   scroll mode, it was 64px of the ~60px the section ran over its viewport. */
+.contact-heading {
+  margin-bottom: clamp(1rem, 4vh, 4rem);
+}
+
+/* The message box is the tallest single thing in the form. 144px is right when
+   the panel has room; on a phone, where the section sizes to its content, it was
+   a third of the overflow. Four lines still takes a real message and the box
+   grows as you type. */
+.contact-textarea {
+  min-height: clamp(84px, 14vh, 144px);
+}
+
+/* The sub-line under the contact headline is a full sentence of framing. It is
+   the first thing to go when the section has to fit a phone: the heading above
+   it already says what the section is. */
+@media (max-width: 640px) {
+  .contact-heading p:last-child {
+    display: none;
+  }
+
+  /* The last few dozen pixels on the narrowest phones, taken from spacing
+     rather than from any field or label. */
+  .contact-grid {
+    gap: 0.6rem;
+  }
+
+  .contact-grid > div:first-child {
+    gap: 0.5rem;
+  }
+
+  .contact-heading {
+    margin-bottom: 0.75rem;
+  }
+}
+
+/* ── Projects rail (mobile grid view) ──
+   Cards slide right-to-left in one snap track instead of stacking. 40 cards one
+   per row made this the longest scroll on the site, and a phone-width card is
+   already full-bleed, so a vertical list gained nothing a swipe does not.
+
+   The track is pulled out to the panel's edges so a card can sit centred with
+   its neighbours peeking in -- that peek is the affordance telling the reader
+   there is more sideways. */
+.projects-rail {
+  display: flex;
+  gap: 0.75rem;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+  margin-inline: calc(-1 * var(--panel-pad-x));
+  padding-inline: var(--panel-pad-x);
+  padding-bottom: 0.25rem;
+}
+
+.projects-rail::-webkit-scrollbar { display: none; }
+
+.projects-rail > * {
+  flex: 0 0 auto;
+  width: min(78vw, 320px);
+  scroll-snap-align: center;
+}
+
+/* A rail is horizontal; the reveal animation slides cards up from below, which
+   fights the direction of travel and leaves off-screen cards stranded at
+   opacity 0 until they are swiped to. */
+.projects-rail > * > * {
+  opacity: 1 !important;
+  transform: none !important;
+}
+
+/* ── Hero terminal card, compact (mobile) ──
+   The card was hidden below lg, which removed the strongest "this is a
+   developer" signal from the devices most visitors arrive on. It is back above
+   the copy, printed short: three lines, no run output, no float animation.
+
+   Sized against the measured slack in the phone hero -- 288px at 414x896 down
+   to 139px at 360x740 -- so it takes what is spare and no more. */
+.hero-terminal-compact {
+  width: 100%;
+  margin-bottom: clamp(0.75rem, 2.2vh, 1.25rem);
+}
+
+/* Above the copy, not below it. The card is the second grid cell in DOM order
+   (it is the hero's right column on desktop), and the grid collapses to one
+   column below lg, so it landed under everything. TerminalCard renders inside
+   an <astro-island>, which is display:contents and cannot take the order --
+   it goes on the card element itself, with the left column pushed after it.
+
+   Only below lg: at lg+ the grid is two columns and source order is correct. */
+@media (max-width: 1023px) {
+  .hero-grid {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .hero-grid > astro-island,
+  .hero-grid > div:first-child {
+    width: 100%;
+  }
+
+  .hero-terminal-compact {
+    order: -1;
+  }
+}
+
+.hero-terminal-compact-body {
+  padding: clamp(0.6rem, 1.6vh, 0.9rem) clamp(0.7rem, 3vw, 1rem);
+  font-size: clamp(0.62rem, 0.5rem + 0.7vw, 0.74rem);
+  line-height: 1.7;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.hero-terminal-compact-body::-webkit-scrollbar { display: none; }
+
+/* The stack array is the one line that can outrun a narrow screen; let the body
+   scroll rather than wrap it into a second line that costs height. */
+.hero-terminal-compact-line {
+  white-space: nowrap;
+}
+
+/* Below ~740px tall the hero has no slack to give the card: the copy alone
+   already fills the viewport, so adding the card pushed the section past 100vh
+   (measured +61px at 360x740, +31px at 320x650). The copy wins there. */
+@media (max-width: 340px), (max-height: 745px) {
+  .hero-terminal-compact { display: none; }
+}
+
 /* ── Profile sizing ──
    Everything here was tuned when Profile was a cramped full-viewport panel. As
    one sub-tab of a shared panel it has room to spare: the grid measured 204px

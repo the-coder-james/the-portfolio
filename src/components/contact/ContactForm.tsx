@@ -100,7 +100,7 @@ export function ContactForm() {
               send_message.ts
             </span>
           </div>
-          <div className="grid sm:grid-cols-2 gap-5">
+          <div className="grid sm:grid-cols-2 gap-3 sm:gap-5">
             <div className="space-y-1.5">
               <Label htmlFor="contact-name" className="font-mono text-[0.75rem] text-brand">name:</Label>
               <Input
@@ -135,7 +135,7 @@ export function ContactForm() {
               placeholder="Tell me about your project..."
               value={form.message}
               onChange={(e) => setForm((f) => ({ ...f, message: e.target.value }))}
-              className={`${fieldClass} resize-vertical min-h-[144px]`}
+              className={`${fieldClass} contact-textarea resize-vertical`}
             />
           </div>
           <Button

@@ -18,6 +18,16 @@ export function TerminalCard({ name, since, professional, stackLabels }: Termina
     return items;
   });
 
+  // The mobile card is the same object, printed short: name, stack and the
+  // availability flag are what a visitor actually reads off it. The full seven
+  // lines plus the run output need ~300px, which a phone hero does not have
+  // (measured slack: 288px at 414x896 down to 1px at 320x650).
+  const compactLines = [
+    <><span style={{ color: "var(--color-syn-keyword)" }}>const</span> <span style={{ color: "var(--color-syn-ident)" }}>dev</span> <span style={{ color: "var(--color-code-ink)" }}>=</span> <span style={{ color: "var(--color-syn-string)" }}>{`{`}</span> <span style={{ color: "var(--color-syn-fn)" }}>name</span><span style={{ color: "var(--color-code-ink)" }}>:</span> <span style={{ color: "var(--color-syn-tag)" }}>"{name}"</span><span style={{ color: "var(--color-code-ink-dim)" }}>,</span></>,
+    <>&nbsp;&nbsp;<span style={{ color: "var(--color-syn-fn)" }}>stack</span><span style={{ color: "var(--color-code-ink)" }}>:</span> <span style={{ color: "var(--color-syn-string)" }}>[</span>{stackContent}<span style={{ color: "var(--color-syn-string)" }}>]</span><span style={{ color: "var(--color-code-ink-dim)" }}>,</span></>,
+    <>&nbsp;&nbsp;<span style={{ color: "var(--color-syn-fn)" }}>available</span><span style={{ color: "var(--color-code-ink)" }}>:</span> <span style={{ color: "var(--color-syn-string)" }}>true</span> <span style={{ color: "var(--color-syn-string)" }}>{`}`}</span><span style={{ color: "var(--color-code-ink-dim)" }}>;</span></>,
+  ];
+
   const terminalLines = [
     <><span style={{ color: "var(--color-syn-keyword)" }}>const</span> <span style={{ color: "var(--color-syn-ident)" }}>developer</span> <span style={{ color: "var(--color-code-ink)" }}>=</span> <span style={{ color: "var(--color-syn-string)" }}>{`{`}</span></>,
     <>&nbsp;&nbsp;<span style={{ color: "var(--color-syn-fn)" }}>name</span><span style={{ color: "var(--color-code-ink)" }}>:</span> <span style={{ color: "var(--color-syn-tag)" }}>"{name}"</span><span style={{ color: "var(--color-code-ink-dim)" }}>,</span></>,
@@ -38,6 +48,40 @@ export function TerminalCard({ name, since, professional, stackLabels }: Termina
   });
 
   return (
+    <>
+    {/* Mobile: the same card, printed short and placed above the copy. It was
+        hidden below lg, which removed the strongest "this is a developer"
+        signal on exactly the devices most visitors arrive on. No float
+        animation and no run output here -- both cost height the hero cannot
+        spare. */}
+    <motion.div
+      className="hero-terminal-compact lg:hidden"
+      initial={reduced ? false : { opacity: 0, y: 12 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ type: "spring", visualDuration: 0.5, bounce: 0.2 }}
+    >
+      <TerminalShell
+        filename="developer.config.ts"
+        style={{
+          border: "1px solid var(--tint-brand-20)",
+          boxShadow: "0 8px 24px var(--shadow-black-40)",
+        }}
+        bodyClassName="font-mono hero-terminal-compact-body"
+        footer={
+          <div className="flex items-center gap-2">
+            <span className="w-1.5 h-1.5 rounded-full bg-brand" aria-hidden="true" />
+            <span style={{ fontSize: "0.58rem", color: "var(--color-code-ink-dim)", fontFamily: "'JetBrains Mono'" }}>TypeScript</span>
+          </div>
+        }
+      >
+        <div aria-hidden="true">
+          {compactLines.map((content, i) => (
+            <div key={i} className="hero-terminal-compact-line">{content}</div>
+          ))}
+        </div>
+      </TerminalShell>
+    </motion.div>
+
     <motion.div
       className={`hidden lg:block ${reduced ? "" : "terminal-float"}`}
       initial={reduced ? false : { opacity: 0, y: 20, scale: 0.97 }}
@@ -110,5 +154,6 @@ export function TerminalCard({ name, since, professional, stackLabels }: Termina
         </div>
       </TerminalShell>
     </motion.div>
+    </>
   );
 }
