@@ -5,9 +5,11 @@ import contactJson from "@/assets/contact.json"
 interface Props {
   title?: string;
   description?: string;
+  /** Keep this page out of the index (the 404). */
+  noindex?: boolean;
 }
 
-const { title, description } = Astro.props;
+const { title, description, noindex } = Astro.props;
 const { seo, user } = dataJson;
 
 const pageTitle = title ? `${title} | ${seo.siteName}` : seo.title;
@@ -70,7 +72,7 @@ const websiteSchema = {
 <link rel="icon" type="image/svg+xml" href={faviconHref} />
 
 <meta name="author" content={user.nameDisplay} />
-<meta name="robots" content="index, follow, max-image-preview:large" />
+<meta name="robots" content={noindex ? "noindex, follow" : "index, follow, max-image-preview:large"} />
 <meta name="theme-color" content="#1d4ed8" />
 
 <!-- Open Graph: what LinkedIn, Slack and Facebook read when the link is shared -->

@@ -16,7 +16,10 @@ export default defineConfig({
     // One page, so the sitemap is small -- but it is what tells a crawler the
     // canonical address and when the page last changed, and robots.txt points
     // at it.
-    sitemap()
+    sitemap({
+      // The 404 is served, never indexed -- it has no business in the sitemap.
+      filter: (page) => !page.includes('/404'),
+    })
   ],
   vite: {
     plugins: [tailwindcss()]
