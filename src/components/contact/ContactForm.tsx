@@ -8,6 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { TrafficLights } from "@/components/common/tsx/TerminalShell";
 import contactJson from "@/assets/contact.json";
+import { trackEvent } from "@/components/common/tsx/ConsentStore";
 
 // Sourced from the same list the contact cards render, so the address cannot
 // drift between the two.
@@ -40,6 +41,12 @@ export function ContactForm() {
     const subject = encodeURIComponent(`Portfolio enquiry from ${name || "someone"}`);
     const body = encodeURIComponent(`${message}\n\n— ${name}${email ? ` (${email})` : ""}`);
     window.location.href = `mailto:${CONTACT_EMAIL}?subject=${subject}&body=${body}`;
+
+    // The one event worth having: pageviews cannot tell you whether anyone
+    // actually tried to make contact. No-ops without consent, and the field
+    // values are deliberately not sent -- only that a submit happened.
+    trackEvent("contact_submit", { has_email: Boolean(email) });
+
     setSubmitted(true);
   };
 

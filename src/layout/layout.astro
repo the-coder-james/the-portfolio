@@ -1,7 +1,13 @@
 ---
 import BaseHead from '@/components/common/astro/BaseHead.astro';
 import { LoadingScreen } from '@/components/common/tsx/LoadingScreen';
+import { CookieBanner } from '@/components/common/tsx/CookieBanner';
 const { title, noindex } = Astro.props;
+
+// GTM is injected from ConsentStore after the visitor accepts, not from a tag
+// here: loading it in <head> and asking afterwards is not consent. This only
+// supplies the <noscript> fallback, which must sit immediately after <body>.
+const gtmId = import.meta.env.PUBLIC_GTM_ID;
 ---
 <html lang="en">
   <head>
@@ -34,6 +40,17 @@ const { title, noindex } = Astro.props;
     </style>
   </head>
   <body style="min-height: 100vh; overflow-x: hidden;">
+    {gtmId && (
+      <noscript>
+        <iframe
+          src={`https://www.googletagmanager.com/ns.html?id=${gtmId}`}
+          height="0"
+          width="0"
+          style="display:none;visibility:hidden"
+          title="Google Tag Manager"
+        ></iframe>
+      </noscript>
+    )}
     <div id="preboot-veil"></div>
     {/* Fixed page backdrop. Stays put while the content scrolls over it.
         Its gradients live in .site-backdrop so they follow the theme. */}
@@ -41,6 +58,7 @@ const { title, noindex } = Astro.props;
     <a href="#main" class="skip-link">Skip to content</a>
     <LoadingScreen client:load />
     <slot />
+    <CookieBanner client:idle />
     <script is:inline>
       // Remove the static veil once React's loading screen has mounted on top.
       // The React component handles the actual fade-out animation.

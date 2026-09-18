@@ -126,6 +126,32 @@ before first paint by an inline script in `layout.astro`.
 Contrast ratios in the token comments are measured, not estimated. Re-measure
 if you change a surface.
 
+### Analytics: GTM behind a consent gate
+
+Off unless `PUBLIC_GTM_ID` is set. Without it the loader, the `<noscript>`
+fallback and the banner all no-op, so local dev and any build lacking the
+variable ship no analytics at all. Production reads it from the `PUBLIC_GTM_ID`
+repository secret, passed to `yarn build` in the deploy workflow.
+
+**GTM is injected from `ConsentStore.ts` after the visitor accepts — never from
+a tag in `<head>`.** Loading it in the head and asking afterwards is not
+consent; it is a notice shown after the data has already gone. The store is a
+module-level `useSyncExternalStore`, same as `ThemeProvider` and for the same
+reason (each island is its own React root).
+
+- `grant()` writes localStorage and injects the loader; `deny()` writes and
+  injects nothing. `initConsent()` re-injects on later visits for someone who
+  already accepted, so they are not asked twice.
+- `trackEvent()` is a no-op without consent — events are dropped, not queued,
+  or a later grant would leak what a declining visitor did.
+- The only custom event is `contact_submit` from `ContactForm`, carrying
+  `has_email` and no field values. Pageviews cannot tell you whether anyone
+  tried to make contact, which is the one thing worth knowing here.
+- Accept and Decline share a size and shape; only the fill differs. A banner
+  that makes declining harder is not valid consent under GDPR.
+- The banner clears the footer via `--footer-h`, except in scroll mode where the
+  footer sits at the end of the document rather than pinned.
+
 ### Data
 
 Content lives in `src/assets/*.json`:

@@ -1901,6 +1901,127 @@ html[data-subtabs-ready] .about-pane[hidden] {
   transition: color 0.2s ease;
 }
 
+/* ── Cookie consent banner ──
+   Bottom-anchored glass card, the same material as the nav and sub-tabs. Sits
+   above the panels but below the nav pill, so it never covers navigation.
+
+   Accept and Decline share a size and shape; only the fill differs. A banner
+   that makes declining harder than accepting is not valid consent under GDPR,
+   and it is the pattern every visitor has learned to resent. */
+.cookie-banner {
+  position: fixed;
+  z-index: 55;
+  left: 50%;
+  /* Clear of the footer, not just of the viewport edge. On desktop the footer
+     is pinned below the panel, so a banner measured from the bottom sat on top
+     of it. --footer-h is measured at runtime by the header island. */
+  bottom: calc(var(--footer-h, 61px) + clamp(0.75rem, 2.5vh, 1.5rem));
+  transform: translateX(-50%);
+  width: min(560px, calc(100% - 1.5rem));
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem 1rem;
+  padding: 0.85rem 1rem;
+  border-radius: 14px;
+  background: var(--glass-bg);
+  box-shadow: var(--glass-highlight), var(--glass-lowlight), var(--glass-shadow);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+  backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+}
+
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .cookie-banner {
+    background: color-mix(in srgb, var(--color-surface-base) 96%, transparent);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .cookie-banner {
+    animation: cookieBannerIn 0.35s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+}
+
+@keyframes cookieBannerIn {
+  from { opacity: 0; transform: translate(-50%, 12px); }
+  to   { opacity: 1; transform: translate(-50%, 0); }
+}
+
+.cookie-banner-text {
+  flex: 1 1 15rem;
+  min-width: 0;
+  margin: 0;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.76rem;
+  line-height: 1.55;
+  color: var(--color-ink-dim);
+}
+
+.cookie-banner-actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.cookie-btn {
+  /* 2.25rem tall and 5rem wide clears the 24x24 CSS px minimum in SC 2.5.8. */
+  min-height: 2.25rem;
+  min-width: 5rem;
+  padding: 0.4rem 0.9rem;
+  border-radius: 999px;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.78rem;
+  font-weight: 500;
+  cursor: pointer;
+  color: var(--color-ink-muted);
+  background: var(--tint-white-05);
+  border: 1px solid var(--color-card-border);
+  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+
+.cookie-btn:hover {
+  color: var(--color-ink);
+  border-color: var(--color-card-border-strong);
+}
+
+.cookie-btn-accept {
+  color: var(--color-on-brand);
+  background: var(--color-brand-700);
+  border-color: var(--color-brand-700);
+}
+
+.cookie-btn-accept:hover {
+  background: var(--color-brand-900);
+  border-color: var(--color-brand-900);
+}
+
+.cookie-btn:focus-visible {
+  outline: 2px solid var(--color-brand-300);
+  outline-offset: 2px;
+}
+
+/* On a phone the banner spans the width and the buttons take a row of their
+   own, so neither is cramped against the copy. */
+/* Scroll mode: the footer is at the end of the document rather than pinned
+   under the panel, so there is nothing at the bottom of the viewport to clear. */
+html[data-scroll-mode] .cookie-banner {
+  bottom: clamp(0.75rem, 2.5vh, 1.5rem);
+}
+
+@media (max-width: 480px) {
+  .cookie-banner {
+    padding: 0.8rem 0.9rem;
+  }
+
+  .cookie-banner-actions {
+    width: 100%;
+  }
+
+  .cookie-btn {
+    flex: 1;
+  }
+}
+
 /* ── Flow link ──
    The forward step out of a section. Liquid glass like the nav and sub-tabs,
    borderless, with the arrow easing right on hover to read as "onward" rather
