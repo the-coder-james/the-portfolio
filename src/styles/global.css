@@ -1643,32 +1643,37 @@ html[data-subtabs-ready] .about-pane[hidden] {
 
    Sized against the measured slack in the phone hero -- 288px at 414x896 down
    to 139px at 360x740 -- so it takes what is spare and no more. */
+/* A backdrop, not a card in the flow. In the flow it cost the hero ~155px of
+   the little height a phone has and pushed the copy down; behind the copy it
+   keeps the developer signal and costs nothing, which is the same trade the
+   About panel makes with its code block.
+
+   Pinned to the top of the hero, faded and masked out toward the bottom so the
+   headline reads over clean ground. aria-hidden already: it is a decorative
+   sample, and nothing in it is content a reader needs. */
 .hero-terminal-compact {
-  width: 100%;
-  margin-bottom: clamp(0.75rem, 2.2vh, 1.25rem);
+  position: absolute;
+  /* Anchored to the hero's lower half, not the top. Pinned under the nav it
+     landed straight behind the badge and greeting -- two type layers at similar
+     weight in the same 150px, which read as a rendering fault rather than a
+     backdrop. Below the CTAs the hero has nothing but empty ground. */
+  bottom: clamp(2rem, 9vh, 5.5rem);
+  left: var(--panel-pad-x);
+  right: var(--panel-pad-x);
+  width: auto;
+  z-index: 1;
+  pointer-events: none;
+  /* Lower than the About backdrop's 0.18: that one sits behind a portrait and
+     short paragraphs, this sits behind a 2.5rem headline and body copy that
+     have to stay legible over it. */
+  opacity: 0.14;
+  transform: rotate(-1.5deg);
+  -webkit-mask-image: linear-gradient(to top, #000 55%, transparent 100%);
+  mask-image: linear-gradient(to top, #000 55%, transparent 100%);
 }
 
-/* Above the copy, not below it. The card is the second grid cell in DOM order
-   (it is the hero's right column on desktop), and the grid collapses to one
-   column below lg, so it landed under everything. TerminalCard renders inside
-   an <astro-island>, which is display:contents and cannot take the order --
-   it goes on the card element itself, with the left column pushed after it.
-
-   Only below lg: at lg+ the grid is two columns and source order is correct. */
-@media (max-width: 1023px) {
-  .hero-grid {
-    display: flex;
-    flex-direction: column;
-  }
-
-  .hero-grid > astro-island,
-  .hero-grid > div:first-child {
-    width: 100%;
-  }
-
-  .hero-terminal-compact {
-    order: -1;
-  }
+.dark .hero-terminal-compact {
+  opacity: 0.2;
 }
 
 .hero-terminal-compact-body {
@@ -1687,10 +1692,11 @@ html[data-subtabs-ready] .about-pane[hidden] {
   white-space: nowrap;
 }
 
-/* Below ~740px tall the hero has no slack to give the card: the copy alone
-   already fills the viewport, so adding the card pushed the section past 100vh
-   (measured +61px at 360x740, +31px at 320x650). The copy wins there. */
-@media (max-width: 340px), (max-height: 745px) {
+/* The backdrop costs no layout height, so a short viewport gains nothing by
+   hiding it -- but it does need somewhere empty to sit. Below ~670px tall the
+   copy runs all the way to the fold and the card lands on the CTAs instead of
+   behind bare ground, so it yields there. */
+@media (max-height: 670px) {
   .hero-terminal-compact { display: none; }
 }
 

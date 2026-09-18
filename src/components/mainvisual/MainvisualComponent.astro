@@ -2,6 +2,7 @@
 import { ParticleCanvas } from "@/components/mainvisual/ParticleCanvas"
 import { TypingHeadline } from "@/components/mainvisual/TypingHeadline"
 import { TerminalCard } from "@/components/mainvisual/TerminalCard"
+import { TerminalBackdrop } from "@/components/mainvisual/TerminalBackdrop"
 import contactJson from "@/assets/contact.json"
 import dataJson from "@/assets/data.json"
 
@@ -37,6 +38,11 @@ const socials = contactJson
 
   <!-- Static overlays -->
   <div class="absolute inset-0 dot-grid opacity-30" aria-hidden="true" style="z-index: 0"></div>
+
+  <!-- Mobile: the config card as a backdrop behind the copy. A sibling of the
+       other decorative layers on purpose -- inside the content column it would
+       sit within `div.relative z-10` and could never render behind it. -->
+  <TerminalBackdrop client:idle name={name} stackLabels={user.stackLabels} />
 
   <!-- Static floating code snippets (lg+) -->
   {mainvisual.floaters.map((f) => (
