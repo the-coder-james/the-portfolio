@@ -10,6 +10,7 @@ npm run build     # Production build → dist/
 npm run preview   # Preview production build locally
 npm run shadcn    # Run shadcn CLI to add/update components
 npm run images    # Optimise source images (scripts/optimize-images.mjs)
+npm run og        # Regenerate public/og-image.png from the hero; needs `npm run preview`
 npm run inspect   # Playwright layout check; needs `npm run preview` running
 ```
 
@@ -19,7 +20,7 @@ Requires Node >= 18.20.8 (Astro 5). No linting or unit-test scripts are configur
 ## Architecture
 
 **Astro + React + Tailwind v4** portfolio deployed to GitHub Pages at
-`https://alejandrejames.github.io/the-portfolio/` (base path `/the-portfolio/`).
+`https://the-coder-james.github.io/the-portfolio/` (base path `/the-portfolio/`).
 Static output — there is no server at runtime.
 
 ### Page structure: tabs on desktop, one scroll on mobile
@@ -129,8 +130,9 @@ if you change a surface.
 
 Content lives in `src/assets/*.json`:
 
-- `data.json` — nav (the tab list), user profile, hero, about copy (including
-  `about.tabs`, the sub-tab labels) and skills copy
+- `data.json` — nav (the tab list), `seo` (title, description, keywords, OG
+  image), user profile, hero, about copy (including `about.tabs`, the sub-tab
+  labels), skills copy, and `flow` (the forward step out of each section)
 - `projectlist.json` — project entries; integer ids reference `taglist.json`,
   `roles.json`, `techs.json`, `projectprovider.json`
 - `experience.json`, `contact.json`

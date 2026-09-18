@@ -17,6 +17,23 @@
       "href": "#contact"
     }
   ],
+  "seo": {
+    "siteName": "James the Dev",
+    "title": "James — Full Stack Developer",
+    "description": "Full stack developer building e-commerce platforms, business sites and landing pages with PHP, React and Node.js. Professional since 2019.",
+    "keywords": [
+      "full stack developer",
+      "LAMP stack",
+      "MERN stack",
+      "PHP developer",
+      "React developer",
+      "e-commerce development",
+      "web developer portfolio"
+    ],
+    "ogImage": "og-image.png",
+    "jobTitle": "Full Stack Developer",
+    "locale": "en_US"
+  },
   "user": {
     "image": {
       "path": "mainimage.png",
