@@ -1389,15 +1389,18 @@
     scroll-margin-top: calc(var(--nav-h) + 0.5rem);
   }
 
-  /* The first panel still clears the floating nav. It keeps a full-viewport
-     minimum so the hero reads as a landing screen and the pinned backdrop has
-     a screen to cover -- but its content is top-aligned, not centred: the
-     terminal card is hidden below lg, so centring a half-empty grid left a
-     large blank band under the hero copy. */
+  /* The first panel still clears the floating nav and keeps a full-viewport
+     minimum, so the hero reads as a landing screen and the pinned backdrop has
+     a screen to cover.
+
+     Centred, not top-aligned. It was top-aligned because the terminal card was
+     hidden below lg and centring a half-empty grid left a blank band under the
+     copy -- but the card is a backdrop now and the grid is just the copy, so
+     top-aligning only pushed 138-287px of slack to the bottom. */
   html[data-scroll-mode] #home.panel-viewport {
     padding-top: calc(var(--nav-h) + var(--panel-nav-gap));
     min-height: 100svh;
-    justify-content: flex-start;
+    justify-content: center;
   }
 
   /* Every scroll region flattens: the page is the scroller now. The mask and
@@ -1653,11 +1656,12 @@ html[data-subtabs-ready] .about-pane[hidden] {
    sample, and nothing in it is content a reader needs. */
 .hero-terminal-compact {
   position: absolute;
-  /* Anchored to the hero's lower half, not the top. Pinned under the nav it
-     landed straight behind the badge and greeting -- two type layers at similar
-     weight in the same 150px, which read as a rendering fault rather than a
-     backdrop. Below the CTAs the hero has nothing but empty ground. */
-  bottom: clamp(2rem, 9vh, 5.5rem);
+  /* Pinned to the bottom edge. It used to sit on a fixed offset into the hero's
+     lower half, which worked while the copy was top-aligned and left a deep
+     band of empty ground there; once the copy centred, that band halved and the
+     card ran up into the text by 49-127px. Sitting on the floor keeps it in
+     whatever space is actually left, whichever way the copy is aligned. */
+  bottom: 0;
   left: var(--panel-pad-x);
   right: var(--panel-pad-x);
   width: auto;
@@ -1693,10 +1697,12 @@ html[data-subtabs-ready] .about-pane[hidden] {
 }
 
 /* The backdrop costs no layout height, so a short viewport gains nothing by
-   hiding it -- but it does need somewhere empty to sit. Below ~670px tall the
-   copy runs all the way to the fold and the card lands on the CTAs instead of
-   behind bare ground, so it yields there. */
-@media (max-height: 670px) {
+   hiding it -- but it does need somewhere empty to sit. Centring the hero copy
+   halved the band below it, so the threshold moved up: under ~800px tall the
+   copy reaches the floor and the card would sit on the text rather than behind
+   bare ground. Measured clearance at the cutoff: +8px at 390x844, -43px at
+   360x740. */
+@media (max-height: 800px) {
   .hero-terminal-compact { display: none; }
 }
 
