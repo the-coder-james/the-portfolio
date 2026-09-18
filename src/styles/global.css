@@ -1107,6 +1107,45 @@
 .project-media { aspect-ratio: 16 / 9; }
 
 /* ── Project filters and view toggle ── */
+
+/* Search and filters share one row on desktop and wrap on a phone. Sized in
+   CSS rather than inline so the mobile rules below can reach them. */
+.projects-search {
+  padding-block: 0.5rem;
+  font-size: 0.8rem;
+}
+
+.filter-select {
+  padding: 0.35rem 1.4rem 0.35rem 0.6rem;
+  font-size: 0.72rem;
+}
+
+@media (max-width: 640px) {
+  /* The search bar is the least-used control in this row -- the three selects
+     cover the actual browsing -- so it gives up the height and takes a smaller
+     face, leaving room for the filters to show their labels in full. */
+  .projects-search {
+    padding-block: 0.35rem;
+    font-size: 0.72rem;
+  }
+
+  /* A select with no width sizes to its widest *option*, not to what it is
+     showing -- "role" ran to 246px on the strength of one long role name while
+     "via" sat at 135px. Capped so the three read as one set and each still has
+     room for its label plus a value; the open list is unconstrained. */
+  .filter-field {
+    flex: 1 1 auto;
+    min-width: 0;
+    max-width: calc(50% - 0.25rem);
+  }
+
+  .filter-select {
+    padding: 0.3rem 1.25rem 0.3rem 0.5rem;
+    font-size: 0.68rem;
+    text-overflow: ellipsis;
+  }
+}
+
 .filter-select {
   color: var(--color-ink-dim);
   background: var(--tint-white-03);
@@ -1637,6 +1676,72 @@ html[data-subtabs-ready] .about-pane[hidden] {
 .projects-rail > * > * {
   opacity: 1 !important;
   transform: none !important;
+}
+
+/* ── Rail scroll affordance ──
+   The peeking next card is the strongest hint, but it only reads as one once
+   you already suspect the row moves. Two explicit cues sit alongside it: the
+   track fades out at its right edge so cards visibly continue past it, and a
+   label says so outright until the reader starts swiping.
+
+   The fade is a mask on a wrapper rather than on the rail itself -- masking a
+   scroll container clips its content to the mask on every frame, which makes
+   the leading card fade in and out as it travels. */
+.projects-rail-wrap {
+  position: relative;
+  min-width: 0;
+}
+
+.projects-rail-wrap::after {
+  content: "";
+  position: absolute;
+  inset-block: 0;
+  right: calc(-1 * var(--panel-pad-x));
+  width: clamp(28px, 9vw, 52px);
+  pointer-events: none;
+  z-index: 2;
+  background: linear-gradient(to left, var(--color-surface-base), transparent);
+  opacity: 0.9;
+  transition: opacity 0.25s ease;
+}
+
+/* Once the rail has moved, the reader knows. Set by ProjectsGrid on scroll. */
+.projects-rail-wrap[data-scrolled]::after {
+  opacity: 0;
+}
+
+.projects-rail-hint {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin-top: 0.4rem;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.62rem;
+  color: var(--color-ink-faint);
+  transition: opacity 0.25s ease;
+}
+
+.projects-rail-wrap[data-scrolled] + .projects-rail-hint,
+.projects-rail-hint[data-scrolled] {
+  opacity: 0;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .projects-rail-hint-arrow {
+    animation: railHintNudge 1.6s ease-in-out infinite;
+  }
+}
+
+@keyframes railHintNudge {
+  0%, 100% { transform: translateX(0); }
+  50%      { transform: translateX(4px); }
+}
+
+/* On the shortest phones the label's own line is what tips the panel past the
+   viewport. The edge fade and the peeking card still carry the affordance
+   there, so the words go rather than the section overflow. */
+@media (max-height: 680px) {
+  .projects-rail-hint { display: none; }
 }
 
 /* ── Hero terminal card, compact (mobile) ──

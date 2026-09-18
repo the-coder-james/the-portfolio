@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useMemo, useState } from "react";
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { LayoutGrid, List, Search, X } from "lucide-react";
 import { ProjectCard } from "@/components/projects/ProjectCard";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -92,6 +92,23 @@ export function ProjectsGrid({
   // The rail holds every card in one track -- it is swiped, not scrolled past --
   // so paging only applies to the mobile list view, where cards still stack.
   const paged = scrollMode && view === "list";
+
+  // The rail's affordances retire once the reader has actually swiped -- an
+  // edge fade and a "swipe" label that stay put after the gesture is understood
+  // are just noise over the cards.
+  const railRef = useRef<HTMLDivElement>(null);
+  const [railScrolled, setRailScrolled] = useState(false);
+
+  useEffect(() => {
+    setRailScrolled(false);
+    const el = railRef.current;
+    if (!el) return;
+    const onScroll = () => {
+      if (el.scrollLeft > 12) setRailScrolled(true);
+    };
+    el.addEventListener("scroll", onScroll, { passive: true });
+    return () => el.removeEventListener("scroll", onScroll);
+  }, [scrollMode, view, filtered]);
   const visible = paged ? filtered.slice(0, shown) : filtered;
 
   const tagEntries = Object.entries(taglist);
@@ -125,11 +142,10 @@ export function ProjectsGrid({
               }}
               placeholder="search projects..."
               aria-label="Search projects by title"
-              className="field-interactive w-full pl-9 pr-9 py-2 rounded-lg outline-none"
+              className="field-interactive projects-search w-full pl-9 pr-9 rounded-lg outline-none"
               style={{
                 color: "var(--color-ink-muted)",
                 fontFamily: "'JetBrains Mono', monospace",
-                fontSize: "0.8rem",
               }}
             />
             {query && (
@@ -255,21 +271,14 @@ export function ProjectsGrid({
           </p>
         </div>
       ) : (
-        <div
-          className={
-            // Mobile grid view is a horizontal snap rail: 40 cards stacked one
-            // per row made the section the longest scroll on the page, and a
-            // phone-width card is already full-bleed, so a vertical list gained
-            // nothing a swipe does not. List view stays a list -- that is what
-            // the toggle is for.
-            scrollMode && view === "grid"
-              ? "projects-rail"
-              : view === "grid"
-                ? "grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2.5 sm:gap-3"
-                : "flex flex-col gap-2"
-          }
-        >
-          {visible.map((project, i) => (
+        (() => {
+          // Mobile grid view is a horizontal snap rail: 40 cards stacked one
+          // per row made the section the longest scroll on the page, and a
+          // phone-width card is already full-bleed, so a vertical list gained
+          // nothing a swipe does not. List view stays a list -- that is what
+          // the toggle is for.
+          const isRail = scrollMode && view === "grid";
+          const cards = visible.map((project, i) => (
             <ProjectCard
               key={`${project.title}-${project.date}`}
               project={project}
@@ -280,8 +289,41 @@ export function ProjectsGrid({
               providers={providers}
               baseUrl={baseUrl}
             />
-          ))}
-        </div>
+          ));
+
+          if (!isRail) {
+            return (
+              <div
+                className={
+                  view === "grid"
+                    ? "grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2.5 sm:gap-3"
+                    : "flex flex-col gap-2"
+                }
+              >
+                {cards}
+              </div>
+            );
+          }
+
+          return (
+            <>
+              <div
+                className="projects-rail-wrap"
+                data-scrolled={railScrolled ? "true" : undefined}
+              >
+                <div className="projects-rail" ref={railRef}>{cards}</div>
+              </div>
+              <p
+                className="projects-rail-hint"
+                data-scrolled={railScrolled ? "true" : undefined}
+                aria-hidden="true"
+              >
+                swipe for more
+                <span className="projects-rail-hint-arrow">→</span>
+              </p>
+            </>
+          );
+        })()
       )}
 
       {/* The sentinel doubles as the control: it loads on scroll once the grid
@@ -332,15 +374,20 @@ function FilterSelect({
 }) {
   const active = value !== null;
   return (
-    <label className="relative flex items-center min-w-0 flex-1 sm:flex-none">
+    /* Not flex-1: three equal shares of a phone row left each select ~90px, so
+       every label truncated to "tag: a...". They size to their own content now
+       and wrap instead, which is what flex-wrap on the row is for. */
+    <label className="filter-field relative flex items-center min-w-0">
       <span className="sr-only">Filter by {label}</span>
       <select
         value={value ?? ""}
         onChange={(e) => onChange(e.target.value || null)}
-        className="filter-select font-mono appearance-none rounded-lg pl-2.5 pr-6 py-1.5 outline-none cursor-pointer min-w-0 w-full sm:w-auto truncate"
+        className="filter-select font-mono appearance-none rounded-lg outline-none cursor-pointer min-w-0 w-full"
         data-active={active ? "true" : undefined}
-        style={{ fontSize: "0.72rem" }}
       >
+        {/* The closed select shows the selected option's text, so the label has
+            to live in it. Inside the open list it is the same word on every row
+            -- dropped there, which is what buys the room to show the value. */}
         <option value="">{label}: all</option>
         {options.map(([id, o]) => (
           <option key={id} value={id}>
