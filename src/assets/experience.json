@@ -6,7 +6,9 @@
     "company": "Self-Taught",
     "type": "milestone",
     "description": "Wrote my first line of HTML and immediately got hooked. Started with basic websites, moved to JavaScript and PHP, and never looked back. Every bug became a puzzle worth solving.",
-    "tags": ["HTML", "CSS", "JavaScript", "PHP", "Self-Learning"]
+    "tags": [
+      "Self-Learning"
+    ]
   },
   {
     "year": "2017",
@@ -15,7 +17,10 @@
     "company": "Personal Projects",
     "type": "milestone",
     "description": "Dove into the LAMP stack and build tools. Learned Apache, MySQL, and started building real projects for friends and local businesses as a freelancer.",
-    "tags": ["PHP", "MySQL", "Apache", "WordPress", "Freelancing"]
+    "tags": [
+      "WordPress",
+      "Freelancing"
+    ]
   },
   {
     "year": "2019",
@@ -24,7 +29,13 @@
     "company": "Upward Next",
     "type": "job",
     "description": "Landed my first professional developer position. Started contributing to production codebases, shipping corporate and e-commerce sites for Japanese clients.",
-    "tags": ["LAMP Stack", "WordPress", "Eccube", "Welcart", "Agile"]
+    "tags": [
+      "LAMP Stack",
+      "WordPress",
+      "Eccube",
+      "Welcart",
+      "Agile"
+    ]
   },
   {
     "year": "2021",
@@ -33,7 +44,10 @@
     "company": "Lead Developer",
     "type": "job",
     "description": "Took on full-stack responsibilities — architecting databases, building APIs, and leading feature development. Shipped multiple e-commerce platforms and business tools.",
-    "tags": ["PHP", "MySQL", "JavaScript", "E-Commerce", "Lead Dev"]
+    "tags": [
+      "E-Commerce",
+      "Lead Dev"
+    ]
   },
   {
     "year": "2024",
@@ -42,7 +56,9 @@
     "company": "Upward Next",
     "type": "job",
     "description": "Began exploring MERN stack and Generative AI — adding React, Node.js, and LLM tooling to my skill set alongside continued professional LAMP development.",
-    "tags": ["React", "Node.js", "OpenAI", "MongoDB", "Full-Stack"]
+    "tags": [
+      "Full-Stack"
+    ]
   },
   {
     "year": "Now",
@@ -51,6 +67,10 @@
     "company": "Available for Hire",
     "type": "present",
     "description": "Continuing to build, learn, and grow. Excited about new challenges, collaborations, and the next great project. Always exploring what's next in web development.",
-    "tags": ["Open to Opportunities", "Freelance", "Full-Time"]
+    "tags": [
+      "Open to Opportunities",
+      "Freelance",
+      "Full-Time"
+    ]
   }
 ]

@@ -2,12 +2,16 @@
 const year = new Date().getFullYear()
 ---
 
-<footer class="relative py-10" style="background: var(--color-surface-deep); border-top: 1px solid var(--tint-brand-10)">
-  <div class="max-w-7xl mx-auto px-6">
-    <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
+<!-- py-4 on desktop, not py-8. Every pixel here is taken off the panel above
+     it: --footer-h is measured at runtime and subtracted from .panel-viewport,
+     so a tall footer directly shrinks the one section the reader is looking at.
+     The footer is three short lines of chrome and does not need the height. -->
+<footer class="relative py-3 sm:py-4" style="background: var(--color-surface-deep); border-top: 1px solid var(--tint-brand-10)">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6">
+    <div class="flex flex-row items-center justify-between gap-3 sm:gap-4">
       <div class="flex items-center gap-2">
-        <div class="w-7 h-7 rounded-lg bg-blue-600 flex items-center justify-center">
-          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-white" aria-hidden="true">
+        <div class="w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-brand-700 flex items-center justify-center">
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-on-brand" aria-hidden="true">
             <polyline points="16 18 22 12 16 6"></polyline>
             <polyline points="8 6 2 12 8 18"></polyline>
           </svg>
@@ -17,7 +21,7 @@ const year = new Date().getFullYear()
         </span>
       </div>
 
-      <p class="flex items-center gap-1.5" style="font-size: 0.78rem; color: var(--color-ink-faint); font-family: 'Space Grotesk', sans-serif">
+      <p class="hidden md:flex items-center gap-1.5" style="font-size: 0.78rem; color: var(--color-ink-faint); font-family: 'Space Grotesk', sans-serif">
         Vibe coded with
         <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="var(--color-brand)" stroke="var(--color-brand)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
           <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
@@ -25,8 +29,8 @@ const year = new Date().getFullYear()
         and way too much coffee
       </p>
 
-      <p class="font-mono" style="font-size: 0.7rem; color: var(--color-ink-faint)">
-        © {year} — All rights reserved
+      <p class="font-mono whitespace-nowrap" style="font-size: 0.66rem; color: var(--color-ink-faint)">
+        © {year} <span class="hidden sm:inline">— All rights reserved</span>
       </p>
     </div>
   </div>

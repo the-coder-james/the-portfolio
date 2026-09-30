@@ -1,12 +1,100 @@
 ---
-const data = Astro.props;
+import dataJson from "@/assets/data.json"
+import contactJson from "@/assets/contact.json"
 
-const sitetitle = 'James the Dev';
+interface Props {
+  title?: string;
+  description?: string;
+  /** Keep this page out of the index (the 404). */
+  noindex?: boolean;
+}
+
+const { title, description, noindex } = Astro.props;
+const { seo, user } = dataJson;
+
+const pageTitle = title ? `${title} | ${seo.siteName}` : seo.title;
+const pageDesc = description ?? seo.description;
+
+/**
+ * Canonical and absolute URLs.
+ *
+ * `Astro.site` is the origin and `Astro.url.pathname` already carries the base
+ * path, so joining them gives the real address. Canonical is emitted without a
+ * trailing slash so /the-portfolio and /the-portfolio/ -- both reachable on
+ * GitHub Pages -- resolve to one indexed URL instead of two.
+ */
+const origin = Astro.site?.origin ?? "https://the-coder-james.github.io";
+const canonical = new URL(Astro.url.pathname.replace(/\/+$/, "") || "/", origin).href;
+const baseUrl = import.meta.env.BASE_URL;
+/** Join BASE_URL to a public/ file without doubling the slash between them. */
+const asset = (file: string) => `${baseUrl}${file}`.replace(/\/{2,}/g, "/");
+const faviconHref = asset("favicon.svg");
+const ogImage = new URL(asset(seo.ogImage), origin).href;
+
+const githubUrl = contactJson.find((c) => c.name === "Github")?.url;
+const sameAs = contactJson
+  .filter((c) => c.url && !c.url.startsWith("mailto:"))
+  .map((c) => c.url);
+
+/**
+ * Person schema: what lets a search engine treat the site as an entity rather
+ * than a page of text. knowsAbout carries the stack, sameAs the profiles.
+ */
+const personSchema = {
+  "@context": "https://schema.org",
+  "@type": "Person",
+  name: user.nameDisplay,
+  url: canonical,
+  jobTitle: seo.jobTitle,
+  description: pageDesc,
+  knowsAbout: seo.keywords,
+  ...(sameAs.length ? { sameAs } : {}),
+  worksFor: { "@type": "Organization", name: "Freelance" },
+};
+
+const websiteSchema = {
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  name: seo.siteName,
+  url: canonical,
+  description: pageDesc,
+  inLanguage: "en",
+  author: { "@type": "Person", name: user.nameDisplay },
+};
 ---
 
-<meta charset="utf-8">
-<meta http-equiv="X-UA-Compatible", content="IE=11">
-<meta name="viewport", content="width=device-width, initial-scale=1, shrink-to-fit=yes">
+<!-- charset and viewport are set once in layout.astro, before this component
+     renders: charset in particular must be in the first 1024 bytes. -->
+<title>{pageTitle}</title>
+<meta name="description" content={pageDesc} />
+<link rel="canonical" href={canonical} />
 
-<title>{data.title ? data.title + ' | ' : ''}{sitetitle}</title>
+<link rel="icon" type="image/svg+xml" href={faviconHref} />
 
+{seo.googleSiteVerification && (
+  <meta name="google-site-verification" content={seo.googleSiteVerification} />
+)}
+
+<meta name="author" content={user.nameDisplay} />
+<meta name="robots" content={noindex ? "noindex, follow" : "index, follow, max-image-preview:large"} />
+<meta name="theme-color" content="#1d4ed8" />
+
+<!-- Open Graph: what LinkedIn, Slack and Facebook read when the link is shared -->
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content={seo.siteName} />
+<meta property="og:title" content={pageTitle} />
+<meta property="og:description" content={pageDesc} />
+<meta property="og:url" content={canonical} />
+<meta property="og:locale" content={seo.locale} />
+<meta property="og:image" content={ogImage} />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta property="og:image:alt" content={`${user.nameDisplay} — ${seo.jobTitle}`} />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content={pageTitle} />
+<meta name="twitter:description" content={pageDesc} />
+<meta name="twitter:image" content={ogImage} />
+
+<script type="application/ld+json" is:inline set:html={JSON.stringify(personSchema)} />
+<script type="application/ld+json" is:inline set:html={JSON.stringify(websiteSchema)} />

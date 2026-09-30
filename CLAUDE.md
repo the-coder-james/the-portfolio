@@ -9,49 +9,175 @@ npm run dev       # Start dev server (Astro on localhost:4321)
 npm run build     # Production build → dist/
 npm run preview   # Preview production build locally
 npm run shadcn    # Run shadcn CLI to add/update components
+npm run images    # Optimise source images (scripts/optimize-images.mjs)
+npm run og        # Regenerate public/og-image.png from the hero; needs `npm run preview`
+npm run inspect   # Playwright layout check; needs `npm run preview` running
 ```
 
-No linting or test scripts are configured.
+Requires Node >= 18.20.8 (Astro 5). No linting or unit-test scripts are configured;
+`npx astro check` is the type check.
 
 ## Architecture
 
-This is an **Astro + React + Tailwind** portfolio site deployed to GitHub Pages at `https://alejandrejames.github.io/the-portfolio/` (base path `/the-portfolio/`).
+**Astro + React + Tailwind v4** portfolio deployed to GitHub Pages at
+`https://the-coder-james.github.io/the-portfolio/` (base path `/the-portfolio/`).
+Static output — there is no server at runtime.
 
-### Data flow
+### Page structure: tabs on desktop, one scroll on mobile
 
-All site content lives in `src/assets/*.json`:
-- `data.json` — nav links and user profile (name, role, tech stack cards)
-- `projectlist.json` — portfolio project entries (title, date, tags, role, tech, provider, image, description, siteurl)
-- `taglist.json` — tag ID → name map (`"1": Wordpress`, `"2": Eccube`, `"3": Welcart`)
-- `roles.json` — role ID → name map (1: Lead-Developer, 2: Developer, 3: E-commerce module developer)
-- `techs.json` / `projectprovider.json` — similar lookup tables
-- `contact.json` — social/contact link list
+`src/pages/index.astro` renders four sibling `<section>` panels inside `<main>`:
+`#home`, `#about`, `#projects`, `#contact`.
 
-`src/middleware.ts` injects `data.json` into `Astro.locals.webdata` on every request, making it available to all Astro components via `Astro.locals.webdata`.
+**Above 640px** only one is visible at a time. `HeaderComponent` owns the tab
+state and toggles the native `hidden` attribute on each section by id.
 
-### Component pattern
+**At 640px and below** the page becomes one scrolling document: `HeaderComponent`
+sets `data-scroll-mode` on `<html>`, stops hiding panels (and actively clears
+`hidden`, or a panel left over from a resize would stay invisible), the nav
+pills scroll to their panel instead of switching, and an IntersectionObserver
+moves the active pill to whatever section is on screen. `AboutTabs` drops its
+sub-tab bar there and each pane labels itself instead.
 
-Pages use `.astro` files as containers/shells; interactive UI uses React (`.tsx`) with `client:only="react"` or `client:load` directives. The split is:
+Two things that mode has to fight:
 
-- **Astro components** (`src/components/*/[Name]Component.astro`) — static shells that import JSON and pass data as props to React islands
-- **React components** (`src/components/*/[Name]Component.tsx`) — all interactivity (filtering, dialogs, theme toggle)
+- `html { scroll-behavior: smooth }` turns every scroll correction into an
+  animation. Entering scroll mode roughly doubles the document while the browser
+  is still resolving the landing `#hash` against the old layout, so a plain
+  `/#home` load drifted ~1200px over about 900ms. The mount effect suspends
+  `scroll-behavior`, reasserts the position across several frames, then hands it
+  back. An explicit `/#home` is the slow case and needs the longest hold.
+- Tailwind's `sm:` is `min-width: 640px`, exactly the width scroll mode still
+  treats as mobile. A `sm:` layout variant on a wide row overflows there; use
+  `md:` for anything that must not fire while the page is phone-width.
 
-### Page structure
+The flow is `home -> about -> projects -> contact`, carried by `FlowLink.astro`:
+a plain `<a href="#panel">`, which switches tabs on desktop (via `hashchange`)
+and scrolls on mobile without knowing which mode it is in.
 
-Single-page app (`src/pages/index.astro`) with four full-screen snap sections: `#home`, `#about`, `#works`, `#contact`. The main scroll container uses `snap-y snap-mandatory overflow-y-scroll h-screen`.
+**About is itself three sub-tabs** — Profile, Arsenal, Journey — which is where
+the former `#skills` and `#experience` panels went. `AboutTabs` toggles
+`#about-profile` / `#about-arsenal` / `#about-journey` by `hidden`, exactly the
+way the header toggles panels, and for the same reason: each sub-panel contains
+islands of its own, so passing them in as slots would nest those islands. Old
+`#skills` and `#experience` links resolve to `#about` via `MERGED_TABS` in
+`HeaderComponent` and the hash is canonicalised, so nothing dead-ends.
 
-### Theming
+The merge also removed duplicated content: the skills marquee (`SkillsStrip`)
+re-listed every badge the category tabs already showed, the bio narrated the
+career arc the Journey pipeline draws stage by stage, two stats restated two of
+those stages, and the timeline tags repeated the arsenal's technologies. If you
+add content to one sub-tab, check the other two do not already say it.
 
-Dark/light mode is managed by `src/components/theme-provider.tsx` (wraps the app) and toggled via `src/components/common/tsx/ModeToggle.tsx`. The layout defaults to `class="dark"` on `<html>`.
+**Panels are deliberately NOT passed into a React tab component as slots.**
+Astro's React adapter hands slot content to React as an opaque HTML string via
+`dangerouslySetInnerHTML`, with `StaticHtml.shouldComponentUpdate` pinned to
+`false`; a nested `<astro-island>` defers on its ancestor's `ssr` flag and waits
+for an `astro:hydrate` event dispatched from DOM nodes the ancestor's own mount
+then replaces. Keeping the panels as top-level siblings keeps island nesting
+depth at 1, which is the only depth this codebase has ever exercised. If you
+restructure the page, check `dist/index.html` still has no nested islands.
 
-### UI components
+Consequences to keep in mind:
 
-`src/components/ui/` contains shadcn/ui components. Add new ones with `npm run shadcn add <component>`.
+- **Never use `client:visible` inside a panel.** A hidden panel never
+  intersects, so the island would never hydrate. Use `client:idle`.
+- `useRevealed` (`src/hooks/`) has a 1200ms fallback precisely so reveals still
+  fire in a hidden panel. `motion-primitives/in-view.tsx` has no such fallback.
+- Tabs are driven by the location hash, which is what makes back/forward work
+  and lets plain `<a href="#contact">` links switch tabs. Hashes that do not
+  name a tab (the skip link's `#main`) are ignored rather than reset.
+- Tab state starts at the default and is corrected from the hash in a *layout
+  effect*. Seeding it during the first render leaves Radix's own markup stuck on
+  the server-rendered default.
+- Without JS every panel stays visible, so the page degrades to a plain scroll.
+  The hiding CSS is gated on `html[data-tabs-ready]`.
 
-### Works section
+### Theming: dual, light by default
 
-`projectlist.json` entries use integer IDs to reference `taglist.json`, `roles.json`, `techs.json`, and `projectprovider.json`. When adding a project, all referenced IDs must exist in those lookup files. The `WorksMainComponent.tsx` handles client-side filtering by title search, tag toggle, and sort order.
+Light ("standby") is the default; `.dark` is "combat mode". The palette is the
+Destiny Gundam (ZGMF-X42S): armour white, Destiny blue, crimson, gold, sensor
+green, and the prismatic Wings of Light.
+
+Tailwind v4 compiles `@theme` keys into utilities at build time, so a
+`--color-*` declared there **cannot** be redefined by `.dark`. All of it lives
+in `src/styles/global.css`:
+
+- `@theme` — structural tokens only (radius, breakpoint).
+- `@theme inline` — every colour token, each pointing at a `--t-*` var.
+  `inline` matters: it makes the utility body resolve to `var(--t-x)` directly
+  instead of adding a `--color-x` hop.
+- `:root` / `.dark` — the two palettes as plain `--t-*` declarations.
+
+Token groups that do **not** flip with the page, and why:
+
+- `--color-syn-*` and `--color-code-ink*` — terminal and editor surfaces stay
+  dark in both themes (the developer identity of the site), so text on them is
+  fixed. Using `--color-ink-*` on a code surface is a bug.
+- `--color-on-brand` — labels on a brand-blue fill. Measured against
+  `--color-brand-700`, so use that as the fill, not `--color-brand`.
+- `--tint-white-*` — historical name; it means "a faint film lifting a surface
+  off the page", and inverts to near-black on light.
+
+`ThemeProvider.tsx` is a module-level store read via `useSyncExternalStore`,
+not a context: each Astro island is its own React root, so a provider in one
+island cannot reach another. The source of truth is `.dark` on `<html>`, set
+before first paint by an inline script in `layout.astro`.
+
+Contrast ratios in the token comments are measured, not estimated. Re-measure
+if you change a surface.
+
+### Analytics: GTM behind a consent gate
+
+Off unless `PUBLIC_GTM_ID` is set. Without it the loader, the `<noscript>`
+fallback and the banner all no-op, so local dev and any build lacking the
+variable ship no analytics at all. Production reads it from the `PUBLIC_GTM_ID`
+repository secret, passed to `yarn build` in the deploy workflow.
+
+**GTM is injected from `ConsentStore.ts` after the visitor accepts — never from
+a tag in `<head>`.** Loading it in the head and asking afterwards is not
+consent; it is a notice shown after the data has already gone. The store is a
+module-level `useSyncExternalStore`, same as `ThemeProvider` and for the same
+reason (each island is its own React root).
+
+- `grant()` writes localStorage and injects the loader; `deny()` writes and
+  injects nothing. `initConsent()` re-injects on later visits for someone who
+  already accepted, so they are not asked twice.
+- `trackEvent()` is a no-op without consent — events are dropped, not queued,
+  or a later grant would leak what a declining visitor did.
+- The only custom event is `contact_submit` from `ContactForm`, carrying
+  `has_email` and no field values. Pageviews cannot tell you whether anyone
+  tried to make contact, which is the one thing worth knowing here.
+- Accept and Decline share a size and shape; only the fill differs. A banner
+  that makes declining harder is not valid consent under GDPR.
+- The banner clears the footer via `--footer-h`, except in scroll mode where the
+  footer sits at the end of the document rather than pinned.
+
+### Data
+
+Content lives in `src/assets/*.json`:
+
+- `data.json` — nav (the tab list), `seo` (title, description, keywords, OG
+  image), user profile, hero, about copy (including `about.tabs`, the sub-tab
+  labels), skills copy, and `flow` (the forward step out of each section)
+- `projectlist.json` — project entries; integer ids reference `taglist.json`,
+  `roles.json`, `techs.json`, `projectprovider.json`
+- `experience.json`, `contact.json`
+
+Components import these directly.
+
+### Components
+
+- `src/components/*/[Name]Component.astro` — panel shells; most use
+  `common/astro/SectionShell.astro`, which supplies the tabpanel semantics.
+  `#home` (`mainvisual/`) builds its own section.
+- `src/components/*/*.tsx` — the interactive islands.
+- `src/components/ui/` — shadcn/ui. `tabs.tsx` drives three tablists: the page
+  tab bar, the About sub-tabs, and the Skills category tabs inside Arsenal. All
+  three are DOM siblings rather than nested, so their roving tabindexes cannot
+  trap each other. Keep them visually distinct — the page bar is a floating
+  glass pill, the About sub-tabs an inline segmented control, the Skills tabs
+  filled pills.
 
 ### Path alias
 
-`@/` maps to `src/` throughout the codebase (configured via Astro's built-in tsconfig paths).
+`@/` maps to `src/`.

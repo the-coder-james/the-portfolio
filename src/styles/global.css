@@ -7,107 +7,15 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 /* ── Design tokens ──
-   Ported from tailwind.config.mjs. In v4 the theme lives here; each
-   --color-* key generates the matching bg-/text-/border-* utilities. */
+   Tailwind v4 compiles @theme keys into utilities at build time, so a
+   --color-* declared here cannot be redefined by .dark. The themed colours
+   therefore live as plain --t-* vars in :root / .dark below, and @theme
+   inline points at them: `inline` makes the utility body resolve to
+   var(--t-x) directly instead of adding a --color-x hop, which keeps
+   color-mix() fallbacks working. */
+
+/* Structural tokens — identical in both themes, so they stay literal. */
 @theme {
-  --color-border: hsl(217 33% 17%);
-  --color-input: hsl(217 33% 17%);
-  --color-ring: hsl(217 91% 60%);
-
-  --color-background: hsl(222 47% 4%);
-  --color-foreground: hsl(210 40% 98%);
-
-  --color-primary: hsl(217 91% 60%);
-  --color-primary-foreground: hsl(222 47% 4%);
-
-  --color-secondary: hsl(217 33% 17%);
-  --color-secondary-foreground: hsl(210 40% 98%);
-
-  --color-destructive: hsl(0 84% 60%);
-  --color-destructive-foreground: hsl(210 40% 98%);
-
-  --color-muted: hsl(217 33% 17%);
-  --color-muted-foreground: hsl(215 20% 55%);
-
-  --color-accent: hsl(217 33% 17%);
-  --color-accent-foreground: hsl(210 40% 98%);
-
-  --color-popover: hsl(222 47% 5%);
-  --color-popover-foreground: hsl(210 40% 98%);
-
-  --color-card: hsl(222 47% 5%);
-  --color-card-foreground: hsl(210 40% 98%);
-
-  /* ── Site palette ──
-     The de-facto palette this site was built with, promoted from ~442
-     inline literals to named tokens. Grays that failed WCAG AA have been
-     raised on the slate ramp — same muted character, readable contrast. */
-
-  /* Surfaces */
-  --color-surface-base: #030712;      /* hero, projects, contact */
-  --color-surface-alt: #040b1a;       /* skills, experience */
-  --color-surface-deep: #020509;      /* footer */
-  --color-surface-code: #0d1117;      /* terminal/editor body */
-  --color-surface-code-head: #161b22; /* terminal/editor header */
-
-  /* Brand blues */
-  --color-brand-900: #1d4ed8;
-  --color-brand-700: #2563eb;
-  --color-brand: #3b82f6;
-  --color-brand-400: #60a5fa;
-  --color-brand-300: #93c5fd;
-
-  /* Text ramp — every value meets AA on the surfaces above */
-  --color-ink: #f1f5f9;               /* headings */
-  --color-ink-muted: #e2e8f0;         /* body on dark surfaces */
-  --color-ink-dim: #94a3b8;           /* secondary text (7.9:1) */
-  --color-ink-faint: #64748b;         /* decorative/large only (4.2:1) */
-
-  /* Status */
-  --color-success: #4ade80;
-  --color-success-strong: #22c55e;
-  --color-success-soft: #6ee7b7;
-  --color-danger: #dc2626;
-
-  /* Syntax highlighting — replaces 3 duplicated token maps (~130 literals) */
-  --color-syn-keyword: #c084fc;
-  --color-syn-ident: #60a5fa;
-  --color-syn-fn: #fcd34d;
-  --color-syn-string: #86efac;
-  --color-syn-number: #a5b4fc;
-  --color-syn-punct: #94a3b8;
-  --color-syn-plain: #e2e8f0;
-  --color-syn-comment: #94a3b8;
-  --color-syn-attr: #93c5fd;
-  --color-syn-tag: #f9a8d4;
-  --color-syn-violet: #c4b5fd;
-
-  /* Card surfaces.
-     Cards used to be white at 2-6% alpha over a near-black page, which put
-     their edge at ~1.03:1 against the background — WCAG asks 3:1 for UI
-     boundaries, so they were effectively invisible. A fill alone cannot fix
-     that on this palette (even a much lighter card only reaches ~1.2:1), so
-     the border carries the separation. */
-  --color-card-surface: #111827;
-  --color-card-surface-raised: #161f33;
-  --color-card-border: #506282;        /* 3.2:1 on both surfaces — WCAG 1.4.11 */
-  --color-card-border-strong: #64748b; /* 4.2:1 — hover/focus */
-  --color-card-titlebar: #1b2437;
-
-  /* Editor chrome */
-  --color-chrome-red: #ff5f57;
-  --color-chrome-yellow: #febc2e;
-  --color-chrome-green: #28c840;
-  --color-chrome-line: #64748b;       /* line numbers (was #2d3748, 1.4:1) */
-
-  /* Project card accents */
-  --color-accent-1: #3b82f6;
-  --color-accent-2: #818cf8;
-  --color-accent-3: #34d399;
-  --color-accent-4: #f59e0b;
-  --color-accent-5: #ec4899;
-  --color-accent-6: #60a5fa;
-
   --radius: 0.5rem;
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
@@ -115,6 +23,355 @@
 
   /* container: center + 2rem padding + 1400px 2xl cap (was theme.container) */
   --breakpoint-2xl: 1400px;
+}
+
+/* Themed tokens — the indirection layer. */
+@theme inline {
+  /* shadcn semantic set */
+  --color-border: var(--t-border);
+  --color-input: var(--t-input);
+  --color-ring: var(--t-ring);
+
+  --color-background: var(--t-background);
+  --color-foreground: var(--t-foreground);
+
+  --color-primary: var(--t-primary);
+  --color-primary-foreground: var(--t-primary-foreground);
+
+  --color-secondary: var(--t-secondary);
+  --color-secondary-foreground: var(--t-secondary-foreground);
+
+  --color-destructive: var(--t-destructive);
+  --color-destructive-foreground: var(--t-destructive-foreground);
+
+  --color-muted: var(--t-muted);
+  --color-muted-foreground: var(--t-muted-foreground);
+
+  --color-accent: var(--t-accent);
+  --color-accent-foreground: var(--t-accent-foreground);
+
+  --color-popover: var(--t-popover);
+  --color-popover-foreground: var(--t-popover-foreground);
+
+  --color-card: var(--t-card);
+  --color-card-foreground: var(--t-card-foreground);
+
+  /* Surfaces */
+  --color-surface-base: var(--t-surface-base);
+  --color-surface-alt: var(--t-surface-alt);
+  --color-surface-deep: var(--t-surface-deep);
+  --color-surface-code: var(--t-surface-code);
+  --color-surface-code-head: var(--t-surface-code-head);
+
+  /* Destiny blue ramp */
+  --color-brand-900: var(--t-brand-900);
+  --color-brand-700: var(--t-brand-700);
+  --color-brand: var(--t-brand);
+  --color-brand-400: var(--t-brand-400);
+  --color-brand-300: var(--t-brand-300);
+
+  /* Brand blue at body-text size. The -300/-400 steps are tuned for glow and
+     large display type and fail AA as small text on the light surfaces, so
+     anything that is *read* rather than decorative points here instead. */
+  --color-brand-text: var(--t-brand-text);
+
+  /* Destiny trim */
+  --color-crimson: var(--t-crimson);
+  --color-gold: var(--t-gold);
+
+  /* Label for anything sitting on a brand-coloured fill. The brand blue is
+     the same in both themes, so this must not flip with the surface the way
+     --color-primary-foreground does. */
+  --color-on-brand: var(--t-on-brand);
+
+  /* Text ramp — measured against the page surface, so it flips with it. */
+  --color-ink: var(--t-ink);
+  --color-ink-muted: var(--t-ink-muted);
+  --color-ink-dim: var(--t-ink-dim);
+  --color-ink-faint: var(--t-ink-faint);
+
+  /* Text ramp for anything sitting on a code surface. Those surfaces stay dark
+     in both themes (see --t-surface-code), so this ramp must NOT flip with the
+     page or the light theme puts dark text on a dark terminal. */
+  --color-code-ink: var(--t-code-ink);
+  --color-code-ink-dim: var(--t-code-ink-dim);
+  --color-code-ink-faint: var(--t-code-ink-faint);
+  /* Status green as it appears *inside* a terminal card. The page-level
+     --color-success is tuned for that theme's own surface and drops to
+     3.3:1 on the fixed-dark code surface. */
+  --color-code-success: var(--t-code-success);
+
+  /* Status */
+  --color-success: var(--t-success);
+  --color-success-strong: var(--t-success-strong);
+  --color-success-soft: var(--t-success-soft);
+  --color-danger: var(--t-danger);
+
+  /* Syntax highlighting — identical in both themes; the code surface stays
+     dark either way, so these need no light variant. */
+  --color-syn-keyword: var(--t-syn-keyword);
+  --color-syn-ident: var(--t-syn-ident);
+  --color-syn-fn: var(--t-syn-fn);
+  --color-syn-string: var(--t-syn-string);
+  --color-syn-number: var(--t-syn-number);
+  --color-syn-punct: var(--t-syn-punct);
+  --color-syn-plain: var(--t-syn-plain);
+  --color-syn-comment: var(--t-syn-comment);
+  --color-syn-attr: var(--t-syn-attr);
+  --color-syn-tag: var(--t-syn-tag);
+  --color-syn-violet: var(--t-syn-violet);
+
+  /* Card surfaces */
+  --color-card-surface: var(--t-card-surface);
+  --color-card-surface-raised: var(--t-card-surface-raised);
+  --color-card-border: var(--t-card-border);
+  --color-card-border-strong: var(--t-card-border-strong);
+  --color-card-titlebar: var(--t-card-titlebar);
+
+  /* Editor chrome */
+  --color-chrome-red: var(--t-chrome-red);
+  --color-chrome-yellow: var(--t-chrome-yellow);
+  --color-chrome-green: var(--t-chrome-green);
+  --color-chrome-line: var(--t-chrome-line);
+
+  /* Project card accents */
+  --color-accent-1: var(--t-accent-1);
+  --color-accent-2: var(--t-accent-2);
+  --color-accent-3: var(--t-accent-3);
+  --color-accent-4: var(--t-accent-4);
+  --color-accent-5: var(--t-accent-5);
+  --color-accent-6: var(--t-accent-6);
+
+  /* Wings of Light — the prismatic ramp (gradient text + card bloom) */
+  --color-wing-1: var(--t-wing-1);
+  --color-wing-2: var(--t-wing-2);
+  --color-wing-3: var(--t-wing-3);
+  --color-wing-4: var(--t-wing-4);
+  --color-wing-5: var(--t-wing-5);
+  --color-wing-6: var(--t-wing-6);
+}
+
+/* ── Palette: Destiny (ZGMF-X42S) ──
+   White/light-grey armour, Destiny blue, crimson vents, gold V-fin, green
+   sensors, and the prismatic Wings of Light.
+
+   Light is the default ("standby"); .dark is "combat mode". Contrast ratios
+   in the comments are measured against that theme's own surface-base. */
+
+:root {
+  color-scheme: light;
+
+  /* Surfaces — armour white / light plating */
+  --t-surface-base: #f8fafc;
+  --t-surface-alt: #eef2f7;
+  --t-surface-deep: #e2e8f0;
+  /* Light editor chrome, in the spirit of GitHub Light. The terminal cards
+     used to stay dark in both themes; they now theme like everything else, so
+     the whole on-code ramp below has a light variant too. */
+  --t-surface-code: #f6f8fa;
+  --t-surface-code-head: #eaeef2;
+
+  /* Destiny blue */
+  --t-brand-900: #1e3a8a;             /* 8.6:1 */
+  --t-brand-700: #1d4ed8;             /* 6.9:1 — AA body text */
+  --t-brand: #2563eb;                 /* 5.2:1 — AA */
+  --t-brand-400: #3b82f6;             /* 3.6:1 — large text / UI only */
+  --t-brand-300: #60a5fa;             /* decorative only */
+
+  /* Trim */
+  --t-brand-text: #1d4ed8;            /* 6.9:1 on surface-base — AA at any size */
+  --t-crimson: #be123c;               /* 5.9:1 — chest vents */
+  --t-on-brand: #f8fafc;              /* 4.9:1 on --t-brand-700, the fill colour */
+  --t-gold: #a16207;                  /* 4.9:1 — V-fin, AA on light */
+
+  /* Text ramp */
+  --t-ink: #0b1220;                   /* 17.9:1 headings */
+  --t-ink-muted: #1e293b;             /* 13.6:1 body */
+  --t-ink-dim: #475569;               /* 7.5:1 secondary */
+  --t-ink-faint: #64748b;             /* 4.8:1 — passes AA normal text */
+
+  /* Status — sensor green */
+  --t-success: #047857;               /* 4.9:1 */
+  --t-success-strong: #065f46;        /* 6.9:1 */
+  --t-success-soft: #059669;          /* 3.9:1 — UI only */
+  --t-danger: #b91c1c;                /* 6.4:1 */
+
+  /* Cards */
+  --t-card-surface: #ffffff;
+  --t-card-surface-raised: #f1f5f9;
+  --t-card-border: #7c8ca1;           /* 3.4:1 on card, 3.3:1 on page — WCAG 1.4.11 */
+  --t-card-border-strong: #6b7b90;    /* 4.3:1 — hover/focus */
+  --t-card-titlebar: #e2e8f0;
+
+  /* Editor chrome. The dots are decorative; the line-number colour is measured
+     against --t-surface-code (dark), not the page. */
+  --t-chrome-red: #ef4444;
+  --t-chrome-yellow: #eab308;
+  --t-chrome-green: #22c55e;
+  --t-chrome-line: #57606a;           /* 6.0:1 on surface-code */
+
+  /* Project accents — each ≥4.5:1 on the light surfaces */
+  --t-accent-1: #2563eb;
+  --t-accent-2: #4f46e5;
+  --t-accent-3: #047857;
+  --t-accent-4: #b45309;
+  --t-accent-5: #be185d;
+  --t-accent-6: #0369a1;
+
+  /* Wings of Light — deeper stops so the ramp holds on a pale ground */
+  --t-wing-1: #2563eb;
+  --t-wing-2: #7c3aed;
+  --t-wing-3: #be123c;
+  --t-wing-4: #b45309;
+  --t-wing-5: #047857;
+  --t-wing-6: #0369a1;
+
+  /* shadcn semantic set */
+  --t-border: #cbd5e1;
+  --t-input: #cbd5e1;
+  --t-ring: #2563eb;
+  --t-background: #f8fafc;
+  --t-foreground: #0b1220;
+  --t-primary: #2563eb;
+  --t-primary-foreground: #f8fafc;
+  --t-secondary: #e2e8f0;
+  --t-secondary-foreground: #0b1220;
+  --t-destructive: #b91c1c;
+  --t-destructive-foreground: #f8fafc;
+  --t-muted: #e2e8f0;
+  --t-muted-foreground: #475569;
+  --t-accent: #e2e8f0;
+  --t-accent-foreground: #0b1220;
+  --t-popover: #ffffff;
+  --t-popover-foreground: #0b1220;
+  --t-card: #ffffff;
+  --t-card-foreground: #0b1220;
+
+  /* On-code text and syntax for the light editor surface. Every value is
+     measured against --t-surface-code (#f6f8fa), not the page. */
+  --t-code-ink: #1f2328;              /* 14.8:1 */
+  --t-code-ink-dim: #4b535d;          /* 7.3:1  */
+  --t-code-ink-faint: #57606a;        /* 6.0:1 body, 5.5:1 titlebar */
+  --t-code-success: #116329;          /* 6.9:1  */
+
+  --t-syn-keyword: #cf222e;           /* 5.0:1  */
+  --t-syn-ident: #0550ae;             /* 7.1:1  */
+  --t-syn-fn: #6639ba;                /* 6.9:1  */
+  --t-syn-string: #0a3069;            /* 12.0:1 */
+  --t-syn-number: #0550ae;            /* 7.1:1  */
+  --t-syn-punct: #57606a;             /* 6.0:1  */
+  --t-syn-plain: #1f2328;             /* 14.8:1 */
+  --t-syn-comment: #656d76;           /* 4.9:1  */
+  --t-syn-attr: #0550ae;              /* 7.1:1  */
+  --t-syn-tag: #116329;               /* 6.9:1  */
+  --t-syn-violet: #6639ba;            /* 6.9:1  */
+}
+
+.dark {
+  /* On-code ramp and syntax for the dark editor surface (#0d1117). These
+     mirror the light set in :root -- both are measured against their own
+     --t-surface-code, never against the page. */
+  --t-code-ink: #e2e8f0;              /* 15.4:1 */
+  --t-code-ink-dim: #94a3b8;          /* 7.4:1  */
+  --t-code-ink-faint: #8b98ad;        /* 6.5:1  */
+  --t-code-success: #4ade80;          /* 12.1:1 */
+
+  --t-syn-keyword: #c084fc;
+  --t-syn-ident: #60a5fa;
+  --t-syn-fn: #fcd34d;
+  --t-syn-string: #86efac;
+  --t-syn-number: #a5b4fc;
+  --t-syn-punct: #94a3b8;
+  --t-syn-plain: #e2e8f0;
+  --t-syn-comment: #94a3b8;
+  --t-syn-attr: #93c5fd;
+  --t-syn-tag: #f9a8d4;
+  --t-syn-violet: #c4b5fd;
+
+  color-scheme: dark;
+
+  /* Surfaces */
+  --t-surface-base: #05080f;
+  --t-surface-alt: #0a1020;
+  --t-surface-deep: #020509;
+  --t-surface-code: #0d1117;
+  --t-surface-code-head: #161b22;
+
+  /* Destiny blue */
+  --t-brand-900: #1d4ed8;
+  --t-brand-700: #2563eb;
+  --t-brand: #3b82f6;                 /* 6.0:1 */
+  --t-brand-400: #60a5fa;             /* 8.7:1 */
+  --t-brand-300: #93c5fd;             /* 11.4:1 */
+
+  /* Trim */
+  --t-brand-text: #93c5fd;            /* 11.4:1 on surface-base */
+  --t-crimson: #f43f5e;               /* 6.2:1 */
+  --t-on-brand: #f8fafc;              /* 6.4:1 on --t-brand-700, the fill colour */
+  --t-gold: #fbbf24;                  /* 11.1:1 */
+
+  /* Text ramp */
+  --t-ink: #f1f5f9;
+  --t-ink-muted: #e2e8f0;
+  --t-ink-dim: #94a3b8;               /* 7.9:1 */
+  --t-ink-faint: #748499;             /* 5.3:1 on surface-base */
+
+  /* Status */
+  --t-success: #4ade80;
+  --t-success-strong: #22c55e;
+  --t-success-soft: #6ee7b7;
+  --t-danger: #f87171;                /* 6.0:1 — was #dc2626 at 3.1:1 (AA fail) */
+
+  /* Cards. A fill alone cannot separate a card from a near-black page (even a
+     much lighter card only reaches ~1.2:1), so the border carries it. */
+  --t-card-surface: #111827;
+  --t-card-surface-raised: #161f33;
+  --t-card-border: #5a6d90;           /* 3.4:1 on card, 3.8:1 on page — WCAG 1.4.11 */
+  --t-card-border-strong: #6b7f9c;    /* 4.3:1 — hover/focus */
+  --t-card-titlebar: #1b2437;
+
+  /* Editor chrome */
+  --t-chrome-red: #ff5f57;
+  --t-chrome-yellow: #febc2e;
+  --t-chrome-green: #28c840;
+  --t-chrome-line: #8b98ad;           /* 6.5:1 on surface-code */
+
+  /* Project accents */
+  --t-accent-1: #3b82f6;
+  --t-accent-2: #818cf8;
+  --t-accent-3: #34d399;
+  --t-accent-4: #f59e0b;
+  --t-accent-5: #ec4899;
+  --t-accent-6: #60a5fa;
+
+  /* Wings of Light — brighter stops for the dark ground */
+  --t-wing-1: #60a5fa;
+  --t-wing-2: #a78bfa;
+  --t-wing-3: #fb7185;
+  --t-wing-4: #fbbf24;
+  --t-wing-5: #34d399;
+  --t-wing-6: #38bdf8;
+
+  /* shadcn semantic set */
+  --t-border: #1e293b;
+  --t-input: #1e293b;
+  --t-ring: #3b82f6;
+  --t-background: #05080f;
+  --t-foreground: #f1f5f9;
+  --t-primary: #3b82f6;
+  --t-primary-foreground: #05080f;
+  --t-secondary: #1e293b;
+  --t-secondary-foreground: #f1f5f9;
+  --t-destructive: #f87171;
+  --t-destructive-foreground: #05080f;
+  --t-muted: #1e293b;
+  --t-muted-foreground: #94a3b8;
+  --t-accent: #1e293b;
+  --t-accent-foreground: #f1f5f9;
+  --t-popover: #0a1020;
+  --t-popover-foreground: #f1f5f9;
+  --t-card: #0a1020;
+  --t-card-foreground: #f1f5f9;
 }
 
 /* v3's `container` config has no direct v4 equivalent; express it as a utility. */
@@ -138,11 +395,18 @@
     background-color: var(--color-background);
     color: var(--color-foreground);
     font-family: 'Space Grotesk', sans-serif;
-    background-color: #030712;
   }
 
   html {
     scroll-behavior: smooth;
+    /* Firefox scrollbar; the WebKit equivalent is further down. */
+    scrollbar-color: var(--color-brand) var(--color-surface-alt);
+  }
+
+  /* Tab panels are hidden with the `hidden` attribute. Without this, any
+     `display` utility on the same element silently wins over the UA rule. */
+  [hidden] {
+    display: none !important;
   }
 }
 
@@ -171,6 +435,49 @@
   --tint-brand-50: color-mix(in srgb, var(--color-brand) 50%, transparent);
   --tint-brand-60: color-mix(in srgb, var(--color-brand) 60%, transparent);
 
+  --tint-success-08: color-mix(in srgb, var(--color-success) 8%, transparent);
+  --tint-success-10: color-mix(in srgb, var(--color-success) 10%, transparent);
+  --tint-success-20: color-mix(in srgb, var(--color-success) 20%, transparent);
+  --tint-success-30: color-mix(in srgb, var(--color-success) 30%, transparent);
+  --tint-success-60: color-mix(in srgb, var(--color-success) 60%, transparent);
+
+  --tint-violet-07: rgb(139 92 246 / 0.07);
+  --tint-violet-20: rgb(139 92 246 / 0.2);
+}
+
+/* ── Contrast films and scrims ──
+   NOTE the historical name: `--tint-white-*` means "a faint film that lifts a
+   surface away from the page", not literally white. On the dark theme that
+   film is white; on the light theme it has to invert to near-black, or it
+   disappears. The 31 call sites are unchanged — only the values flip.
+
+   The light alphas are roughly 1.5x their dark counterparts: dark-on-light at
+   2-8% is far less visible than white-on-black at the same alpha. */
+:root {
+  --tint-white-02: rgb(15 23 42 / 0.03);
+  --tint-white-03: rgb(15 23 42 / 0.045);
+  --tint-white-04: rgb(15 23 42 / 0.06);
+  --tint-white-05: rgb(15 23 42 / 0.07);
+  --tint-white-06: rgb(15 23 42 / 0.085);
+  --tint-white-07: rgb(15 23 42 / 0.10);
+  --tint-white-08: rgb(15 23 42 / 0.12);
+  --tint-white-15: rgb(15 23 42 / 0.20);
+
+  /* Scrims sit under the sticky header and the mobile drawer, so they take the
+     page colour, not a fixed near-black. */
+  --scrim-soft: rgb(248 250 252 / 0.35);
+  --scrim-strong: rgb(248 250 252 / 0.7);
+  --scrim-base-35: rgb(248 250 252 / 0.35);
+  --scrim-base-90: rgb(248 250 252 / 0.9);
+  --scrim-base-98: rgb(248 250 252 / 0.98);
+
+  /* Pure black over a pale surface reads as dirt; tint the shadow with the
+     surface hue instead. */
+  --shadow-black-40: rgb(15 23 42 / 0.12);
+  --shadow-black-50: rgb(15 23 42 / 0.16);
+}
+
+.dark {
   --tint-white-02: rgb(255 255 255 / 0.02);
   --tint-white-03: rgb(255 255 255 / 0.03);
   --tint-white-04: rgb(255 255 255 / 0.04);
@@ -180,19 +487,11 @@
   --tint-white-08: rgb(255 255 255 / 0.08);
   --tint-white-15: rgb(255 255 255 / 0.15);
 
-  --tint-success-08: color-mix(in srgb, var(--color-success) 8%, transparent);
-  --tint-success-10: color-mix(in srgb, var(--color-success) 10%, transparent);
-  --tint-success-20: color-mix(in srgb, var(--color-success) 20%, transparent);
-  --tint-success-30: color-mix(in srgb, var(--color-success) 30%, transparent);
-  --tint-success-60: color-mix(in srgb, var(--color-success) 60%, transparent);
-
   --scrim-soft: rgb(10 15 26 / 0.35);
   --scrim-strong: rgb(10 15 26 / 0.7);
   --scrim-base-35: rgb(3 7 18 / 0.35);
   --scrim-base-90: rgb(3 7 18 / 0.9);
   --scrim-base-98: rgb(3 7 18 / 0.98);
-  --tint-violet-07: rgb(139 92 246 / 0.07);
-  --tint-violet-20: rgb(139 92 246 / 0.2);
 
   --shadow-black-40: rgb(0 0 0 / 0.4);
   --shadow-black-50: rgb(0 0 0 / 0.5);
@@ -202,6 +501,99 @@
 :root {
   --blue-glow: 0 0 20px var(--tint-brand-40);
   --blue-glow-lg: 0 0 40px var(--tint-brand-30);
+}
+
+/* ── Liquid glass ──
+   The nav is a floating pill rather than a full-width bar: a translucent
+   surface that samples the page through backdrop-filter, with saturation
+   pushed up so colour scrolling underneath bleeds through the way Apple's
+   material does. The highlight is two inset shadows -- a bright top edge and
+   a dim bottom one -- which is what reads as a curved piece of glass rather
+   than a flat panel. */
+:root {
+  --glass-bg: color-mix(in srgb, var(--color-surface-base) 62%, transparent);
+  --glass-border: rgb(255 255 255 / 0.55);
+  --glass-highlight: inset 0 1px 0 0 rgb(255 255 255 / 0.85);
+  --glass-lowlight: inset 0 -1px 0 0 rgb(15 23 42 / 0.06);
+  --glass-shadow: 0 8px 32px rgb(15 23 42 / 0.10), 0 2px 8px rgb(15 23 42 / 0.06);
+  --glass-blur: 20px;
+  --glass-saturate: 180%;
+}
+
+.dark {
+  --glass-bg: color-mix(in srgb, var(--color-surface-base) 55%, transparent);
+  --glass-border: rgb(255 255 255 / 0.12);
+  --glass-highlight: inset 0 1px 0 0 rgb(255 255 255 / 0.14);
+  --glass-lowlight: inset 0 -1px 0 0 rgb(0 0 0 / 0.30);
+  --glass-shadow: 0 8px 32px rgb(0 0 0 / 0.45), 0 2px 8px rgb(0 0 0 / 0.30);
+  --glass-blur: 22px;
+  --glass-saturate: 170%;
+}
+
+.glass-surface {
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-highlight), var(--glass-lowlight), var(--glass-shadow);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+  backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+}
+
+/* Where backdrop-filter is unavailable the pill would read as a flat wash, so
+   fall back to a more opaque surface that still separates from the page. */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .glass-surface {
+    background: color-mix(in srgb, var(--color-surface-base) 94%, transparent);
+  }
+}
+
+/* The moving pill behind the active tab. Sits under the labels (z-0 vs z-10)
+   and animates via left/width from the tab bar. */
+.glass-pill {
+  background: color-mix(in srgb, var(--color-brand) 14%, transparent);
+  /* Full-strength brand, not a 30% mix. The pill is the only thing marking
+     which tab is active, so its edge is a UI component boundary under
+     SC 1.4.11 and needs 3:1 against what it sits on -- the mix measured
+     1.54:1 on light and 1.44:1 on dark. Shared by the page tab bar and the
+     About sub-tabs, so this fixes both. */
+  border: 1px solid var(--color-brand);
+  box-shadow: inset 0 1px 0 0 rgb(255 255 255 / 0.25),
+              0 2px 10px color-mix(in srgb, var(--color-brand) 22%, transparent);
+}
+
+/* ── Wings of Light glow ──
+   box-shadow takes no gradient, so the prismatic bloom is built from stacked
+   shadows fanned out along x: each layer contributes one stop of the ramp and
+   they blend where they overlap.
+
+   Light and dark are tuned separately. A 22% chromatic bloom reads as energy
+   against near-black and as a smudge against #f8fafc, so the light theme runs
+   at roughly half the alpha and leans on a real depth shadow instead. */
+:root {
+  --wing-glow:
+    -10px 0 22px color-mix(in srgb, var(--color-wing-1) 12%, transparent),
+     -4px 0 20px color-mix(in srgb, var(--color-wing-2) 11%, transparent),
+      0    0 18px color-mix(in srgb, var(--color-wing-3) 10%, transparent),
+      4px 0 20px color-mix(in srgb, var(--color-wing-4) 11%, transparent),
+     10px 0 22px color-mix(in srgb, var(--color-wing-5) 12%, transparent),
+      0    8px 24px var(--shadow-black-40);
+  --wing-glow-sm:
+    -5px 0 12px color-mix(in srgb, var(--color-wing-1) 10%, transparent),
+     0   0 10px color-mix(in srgb, var(--color-wing-3) 9%, transparent),
+     5px 0 12px color-mix(in srgb, var(--color-wing-5) 10%, transparent),
+     0   4px 14px var(--shadow-black-40);
+}
+
+.dark {
+  --wing-glow:
+    -10px 0 22px color-mix(in srgb, var(--color-wing-1) 22%, transparent),
+     -4px 0 20px color-mix(in srgb, var(--color-wing-2) 20%, transparent),
+      0    0 18px color-mix(in srgb, var(--color-wing-3) 18%, transparent),
+      4px 0 20px color-mix(in srgb, var(--color-wing-4) 20%, transparent),
+     10px 0 22px color-mix(in srgb, var(--color-wing-5) 22%, transparent);
+  --wing-glow-sm:
+    -5px 0 12px color-mix(in srgb, var(--color-wing-1) 18%, transparent),
+     0   0 10px color-mix(in srgb, var(--color-wing-3) 16%, transparent),
+     5px 0 12px color-mix(in srgb, var(--color-wing-5) 18%, transparent);
 }
 
 /* ── Font overrides ── */
@@ -245,7 +637,7 @@
 }
 .icon-btn:hover,
 .icon-btn:focus-visible {
-  color: var(--color-brand-300);
+  color: var(--color-brand-text);
 }
 
 /* Filter chip — `aria-pressed` drives the active look, so state is exposed
@@ -258,11 +650,11 @@
 }
 .filter-chip:hover,
 .filter-chip:focus-visible {
-  color: var(--color-brand-300);
+  color: var(--color-brand-text);
   border-color: var(--tint-brand-30);
 }
 .filter-chip[aria-pressed="true"] {
-  color: var(--color-brand-300);
+  color: var(--color-brand-text);
   border-color: var(--tint-brand-50);
   background: var(--tint-brand-15);
 }
@@ -289,7 +681,7 @@
   color: var(--color-ink-muted);
 }
 .nav-link[aria-current="true"] {
-  color: var(--color-brand-400);
+  color: var(--color-brand-text);
 }
 
 /* Primary submit button */
@@ -359,8 +751,8 @@
 
 /* ── Scrollbar ── */
 ::-webkit-scrollbar { width: 4px; }
-::-webkit-scrollbar-track { background: #030712; }
-::-webkit-scrollbar-thumb { background: #3b82f6; border-radius: 4px; }
+::-webkit-scrollbar-track { background: var(--color-surface-alt); }
+::-webkit-scrollbar-thumb { background: var(--color-brand); border-radius: 4px; }
 
 /* ── Dot grid background ── */
 .dot-grid {
@@ -368,33 +760,59 @@
   background-size: 28px 28px;
 }
 
-/* ── Card glow hover ── */
+/* ── Card glow hover ──
+   The bloom is the Wings of Light ramp; see --wing-glow above. */
 .card-glow {
   transition: box-shadow 0.3s ease, border-color 0.3s ease;
 }
 .card-glow:hover,
 .card-glow:focus-within {
-  box-shadow: 0 0 24px var(--tint-brand-25);
+  box-shadow: var(--wing-glow);
   border-color: var(--color-card-border-strong) !important;
 }
 
-/* Window-chrome cards. The border is the card's edge against a near-black
-   page, so it strengthens rather than disappears on interaction. */
+/* Window-chrome cards. The border is the card's edge against the page, so it
+   strengthens rather than disappears on interaction.
+
+   Shadow order matters: the 1px ring sits tight to the edge, the wing bloom
+   is chromatic light around it, and the depth shadow lands last so the card
+   still reads as lifted rather than merely glowing. */
 .window-card {
   transition: border-color 0.25s ease, box-shadow 0.25s ease, transform 0.25s ease;
 }
 .window-card:hover,
 .window-card:focus-within {
   border-color: var(--color-card-border-strong);
-  box-shadow: 0 0 0 1px var(--tint-brand-15), 0 12px 32px var(--shadow-black-40);
+  box-shadow: 0 0 0 1px var(--tint-brand-15), var(--wing-glow);
 }
 
-/* ── Gradient text ── */
+/* ── Gradient text — Wings of Light ── */
 .gradient-text {
-  background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 50%, #1d4ed8 100%);
+  background: linear-gradient(
+    115deg,
+    var(--color-wing-1) 0%,
+    var(--color-wing-2) 20%,
+    var(--color-wing-3) 40%,
+    var(--color-wing-4) 60%,
+    var(--color-wing-5) 80%,
+    var(--color-wing-6) 100%
+  );
+  background-size: 300% 100%;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
+}
+
+/* The wings drift only when motion is welcome. */
+@media (prefers-reduced-motion: no-preference) {
+  .gradient-text {
+    animation: wingShift 6s linear infinite;
+  }
+}
+
+@keyframes wingShift {
+  from { background-position: 0% 0; }
+  to { background-position: -200% 0; }
 }
 
 /* ── Floating animation ── */
@@ -466,49 +884,1317 @@
   z-index: 0;
   pointer-events: none;
   background-color: var(--color-surface-base);
-  background-size: cover;
-  background-position: center;
+  /* Was a static hero-mesh.svg, which could not read CSS vars and so could not
+     follow the theme. Shipping one SVG per theme would have meant baking
+     Astro's BASE_URL into CSS, which does not resolve under base:
+     '/the-portfolio/'. These gradients theme themselves and drop a request. */
+  background-image:
+    radial-gradient(55% 55% at 18% 22%, var(--tint-brand-20), transparent 70%),
+    radial-gradient(52% 52% at 82% 72%, var(--tint-brand-20), transparent 70%),
+    radial-gradient(40% 40% at 62% 12%, var(--tint-brand-12), transparent 70%);
 }
 
-/* Sections sit above the fixed backdrop. The hero is transparent so the
-   backdrop shows through it; every following section carries its own opaque
-   background and simply scrolls over it. */
+/* Panels sit above the fixed backdrop and are transparent, so the backdrop
+   shows through whichever one is active.
+
+   The seam gradients that used to live here blended the hard edge between
+   stacked, alternately-coloured sections. Only one panel is visible at a time
+   now, so there is no seam left to blend. */
 .page-section {
   position: relative;
   z-index: 1;
 }
 
-/* ── Section seams ──
-   Sections alternate between two near-black surfaces, and butting them
-   together produced a visible hard edge at every boundary. These blend the
-   join: a soft gradient on each side of the seam plus a thin brand rule, so
-   the page reads as continuous rather than as stacked slabs.
+/* ── Panel viewport ──
+   A panel is exactly one screen tall. The page itself never scrolls: the
+   footer is pinned below the panel and both together fill the viewport, so
+   the only thing that can scroll is a panel's own content region.
 
-   The gradients are drawn from the section's own background colour to
-   transparent, so each one fades into whatever sits behind it. */
-.page-section::before,
-.page-section::after {
+   --nav-h is the floating pill plus its top offset; --footer-h the footer.
+   Both are reserved out of the panel's height. */
+:root {
+  /* Measured at runtime by the header island and written back onto <html>,
+     so a change to either chrome cannot silently break the panel height.
+     The literals here are the correct values for the current markup and only
+     matter for the first paint and the no-JS case. */
+  --nav-h: 66px;
+  --footer-h: 109px;
+  --panel-pad-y: clamp(0.75rem, 2.2vh, 1.75rem);
+  --panel-pad-x: clamp(1rem, 3vw, 2.5rem);
+  /* Clearance between the floating nav and the first thing in a panel. Kept
+     separate from --panel-pad-y so tightening a short screen does not push the
+     eyebrow up under the pill. */
+  --panel-nav-gap: clamp(1.25rem, 3.5vh, 2.75rem);
+}
+
+.panel-viewport {
+  height: calc(100svh - var(--footer-h));
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: calc(var(--nav-h) + var(--panel-nav-gap)) var(--panel-pad-x) var(--panel-pad-y);
+  overflow: hidden;
+}
+
+.panel-inner {
+  /* A flex item's default min-height is auto, which lets content push it past
+     its parent -- the reason an overflow:auto descendant never scrolls. Both
+     this and the scroll region below must opt out explicitly. */
+  min-height: 0;
+  flex: 1 1 auto;
+  gap: clamp(0.75rem, 2vh, 1.5rem);
+}
+
+.panel-scroll {
+  min-height: 0;
+  flex: 1 1 auto;
+}
+
+/* ── Panel entrance ──
+   Panels are swapped by the tab bar, not scrolled to, so the reveal hooks that
+   depend on IntersectionObserver never re-fire after the first view. This runs
+   on the panel itself each time it becomes the active one: the section lifts in
+   and its immediate children follow in a short stagger, so a tab switch reads
+   as an arrival rather than a hard cut.
+
+   The stagger is driven by nth-child delays rather than JS, so it costs nothing
+   at runtime and cannot desync from the CSS. */
+@media (prefers-reduced-motion: no-preference) {
+  .tabpanel[data-entering] .panel-inner > * {
+    animation: panelRise 0.5s cubic-bezier(0.22, 1, 0.36, 1) backwards;
+  }
+  .tabpanel[data-entering] .panel-inner > *:nth-child(1) { animation-delay: 0.02s; }
+  .tabpanel[data-entering] .panel-inner > *:nth-child(2) { animation-delay: 0.10s; }
+  .tabpanel[data-entering] .panel-inner > *:nth-child(3) { animation-delay: 0.16s; }
+
+  /* The hero builds its own section, so it has no .panel-inner. */
+  .tabpanel[data-entering]#home > .relative {
+    animation: panelRise 0.5s cubic-bezier(0.22, 1, 0.36, 1) backwards;
+  }
+}
+
+@keyframes panelRise {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Timeline (split view) ──
+   A rail of years on the left, the selected entry's detail on the right. The
+   entries here run 19-30 words, and a horizontal timeline stops working once
+   an entry needs more than roughly fifteen -- the columns get too narrow and
+   every description wraps into a thin ragged strip. Master-detail gives the
+   selected entry the full width instead. */
+/* The About code block as backdrop: a decorative sample rather than something
+   read line by line, so it sits behind the content, offset and dimmed. Hidden
+   below lg, where there is no room to spend on decoration. */
+.about-code-backdrop {
+  position: absolute;
+  right: -4%;
+  top: 50%;
+  transform: translateY(-50%) rotate(-2deg);
+  width: min(560px, 52%);
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.18;
+  display: none;
+  -webkit-mask-image: linear-gradient(to left, #000 40%, transparent 100%);
+  mask-image: linear-gradient(to left, #000 40%, transparent 100%);
+}
+@media (min-width: 1024px) {
+  .about-code-backdrop { display: block; }
+}
+.dark .about-code-backdrop { opacity: 0.24; }
+
+/* The logo doubles as the Home control, so it needs the same active and focus
+   affordances the tabs have. */
+.logo-home:focus-visible {
+  outline: 2px solid var(--color-brand);
+  outline-offset: 3px;
+}
+.logo-home[aria-current="true"] > div {
+  box-shadow: 0 0 0 3px var(--tint-brand-25);
+}
+
+/* ── Next-section link ──
+   The onward step at the foot of each panel. Understated at rest so it does
+   not compete with the panel's own content, and it commits on hover. */
+.next-section-link {
+  border: 1px solid transparent;
+  transition: background 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+}
+.next-section-link:hover,
+.next-section-link:focus-visible {
+  background: var(--tint-brand-08);
+  border-color: var(--tint-brand-25);
+}
+.next-section-link:focus-visible {
+  outline: 2px solid var(--color-brand);
+  outline-offset: 2px;
+}
+
+.next-section-arrow {
+  transition: transform 0.2s ease;
+}
+.next-section-link:hover .next-section-arrow,
+.next-section-link:focus-visible .next-section-arrow {
+  transform: translateX(3px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .next-section-link,
+  .next-section-arrow { transition: none; }
+}
+
+/* ── Scroll affordance ──
+   A region that scrolls but does not look scrollable reads as a frozen page,
+   and the page itself never scrolls here. The existing mask fades the last rows
+   out; this adds an explicit cue beneath it so "there is more" is stated rather
+   than implied. Both retire once the reader reaches the end. */
+.scroll-hint {
+  position: absolute;
+  left: 50%;
+  bottom: calc(var(--panel-pad-y) + 0.35rem);
+  transform: translateX(-50%);
+  z-index: 4;
+  pointer-events: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.25rem 0.7rem;
+  border-radius: 999px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.62rem;
+  color: var(--color-ink-dim);
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  -webkit-backdrop-filter: blur(10px) saturate(160%);
+  backdrop-filter: blur(10px) saturate(160%);
+  box-shadow: var(--glass-shadow);
+}
+
+.scroll-hint-arrow {
+  display: inline-block;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .scroll-hint-arrow { animation: scrollHintBob 1.6s ease-in-out infinite; }
+}
+
+@keyframes scrollHintBob {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(2px); }
+}
+
+/* Hidden once the region is scrolled to the end, so it never lies. */
+@supports (animation-timeline: scroll()) {
+  .scroll-hint {
+    animation: scrollHintFade linear both;
+    /* Named timeline: the hint is a sibling of the scroll region now, so
+       scroll(nearest) would find the page instead. */
+    animation-timeline: --panel-scroll-tl;
+    animation-range: 0 90px;
+  }
+  .panel-scroll { scroll-timeline: --panel-scroll-tl block; }
+  .tabpanel:has(> .panel-inner .panel-scroll) { timeline-scope: --panel-scroll-tl; }
+  @keyframes scrollHintFade {
+    to { opacity: 0; }
+  }
+}
+
+/* The card's media box. Declared here rather than inline so the short-viewport
+   rules below can actually reach it -- an inline style would outrank them. */
+.project-media { aspect-ratio: 16 / 9; }
+
+/* ── Project filters and view toggle ── */
+
+/* Search and filters share one row on desktop and wrap on a phone. Sized in
+   CSS rather than inline so the mobile rules below can reach them. */
+.projects-search {
+  padding-block: 0.5rem;
+  font-size: 0.8rem;
+}
+
+.filter-select {
+  padding: 0.35rem 1.4rem 0.35rem 0.6rem;
+  font-size: 0.72rem;
+}
+
+@media (max-width: 640px) {
+  /* The search bar is the least-used control in this row -- the three selects
+     cover the actual browsing -- so it gives up the height and takes a smaller
+     face, leaving room for the filters to show their labels in full. */
+  .projects-search {
+    padding-block: 0.35rem;
+    font-size: 0.72rem;
+  }
+
+  /* A select with no width sizes to its widest *option*, not to what it is
+     showing -- "role" ran to 246px on the strength of one long role name while
+     "via" sat at 135px. Capped so the three read as one set and each still has
+     room for its label plus a value; the open list is unconstrained. */
+  .filter-field {
+    flex: 1 1 auto;
+    min-width: 0;
+    max-width: calc(50% - 0.25rem);
+  }
+
+  .filter-select {
+    padding: 0.3rem 1.25rem 0.3rem 0.5rem;
+    font-size: 0.68rem;
+    text-overflow: ellipsis;
+  }
+}
+
+.filter-select {
+  color: var(--color-ink-dim);
+  background: var(--tint-white-03);
+  border: 1px solid var(--tint-white-08);
+  transition: color 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+}
+.filter-select:hover,
+.filter-select:focus-visible {
+  color: var(--color-brand-text);
+  border-color: var(--tint-brand-30);
+}
+.filter-select[data-active] {
+  color: var(--color-brand-text);
+  border-color: var(--tint-brand-50);
+  background: var(--tint-brand-10);
+}
+/* The options list is painted by the OS, so it needs real colours rather than
+   the translucent tints the closed control uses. */
+.filter-select option {
+  background: var(--color-card-surface);
+  color: var(--color-ink);
+}
+
+.view-toggle-btn {
+  color: var(--color-ink-dim);
+}
+.view-toggle-btn:hover,
+.view-toggle-btn:focus-visible {
+  color: var(--color-brand-text);
+}
+.view-toggle-btn[aria-pressed="true"] {
+  background: var(--color-card-surface);
+  color: var(--color-brand-text);
+  box-shadow: 0 1px 2px var(--shadow-black-40);
+}
+
+/* ── Career pipeline ──
+   The timeline drawn as a CI/CD run: connected stage nodes, everything before
+   the present marked passed, the present one still running. */
+.pipeline {
+  scrollbar-width: thin;
+  overscroll-behavior-x: contain;
+}
+.pipeline::-webkit-scrollbar { height: 4px; }
+.pipeline::-webkit-scrollbar-thumb { background: var(--tint-brand-30); border-radius: 4px; }
+.pipeline::-webkit-scrollbar-track { background: transparent; }
+
+/* The run's track. Trimmed to half-width on the first and last stages so the
+   line starts and ends at a node rather than running off into space -- the
+   usual giveaway of a hand-built pipeline. */
+.pipeline-track {
+  background: var(--tint-brand-30);
+}
+.pipeline-track[data-first] { left: 50%; }
+.pipeline-track[data-last] { right: 50%; }
+
+.pipeline-node {
+  background: var(--color-card-surface);
+  border: 2px solid var(--color-card-border);
+  color: var(--color-ink-dim);
+  transition: border-color 0.22s ease, color 0.22s ease,
+              background 0.22s ease, box-shadow 0.22s ease,
+              transform 0.22s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Unselected stages are outlined -- the run's history, present but quiet. */
+.pipeline-node[data-state="passed"] {
+  border-color: var(--tint-brand-50);
+  color: var(--color-brand-text);
+}
+.pipeline-node[data-state="running"] {
+  border-color: var(--tint-success-60);
+  color: var(--color-success);
+}
+
+/* The selected stage inverts to a filled node. An outline-vs-fill difference
+   survives at a glance and in greyscale, which a ring at 15% opacity sitting
+   among five already-outlined nodes did not -- it read as "all six are
+   highlighted". Scale and a halo reinforce it without carrying the meaning. */
+.pipeline-node[data-selected] {
+  transform: scale(1.18);
+}
+.pipeline-node[data-state="passed"][data-selected] {
+  background: var(--color-brand);
+  border-color: var(--color-brand);
+  color: var(--color-on-brand);
+  box-shadow: 0 0 0 5px var(--tint-brand-20), 0 4px 14px var(--tint-brand-40);
+}
+.pipeline-node[data-state="running"][data-selected] {
+  background: var(--color-success);
+  border-color: var(--color-success);
+  color: var(--color-surface-code);
+  box-shadow: 0 0 0 5px var(--tint-success-20), 0 4px 14px var(--tint-success-30);
+}
+
+/* The track up to and including the selected stage reads as the run so far. */
+.pipeline-stage[data-done] .pipeline-track {
+  background: var(--color-brand);
+}
+
+.pipeline-stage-btn {
+  transition: background 0.2s ease;
+}
+.pipeline-stage-btn:hover,
+.pipeline-stage-btn:focus-visible {
+  background: var(--tint-brand-05);
+}
+.pipeline-stage-btn[aria-current="true"] {
+  background: var(--tint-brand-08);
+}
+.pipeline-stage-btn:focus-visible {
+  outline: 2px solid var(--color-brand);
+  outline-offset: 2px;
+}
+
+/* The detail card owns its overflow so a long entry scrolls inside the panel
+   rather than pushing the layout past one viewport. */
+.timeline-detail-card {
+  overflow-y: auto;
+  scrollbar-width: thin;
+}
+
+/* Content taller than the space left over scrolls here rather than growing
+   the document.
+
+   Because the page itself never scrolls, a region that scrolls but does not
+   look scrollable reads as a frozen site, and whatever sits below the fold is
+   silently lost. The mask fades the last rows out so the cut reads as "there
+   is more"; `animation-timeline: scroll()` drops it once the reader reaches
+   the end, and browsers without scroll-driven animations just keep the fade,
+   which is the safe direction to fail in. */
+.panel-scroll {
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: thin;
+  padding-right: 2px;
+  overscroll-behavior: contain;
+  --scroll-fade: 2.25rem;
+  -webkit-mask-image: linear-gradient(to bottom, #000 calc(100% - var(--scroll-fade)), transparent);
+  mask-image: linear-gradient(to bottom, #000 calc(100% - var(--scroll-fade)), transparent);
+}
+
+/* Run the scrolling content out through the panel's bottom padding instead of
+   stopping short of it.
+
+   The panel reserves padding below the scroll region, so the last visible row
+   was cut by the region's own edge and then followed by a band of empty panel
+   before the footer -- the cut read as the end of the grid rather than as more
+   content continuing past it. Pulling the region into that padding puts the cut
+   at the panel's real bottom edge, where the fade and the hint sit, so the last
+   row is visibly mid-card. The padding is given back inside the region so the
+   final row still clears the footer when scrolled to the end. */
+.panel-scroll {
+  margin-bottom: calc(-1 * var(--panel-pad-y));
+}
+
+/* The last row needs clearance from the panel edge when scrolled to the end,
+   but padding on the scroll region itself becomes scrollable empty space --
+   a whole blank screen after the final card. Put it on the content instead,
+   where it is part of the last row rather than a region below it. */
+.panel-scroll > * {
+  padding-bottom: var(--panel-pad-y);
+}
+
+/* Retire the fade once the reader reaches the end, where there is nothing
+   left to hint at. Browsers without scroll-driven animations keep the fade
+   permanently, which is the safe direction to fail in. */
+@property --scroll-fade {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 2.25rem;
+}
+
+@supports (animation-timeline: scroll()) {
+  .panel-scroll {
+    animation: panelScrollFade linear both;
+    animation-timeline: scroll(self block);
+    animation-range: calc(100% - 2.25rem) 100%;
+  }
+  @keyframes panelScrollFade {
+    to { --scroll-fade: 0rem; }
+  }
+}
+
+/* Short viewports: give the content back the space the heading was using. */
+@media (max-height: 700px) {
+  :root { --panel-pad-y: 0.5rem; }
+}
+
+/* Short desktop viewports. Panels fit comfortably at 900px tall and up; below
+   that they run over by 40-120px. Rather than shrink every screen to suit the
+   shortest, scale the panel down here -- a single font-size step on the panel
+   takes every em-based size with it, which is far more effective than chasing
+   individual paddings. */
+@media (min-width: 641px) and (max-height: 900px) {
+  :root { --panel-pad-y: 0.6rem; --panel-nav-gap: 1.5rem; }
+  .panel-inner { gap: 0.6rem; }
+  .tabpanel:not(#home) .panel-inner { font-size: 0.94em; }
+  .tabpanel:not(#home) h2 { font-size: clamp(1.4rem, 3vw, 2rem) !important; }
+}
+
+@media (min-width: 641px) and (max-height: 800px) {
+  .tabpanel:not(#home) .panel-inner { font-size: 0.88em; }
+  :root { --panel-pad-y: 0.45rem; --panel-nav-gap: 1.15rem; }
+  .panel-inner { gap: 0.45rem; }
+}
+
+/* A few things are sized in px or by aspect ratio, so a font-size step does not
+   reach them. These are the ones that actually decide whether a panel fits. */
+@media (min-width: 641px) and (max-height: 860px) {
+  /* Project thumbnails: the media box is the bulk of a card's height. */
+
+  /* Skills: the mindset cards and the marquee strip. */
+  #skills .window-card > div:last-child { padding: 0.55rem 0.75rem; }
+  #skills .edge-fade-x { padding-block: 0.25rem; }
+
+  /* Contact: the form is the task. The contact.sh card above it is decorative
+     chrome restating the location and response time, so it yields first. */
+  #contact form { padding: 0.9rem !important; }
+  #contact form > * + * { margin-top: 0.5rem !important; }
+  #contact textarea { min-height: 4.5rem; }
+  #contact .grid > *:first-child > div:first-child { display: none; }
+
+}
+
+/* Under 780px tall the last two panels still run over. The pieces that yield
+   are the ones that repeat information already on the panel: Skills' marquee
+   strip lists the same technologies as the category card above it, and the
+   fourth project card is one row's worth of extra. */
+@media (min-width: 641px) and (max-height: 780px) {
+  #skills astro-island:has(.edge-fade-x) { display: none; }
+  #projects [tabindex="0"] > div:last-child { padding: 0.55rem 0.7rem; gap: 0.3rem; }
+}
+
+/* Shortest laptops: the row itself is the last thing to give. Three cards fit
+   where four do not, and "Show more" still reaches the rest. */
+@media (min-width: 641px) and (max-height: 740px) {
+  #projects .grid { gap: 0.5rem; }
+}
+
+/* 700px-tall laptops: two cards is the honest fit. Shrinking further would
+   make the thumbnails useless, and "Show more" still reaches the rest. */
+@media (min-width: 641px) and (max-height: 710px) {
+  #skills .panel-inner { font-size: 0.85em; }
+  :root { --panel-pad-y: 0.35rem; --panel-nav-gap: 1rem; }
+  .panel-inner { gap: 0.35rem; }
+}
+
+/* Phones: the panel gutters and the gap under the heading are the cheapest
+   vertical space to reclaim, and every panel pays them. */
+@media (max-width: 640px) {
+  :root {
+    --panel-pad-y: 0.5rem;
+    --panel-pad-x: 0.875rem;
+    --panel-nav-gap: 0.9rem;
+  }
+  .panel-inner {
+    gap: 0.6rem;
+  }
+}
+
+/* ── Mobile: one scrolling document, not tabs ──
+   Fitting four panels into a phone viewport meant shrinking type and clipping
+   content to win space that a phone simply does not have. On mobile every
+   panel is in flow instead and the page scrolls, which is the native gesture
+   there; the header pills become scroll-to-anchor links (see HeaderComponent).
+
+   The panel height/overflow rules are the whole tab layout, so they are undone
+   deliberately rather than patched: a panel sizes to its content, and nothing
+   inside it is a scroll container of its own -- nested scroll regions inside a
+   scrolling page are the thing that makes a phone page feel broken. */
+@media (max-width: 640px) {
+  html[data-scroll-mode] .panel-viewport {
+    height: auto;
+    min-height: auto;
+    overflow: visible;
+    justify-content: flex-start;
+    padding-top: var(--panel-nav-gap);
+    padding-bottom: clamp(2rem, 6vh, 3.25rem);
+    scroll-margin-top: calc(var(--nav-h) + 0.5rem);
+  }
+
+  /* The first panel still clears the floating nav and keeps a full-viewport
+     minimum, so the hero reads as a landing screen and the pinned backdrop has
+     a screen to cover.
+
+     Centred, not top-aligned. It was top-aligned because the terminal card was
+     hidden below lg and centring a half-empty grid left a blank band under the
+     copy -- but the card is a backdrop now and the grid is just the copy, so
+     top-aligning only pushed 138-287px of slack to the bottom. */
+  html[data-scroll-mode] #home.panel-viewport {
+    padding-top: calc(var(--nav-h) + var(--panel-nav-gap));
+    min-height: 100svh;
+    justify-content: center;
+  }
+
+  /* Every scroll region flattens: the page is the scroller now. The mask and
+     the scroll-driven fade go with them, or a region that no longer scrolls
+     would keep a permanent fade over its last rows. */
+  html[data-scroll-mode] .panel-inner,
+  html[data-scroll-mode] .panel-scroll,
+  html[data-scroll-mode] .about-pane {
+    overflow: visible;
+    max-height: none;
+    height: auto;
+    -webkit-mask-image: none;
+    mask-image: none;
+    animation: none;
+  }
+
+  html[data-scroll-mode] .about-pane {
+    flex: none;
+    /* The desktop pane centres itself in a capped box so the three views share
+       a top edge. Stacked on one scrolling page there is nothing to line up
+       with, and the centring just opened a large blank band above each pane. */
+    justify-content: flex-start;
+    align-items: stretch;
+  }
+
+  /* Same reason: the panel no longer needs to fill a viewport it is not
+     confined to. */
+  html[data-scroll-mode] .about-panes,
+  html[data-scroll-mode] .panel-viewport {
+    justify-content: flex-start;
+  }
+
+  /* The scroll hint points at a region that no longer scrolls. */
+  html[data-scroll-mode] .scroll-hint {
+    display: none;
+  }
+
+  /* Each About pane names itself now that the sub-tab bar is gone. */
+  html[data-scroll-mode] .about-pane-label {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    margin-bottom: 0.75rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--color-brand-text);
+  }
+
+  /* Panes are stacked on one page now, so they need air between them. */
+  html[data-scroll-mode] .about-panes {
+    gap: clamp(1.75rem, 5vh, 2.75rem);
+  }
+
+  /* The entrance animation fires on tab switch, which no longer happens. */
+  html[data-scroll-mode] .tabpanel[data-entering] .panel-inner > *,
+  html[data-scroll-mode] .tabpanel[data-entering]#home > .relative {
+    animation: none;
+  }
+}
+
+/* ── Mobile: pinned hero backdrop ──
+   The hero's decorative layers (particle canvas, dot grid, floating snippets)
+   are absolute inside #home, so they scroll away with it. Pinning them to the
+   viewport makes the hero copy appear to travel over a stationary field rather
+   than the whole scene sliding up together.
+
+   They are pinned for the height of the hero only, then faded: a fixed layer
+   left visible behind #about would sit under the rest of the page as noise.
+   The section keeps overflow:hidden off so a fixed child is not clipped, and
+   the layers are pointer-events:none already, so nothing below them loses
+   input. */
+@media (max-width: 640px) {
+  html[data-scroll-mode] #home {
+    overflow: visible;
+  }
+
+  html[data-scroll-mode] #home canvas,
+  html[data-scroll-mode] #home > .dot-grid {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100svh;
+    z-index: 0;
+    /* Fade out across the first viewport, so the field is gone by the time
+       the next section arrives. */
+    animation: heroBackdropFade linear both;
+    animation-timeline: view();
+    animation-range: exit 0% exit 100%;
+  }
+
+  @keyframes heroBackdropFade {
+    from { opacity: 1; }
+    to   { opacity: 0; }
+  }
+
+  /* Without scroll-driven animations the layers cannot fade on scroll, so they
+     are clipped to the hero the old way instead of being left pinned over the
+     whole page. */
+  @supports not (animation-timeline: view()) {
+    html[data-scroll-mode] #home { overflow: hidden; }
+    html[data-scroll-mode] #home canvas,
+    html[data-scroll-mode] #home > .dot-grid { position: absolute; height: 100%; }
+  }
+}
+
+/* A pinned, fading backdrop is motion tied to scrolling. Reduced motion keeps
+   the layers with the section. */
+@media (max-width: 640px) and (prefers-reduced-motion: reduce) {
+  html[data-scroll-mode] #home { overflow: hidden; }
+  html[data-scroll-mode] #home canvas,
+  html[data-scroll-mode] #home > .dot-grid {
+    position: absolute;
+    height: 100%;
+    animation: none;
+  }
+}
+
+/* Panels are toggled by the `hidden` attribute from the tab bar. Until the tab
+   bar has hydrated and marked the document, every panel stays visible, so the
+   page still reads as a plain scrollable document without JS. */
+html[data-tabs-ready] .tabpanel[hidden] {
+  display: none;
+}
+
+/* ── About sub-tabs ──
+   About, Skills and Experience are one panel split three ways. The sub-panels
+   are toggled by the same `hidden` mechanism as the page tabs and gated the
+   same way, so without JS all three stack into a readable document.
+
+   Distinct from the page tab bar on purpose: that one is mono/uppercase in a
+   floating glass pill at the top of the viewport, this one is a small inline
+   segmented control inside the panel. Two tablists that looked alike would
+   read as one broken control. */
+html[data-subtabs-ready] .about-pane[hidden] {
+  display: none;
+}
+
+/* The panes carry max-widths from when each was a full-viewport panel of its
+   own -- Profile at 5xl, Arsenal and Journey at 4xl -- so their content stopped
+   ~250-380px short of the headline above them. Inside one shared panel the
+   headline's own max-w-7xl is already the measure; anything narrower just reads
+   as a misalignment. TimelineList sets its 4xl internally and renders inside an
+   <astro-island> (display: contents), so it is unset here rather than in the
+   markup. */
+.about-pane [class*="max-w-4xl"] {
+  max-width: none;
+}
+
+/* Profile is the exception to the full-width rule. Arsenal and Journey are
+   grids and rails that genuinely use the extra room, but Profile is a portrait
+   plus two paragraphs: at 1280px the 4-column portrait drifted far from the
+   copy and the bio ran to ~95 characters a line, well past a comfortable
+   measure. The block still starts at the headline's left edge; only the prose
+   is held to a readable width. */
+.about-profile-grid > div:last-child {
+  /* 68ch, not 62. The cap is in ch, so it shrank in pixels when the bio type
+     grew -- the copy wrapped earlier than before and left slack to its right.
+     68ch keeps the measure inside the readable range at the larger size. */
+  max-width: 68ch;
+}
+
+/* ── Contact ──
+   The heading carried a flat mb-16 (64px). On desktop that is deliberate air
+   under a short heading; on a phone, where the section sizes to its content in
+   scroll mode, it was 64px of the ~60px the section ran over its viewport. */
+.contact-heading {
+  margin-bottom: clamp(1rem, 4vh, 4rem);
+}
+
+/* The message box is the tallest single thing in the form. 144px is right when
+   the panel has room; on a phone, where the section sizes to its content, it was
+   a third of the overflow. Four lines still takes a real message and the box
+   grows as you type. */
+.contact-textarea {
+  min-height: clamp(84px, 14vh, 144px);
+}
+
+/* The sub-line under the contact headline is a full sentence of framing. It is
+   the first thing to go when the section has to fit a phone: the heading above
+   it already says what the section is. */
+@media (max-width: 640px) {
+  .contact-heading p:last-child {
+    display: none;
+  }
+
+  /* The last few dozen pixels on the narrowest phones, taken from spacing
+     rather than from any field or label. */
+  .contact-grid {
+    gap: 0.6rem;
+  }
+
+  .contact-grid > div:first-child {
+    gap: 0.5rem;
+  }
+
+  .contact-heading {
+    margin-bottom: 0.75rem;
+  }
+}
+
+/* ── Projects rail (mobile grid view) ──
+   Cards slide right-to-left in one snap track instead of stacking. 40 cards one
+   per row made this the longest scroll on the site, and a phone-width card is
+   already full-bleed, so a vertical list gained nothing a swipe does not.
+
+   The track is pulled out to the panel's edges so a card can sit centred with
+   its neighbours peeking in -- that peek is the affordance telling the reader
+   there is more sideways. */
+.projects-rail {
+  display: flex;
+  gap: 0.75rem;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+  margin-inline: calc(-1 * var(--panel-pad-x));
+  padding-inline: var(--panel-pad-x);
+  padding-bottom: 0.25rem;
+}
+
+.projects-rail::-webkit-scrollbar { display: none; }
+
+.projects-rail > * {
+  flex: 0 0 auto;
+  width: min(78vw, 320px);
+  scroll-snap-align: center;
+}
+
+/* A rail is horizontal; the reveal animation slides cards up from below, which
+   fights the direction of travel and leaves off-screen cards stranded at
+   opacity 0 until they are swiped to. */
+.projects-rail > * > * {
+  opacity: 1 !important;
+  transform: none !important;
+}
+
+/* ── Rail scroll affordance ──
+   The peeking next card is the strongest hint, but it only reads as one once
+   you already suspect the row moves. Two explicit cues sit alongside it: the
+   track fades out at its right edge so cards visibly continue past it, and a
+   label says so outright until the reader starts swiping.
+
+   The fade is a mask on a wrapper rather than on the rail itself -- masking a
+   scroll container clips its content to the mask on every frame, which makes
+   the leading card fade in and out as it travels. */
+.projects-rail-wrap {
+  position: relative;
+  min-width: 0;
+}
+
+.projects-rail-wrap::after {
   content: "";
   position: absolute;
-  left: 0;
-  right: 0;
-  height: 96px;
+  inset-block: 0;
+  right: calc(-1 * var(--panel-pad-x));
+  width: clamp(28px, 9vw, 52px);
   pointer-events: none;
   z-index: 2;
-}
-.page-section::before {
-  top: 0;
-  background: linear-gradient(to bottom, var(--seam-color, transparent), transparent);
-}
-.page-section::after {
-  bottom: 0;
-  background: linear-gradient(to top, var(--seam-color, transparent), transparent);
+  background: linear-gradient(to left, var(--color-surface-base), transparent);
+  opacity: 0.9;
+  transition: opacity 0.25s ease;
 }
 
-/* The hero is transparent over the fixed backdrop, so it needs no seam. */
-#hero.page-section::before,
-#hero.page-section::after {
+/* Once the rail has moved, the reader knows. Set by ProjectsGrid on scroll. */
+.projects-rail-wrap[data-scrolled]::after {
+  opacity: 0;
+}
+
+.projects-rail-hint {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin-top: 0.4rem;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.62rem;
+  color: var(--color-ink-faint);
+  transition: opacity 0.25s ease;
+}
+
+.projects-rail-wrap[data-scrolled] + .projects-rail-hint,
+.projects-rail-hint[data-scrolled] {
+  opacity: 0;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .projects-rail-hint-arrow {
+    animation: railHintNudge 1.6s ease-in-out infinite;
+  }
+}
+
+@keyframes railHintNudge {
+  0%, 100% { transform: translateX(0); }
+  50%      { transform: translateX(4px); }
+}
+
+/* On the shortest phones the label's own line is what tips the panel past the
+   viewport. The edge fade and the peeking card still carry the affordance
+   there, so the words go rather than the section overflow. */
+@media (max-height: 680px) {
+  .projects-rail-hint { display: none; }
+}
+
+/* ── Hero terminal card, compact (mobile) ──
+   The card was hidden below lg, which removed the strongest "this is a
+   developer" signal from the devices most visitors arrive on. It is back above
+   the copy, printed short: three lines, no run output, no float animation.
+
+   Sized against the measured slack in the phone hero -- 288px at 414x896 down
+   to 139px at 360x740 -- so it takes what is spare and no more. */
+/* A backdrop, not a card in the flow. In the flow it cost the hero ~155px of
+   the little height a phone has and pushed the copy down; behind the copy it
+   keeps the developer signal and costs nothing, which is the same trade the
+   About panel makes with its code block.
+
+   Pinned to the top of the hero, faded and masked out toward the bottom so the
+   headline reads over clean ground. aria-hidden already: it is a decorative
+   sample, and nothing in it is content a reader needs. */
+.hero-terminal-compact {
+  position: absolute;
+  /* Pinned to the bottom edge. It used to sit on a fixed offset into the hero's
+     lower half, which worked while the copy was top-aligned and left a deep
+     band of empty ground there; once the copy centred, that band halved and the
+     card ran up into the text by 49-127px. Sitting on the floor keeps it in
+     whatever space is actually left, whichever way the copy is aligned. */
+  bottom: 0;
+  left: var(--panel-pad-x);
+  right: var(--panel-pad-x);
+  width: auto;
+  z-index: 1;
+  pointer-events: none;
+  /* Lower than the About backdrop's 0.18: that one sits behind a portrait and
+     short paragraphs, this sits behind a 2.5rem headline and body copy that
+     have to stay legible over it. */
+  opacity: 0.14;
+  transform: rotate(-1.5deg);
+  -webkit-mask-image: linear-gradient(to top, #000 55%, transparent 100%);
+  mask-image: linear-gradient(to top, #000 55%, transparent 100%);
+}
+
+.dark .hero-terminal-compact {
+  opacity: 0.2;
+}
+
+.hero-terminal-compact-body {
+  padding: clamp(0.6rem, 1.6vh, 0.9rem) clamp(0.7rem, 3vw, 1rem);
+  font-size: clamp(0.62rem, 0.5rem + 0.7vw, 0.74rem);
+  line-height: 1.7;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.hero-terminal-compact-body::-webkit-scrollbar { display: none; }
+
+/* The stack array is the one line that can outrun a narrow screen; let the body
+   scroll rather than wrap it into a second line that costs height. */
+.hero-terminal-compact-line {
+  white-space: nowrap;
+}
+
+/* The backdrop costs no layout height, so a short viewport gains nothing by
+   hiding it -- but it does need somewhere empty to sit. Centring the hero copy
+   halved the band below it, so the threshold moved up: under ~800px tall the
+   copy reaches the floor and the card would sit on the text rather than behind
+   bare ground. Measured clearance at the cutoff: +8px at 390x844, -43px at
+   360x740. */
+@media (max-height: 800px) {
+  .hero-terminal-compact { display: none; }
+}
+
+/* ── Profile sizing ──
+   Everything here was tuned when Profile was a cramped full-viewport panel. As
+   one sub-tab of a shared panel it has room to spare: the grid measured 204px
+   in a 420px pane, with the portrait at 170px inside a 405px column. These
+   scale with the viewport instead of sitting at the old fixed minimums. */
+
+.about-bio {
+  font-size: clamp(0.92rem, 0.75rem + 0.45vw, 1.08rem);
+  color: var(--color-ink-dim);
+  line-height: 1.7;
+  font-family: 'Space Grotesk', sans-serif;
+  margin: 0;
+}
+
+/* The portrait drives its own rings and glow off --portrait-size, so that is
+   the variable to set -- shrinking or growing the wrapper alone leaves the
+   decorations at their original size. */
+.about-pane [class*="portrait-size"] {
+  --portrait-size: clamp(170px, 9rem + 6vw, 260px) !important;
+}
+
+/* Two stats, so two columns: the old grid-cols-4 left each card a quarter of
+   the row while half the row sat empty. */
+.stats-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  max-width: 30rem;
+}
+
+.stat-card {
+  padding: clamp(0.6rem, 0.4rem + 0.5vw, 1rem) clamp(0.5rem, 0.3rem + 0.5vw, 0.9rem);
+}
+
+.stat-icon {
+  font-size: clamp(1.15rem, 0.9rem + 0.6vw, 1.6rem);
+  margin-bottom: 0.3rem;
+}
+
+.stat-value {
+  font-size: clamp(1.25rem, 1rem + 0.8vw, 1.85rem);
+  font-weight: 700;
+  line-height: 1.1;
+  font-family: 'Space Grotesk', sans-serif;
+}
+
+.stat-label {
+  font-size: clamp(0.68rem, 0.6rem + 0.2vw, 0.8rem);
+  color: var(--color-ink-dim);
+  margin-top: 3px;
+  line-height: 1.25;
+  font-family: 'Space Grotesk', sans-serif;
+}
+
+/* Short viewports keep the old compact end of each range: the panel has no
+   spare height there and Profile has to fit alongside the heading and tabs. */
+@media (max-height: 760px) {
+  .about-pane [class*="portrait-size"] {
+    --portrait-size: clamp(150px, 8rem + 4vw, 195px) !important;
+  }
+  .about-bio { font-size: clamp(0.86rem, 0.75rem + 0.3vw, 0.98rem); }
+  .stat-value { font-size: clamp(1.1rem, 0.95rem + 0.5vw, 1.45rem); }
+  .stat-icon  { font-size: 1.1rem; margin-bottom: 0.2rem; }
+  .stat-card  { padding: 0.5rem 0.5rem; }
+}
+
+.about-subtab-bar {
+  margin-bottom: clamp(0.6rem, 1.6vh, 1.1rem);
+}
+
+/* Shown only in mobile scroll mode, where the sub-tab bar is gone. */
+.about-pane-label {
   display: none;
+}
+
+/* Built like the page tab bar: a transparent track, with one .glass-pill
+   sliding behind the labels. The pill carries both the active fill and the
+   non-text contrast (SC 1.4.11) via its own brand border, so the triggers
+   themselves need no background, border or underline of their own -- the
+   earlier filled-track version had to invent an underline to replace the
+   border it dropped. Colours come from .nav-link, shared with the header. */
+.about-subtabs {
+  background: transparent;
+  border: none;
+  padding: 0;
+}
+
+.about-subtab {
+  border: none;
+  transition: color 0.2s ease;
+}
+
+/* ── Cookie consent banner ──
+   Bottom-anchored glass card, the same material as the nav and sub-tabs. Sits
+   above the panels but below the nav pill, so it never covers navigation.
+
+   Accept and Decline share a size and shape; only the fill differs. A banner
+   that makes declining harder than accepting is not valid consent under GDPR,
+   and it is the pattern every visitor has learned to resent. */
+.cookie-banner {
+  position: fixed;
+  z-index: 55;
+  left: 50%;
+  /* Clear of the footer, not just of the viewport edge. On desktop the footer
+     is pinned below the panel, so a banner measured from the bottom sat on top
+     of it. --footer-h is measured at runtime by the header island. */
+  bottom: calc(var(--footer-h, 61px) + clamp(0.75rem, 2.5vh, 1.5rem));
+  transform: translateX(-50%);
+  width: min(560px, calc(100% - 1.5rem));
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem 1rem;
+  padding: 0.85rem 1rem;
+  border-radius: 14px;
+  background: var(--glass-bg);
+  box-shadow: var(--glass-highlight), var(--glass-lowlight), var(--glass-shadow);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+  backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+}
+
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .cookie-banner {
+    background: color-mix(in srgb, var(--color-surface-base) 96%, transparent);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .cookie-banner {
+    animation: cookieBannerIn 0.35s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+}
+
+@keyframes cookieBannerIn {
+  from { opacity: 0; transform: translate(-50%, 12px); }
+  to   { opacity: 1; transform: translate(-50%, 0); }
+}
+
+.cookie-banner-text {
+  flex: 1 1 15rem;
+  min-width: 0;
+  margin: 0;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.76rem;
+  line-height: 1.55;
+  color: var(--color-ink-dim);
+}
+
+.cookie-banner-actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.cookie-btn {
+  /* 2.25rem tall and 5rem wide clears the 24x24 CSS px minimum in SC 2.5.8. */
+  min-height: 2.25rem;
+  min-width: 5rem;
+  padding: 0.4rem 0.9rem;
+  border-radius: 999px;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.78rem;
+  font-weight: 500;
+  cursor: pointer;
+  color: var(--color-ink-muted);
+  background: var(--tint-white-05);
+  border: 1px solid var(--color-card-border);
+  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+
+.cookie-btn:hover {
+  color: var(--color-ink);
+  border-color: var(--color-card-border-strong);
+}
+
+.cookie-btn-accept {
+  color: var(--color-on-brand);
+  background: var(--color-brand-700);
+  border-color: var(--color-brand-700);
+}
+
+.cookie-btn-accept:hover {
+  background: var(--color-brand-900);
+  border-color: var(--color-brand-900);
+}
+
+.cookie-btn:focus-visible {
+  outline: 2px solid var(--color-brand-300);
+  outline-offset: 2px;
+}
+
+/* On a phone the banner spans the width and the buttons take a row of their
+   own, so neither is cramped against the copy. */
+/* Scroll mode: the footer is at the end of the document rather than pinned
+   under the panel, so there is nothing at the bottom of the viewport to clear. */
+html[data-scroll-mode] .cookie-banner {
+  bottom: clamp(0.75rem, 2.5vh, 1.5rem);
+}
+
+@media (max-width: 480px) {
+  .cookie-banner {
+    padding: 0.8rem 0.9rem;
+  }
+
+  .cookie-banner-actions {
+    width: 100%;
+  }
+
+  .cookie-btn {
+    flex: 1;
+  }
+}
+
+/* ── Flow link ──
+   The forward step out of a section. Liquid glass like the nav and sub-tabs,
+   borderless, with the arrow easing right on hover to read as "onward" rather
+   than "submit". Sized past the 24x24 minimum for SC 2.5.8. */
+.flow-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 1.15rem;
+  min-height: 2.5rem;
+  border-radius: 999px;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 500;
+  text-decoration: none;
+  white-space: nowrap;
+  color: var(--color-brand-text);
+  background: var(--glass-bg);
+  box-shadow: var(--glass-highlight), var(--glass-lowlight), var(--glass-shadow);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+  backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+  transition: color 0.2s ease, background-color 0.2s ease, transform 0.2s ease;
+}
+
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .flow-link {
+    background: color-mix(in srgb, var(--color-surface-base) 94%, transparent);
+  }
+}
+
+.flow-link svg {
+  width: 15px;
+  height: 15px;
+  transition: transform 0.2s ease;
+}
+
+.flow-link:hover {
+  background: color-mix(in srgb, var(--color-brand) 16%, transparent);
+  color: var(--color-brand-text);
+}
+
+.flow-link:hover svg {
+  transform: translateX(3px);
+}
+
+.flow-link:focus-visible {
+  outline: 2px solid var(--color-brand-300);
+  outline-offset: 2px;
+}
+
+/* The flow link sits under a panel's content as its closing move, so it gets
+   air above it but must not add height a fitted panel cannot spare. */
+.flow-row {
+  display: flex;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: clamp(0.6rem, 1.8vh, 1.25rem);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .flow-link,
+  .flow-link svg { transition: none; }
+  .flow-link:hover svg { transform: none; }
+}
+
+/* Each pane owns the remaining height, so switching sub-tabs does not make the
+   panel jump: all three occupy the same box.
+
+   align-items: center, not the default stretch -- Arsenal and Journey both wrap
+   their content in a max-width box, which stretch pins to the left edge of a
+   much wider pane while Profile (a grid with mx-auto) centres. The two sat
+   visibly out of line with each other. */
+.about-pane {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  /* Top-aligned inside the pane; the centring happens one level up on
+     .about-panes, which is what keeps the three views sharing a common top
+     edge instead of each floating in its own box. */
+  justify-content: flex-start;
+  align-items: center;
+  overflow-y: auto;
+  scrollbar-width: thin;
+}
+
+/* The panes centre in the space under the heading, but that space grows with
+   the viewport: at 1920x1080 pure centring left ~270px between the headline and
+   the content while the panel's own padding held the rest. Capping the pane's
+   height keeps the group tied to the heading on tall screens and lets it fall
+   back to plain centring on short ones, where there is no slack to give. */
+.about-panes {
+  justify-content: center;
+}
+
+/* The three views share one box so switching sub-tabs never shifts the heading
+   or the content's top edge.
+
+   Only a *cap*, never a floor: an earlier fixed height tied to vh clipped the
+   taller views on short and narrow screens, where there is no slack to give.
+   The pane takes the space it has and simply stops growing past the cap, which
+   is what keeps a 1080p viewport from stranding the content ~270px below the
+   headline. */
+.about-pane {
+  flex: 1;
+  max-height: 420px;
+}
+
+/* Below the desktop breakpoint the views stack taller (the Profile grid goes
+   one column), so the cap would clip rather than tidy. */
+@media (max-width: 1023px), (max-height: 780px) {
+  .about-pane { max-height: none; }
+}
+
+/* Direct children still need the full width to lay out inside. */
+.about-pane > * {
+  width: 100%;
+}
+
+/* Arsenal and Journey fill the shared box, so top-aligning them keeps a common
+   top edge across sub-tabs. Profile is shorter than the box by design -- it is
+   a portrait and two paragraphs -- and top-aligned it left a visible band of
+   nothing underneath. Centring only this pane spends that space on both sides
+   of the content instead of dumping it all below. */
+#about-profile {
+  justify-content: center;
+}
+
+/* The mindset icon tile, sized down with the card on narrow screens. */
+.mindset-icon {
+  width: 2rem;
+  height: 2rem;
+  font-size: 0.95rem;
+}
+@media (min-width: 640px) {
+  .mindset-icon {
+    width: 2.5rem;
+    height: 2.5rem;
+    font-size: 1.1rem;
+  }
+}
+
+/* Mindset card copy. Sized in CSS rather than inline so the narrow-screen
+   rules below can actually win -- an inline style outranks any stylesheet rule,
+   media query or not. */
+.mindset-title { font-size: 0.9rem; }
+.mindset-desc  { font-size: 0.8rem; }
+
+/* Arsenal badges. Sized in CSS, not inline, so the narrow rules below apply. */
+.skill-badge-lg {
+  padding: 9px 16px;
+  font-size: 0.82rem;
+}
+@media (max-width: 400px) {
+  .skill-badge-lg {
+    padding: 6px 11px;
+    font-size: 0.74rem;
+  }
+}
+
+/* Below ~400px the four mindset cards are the tallest thing in the Arsenal
+   view. Trimming the copy to two lines keeps the pane inside the panel without
+   dropping a card, which would hide content rather than fit it. */
+@media (max-width: 400px) {
+  .mindset-title { font-size: 0.82rem; }
+  .mindset-desc {
+    font-size: 0.72rem;
+    line-height: 1.35;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
 }
 
 /* ── Reduced motion ──
