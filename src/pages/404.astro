@@ -1,0 +1,70 @@
+---
+import "@/styles/global.css"
+import Layout from "@/layout/layout.astro"
+import dataJson from "@/assets/data.json"
+
+const baseUrl = import.meta.env.BASE_URL
+const { seo } = dataJson
+---
+
+<Layout title="Page not found" noindex>
+  <main id="main" tabindex="-1" class="page-404">
+    <p class="font-mono page-404-code">404</p>
+    <h1 class="page-404-title">This page doesn&rsquo;t exist</h1>
+    <p class="page-404-body">
+      The link may be out of date. Everything lives on one page &mdash; head back and
+      pick up from there.
+    </p>
+    <a href={baseUrl} class="flow-link">
+      <span>Back to {seo.siteName}</span>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+           stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M5 12h14M13 6l6 6-6 6" />
+      </svg>
+    </a>
+  </main>
+</Layout>
+
+<style is:global>
+  /* GitHub Pages serves its own 404 otherwise, which drops the visitor out of
+     the site entirely. noindex is set via the page title path in BaseHead --
+     this page should never be indexed, only served. */
+  .page-404 {
+    /* .site-backdrop is position:fixed with an opaque background at z-index 0.
+       Panels on the main page sit at z-index 1 (see .page-section), so they
+       paint above it; without a stacking position of its own this page rendered
+       underneath and only the button -- which creates its own layer -- showed. */
+    position: relative;
+    z-index: 1;
+    min-height: 100svh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    padding: 2rem 1.25rem;
+    text-align: center;
+  }
+  .page-404-code {
+    font-size: clamp(3rem, 12vw, 5rem);
+    font-weight: 700;
+    line-height: 1;
+    color: var(--color-brand-text);
+    margin: 0;
+  }
+  .page-404-title {
+    font-size: clamp(1.35rem, 4vw, 2rem);
+    font-weight: 700;
+    color: var(--color-ink);
+    font-family: 'Space Grotesk', sans-serif;
+    margin: 0;
+  }
+  .page-404-body {
+    font-size: 0.95rem;
+    color: var(--color-ink-dim);
+    font-family: 'Space Grotesk', sans-serif;
+    max-width: 44ch;
+    line-height: 1.65;
+    margin: 0 0 0.75rem;
+  }
+</style>

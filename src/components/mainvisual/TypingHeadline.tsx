@@ -78,7 +78,7 @@ export function TypingHeadline({ name, sequences, headlinePrefix, rolePrefix }: 
             </span>
             <span className="sr-only">{sequences.join(", ")}</span>
             <span
-              className="cursor-blink inline-block w-0.5 h-7 bg-blue-400"
+              className="cursor-blink inline-block w-0.5 h-7 bg-brand-400"
               style={{ marginLeft: "2px" }}
               aria-hidden="true"
             />

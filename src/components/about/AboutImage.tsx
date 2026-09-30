@@ -25,7 +25,7 @@ export function AboutImage({ name, imagePath, hoverImagePath, baseUrl }: AboutIm
   return (
     <motion.div
       ref={wrapperRef}
-      className="flex justify-center lg:justify-start mb-10"
+      className="flex justify-center px-3 pt-6 [--portrait-size:120px] sm:[--portrait-size:170px]"
       initial={reduced ? false : { opacity: 0, scale: 0.85 }}
       animate={revealed ? { opacity: 1, scale: 1 } : undefined}
       transition={{ delay: 0.15, type: "spring", visualDuration: 0.6, bounce: 0.25 }}
@@ -47,7 +47,7 @@ export function AboutImage({ name, imagePath, hoverImagePath, baseUrl }: AboutIm
         />
         <motion.div
           className="relative rounded-full overflow-hidden"
-          style={{ width: "170px", height: "170px", border: "3px solid var(--tint-brand-60)", boxShadow: "0 0 30px var(--tint-brand-35)" }}
+          style={{ width: "var(--portrait-size, 170px)", height: "var(--portrait-size, 170px)", border: "3px solid var(--tint-brand-60)", boxShadow: "0 0 30px var(--tint-brand-35)" }}
           initial={reduced ? false : { rotate: -12 }}
           animate={revealed ? { rotate: 0 } : undefined}
           transition={{ delay: 0.25, type: "spring", visualDuration: 0.7, bounce: 0.05 }}
@@ -86,11 +86,11 @@ export function AboutImage({ name, imagePath, hoverImagePath, baseUrl }: AboutIm
           style={{ background: "var(--color-surface-code)", border: "1px solid var(--tint-brand-35)", boxShadow: "0 4px 12px var(--shadow-black-40)" }}
           {...reveal(0.45, { scale: 0 })}
         >
-          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 cursor-blink" />
-          <span className="font-mono" style={{ fontSize: "0.6rem", color: "var(--color-success-soft)", whiteSpace: "nowrap" }}>available</span>
+          <span className="w-1.5 h-1.5 rounded-full bg-success cursor-blink" />
+          <span className="font-mono" style={{ fontSize: "0.6rem", color: "var(--color-code-success)", whiteSpace: "nowrap" }}>available</span>
         </motion.div>
         <motion.div
-          className="absolute -top-2 -left-4 px-2.5 py-1 rounded-lg font-mono"
+          className="absolute -top-5 left-0 px-2.5 py-1 rounded-lg font-mono"
           style={{ background: "var(--tint-brand-15)", border: "1px solid var(--tint-brand-30)", fontSize: "0.6rem", color: "var(--color-brand-300)", whiteSpace: "nowrap" }}
           {...reveal(0.35, { x: -12 })}
         >

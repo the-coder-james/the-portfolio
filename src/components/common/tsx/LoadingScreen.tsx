@@ -193,7 +193,7 @@ export function LoadingScreen() {
             fontSize: "2.4rem",
             fontWeight: 700,
             letterSpacing: "-0.02em",
-            color: "var(--color-ink)",
+            color: "var(--color-code-ink)",
             textShadow: "0 0 20px var(--tint-brand-40)",
             opacity: 0,
           }}
@@ -216,7 +216,7 @@ export function LoadingScreen() {
             style={{ background: "var(--color-surface-code-head)", borderBottom: "1px solid var(--tint-white-05)" }}
           >
             <TrafficLights />
-            <span className="ml-2 font-mono" style={{ fontSize: "0.65rem", color: "var(--color-ink-dim)" }}>
+            <span className="ml-2 font-mono" style={{ fontSize: "0.65rem", color: "var(--color-code-ink-dim)" }}>
               boot.sh
             </span>
           </div>
@@ -224,7 +224,7 @@ export function LoadingScreen() {
             {BOOT_LINES.map((l, i) => (
               <div key={i} className="boot-line" style={{ opacity: 0 }}>
                 <span style={{ color: l.prompt === "✓" ? "var(--color-success)" : "var(--color-success-strong)" }}>{l.prompt}</span>
-                <span style={{ color: l.prompt === "✓" ? "var(--color-success)" : "var(--color-ink-dim)", marginLeft: "8px" }}>
+                <span style={{ color: l.prompt === "✓" ? "var(--color-success)" : "var(--color-code-ink-dim)", marginLeft: "8px" }}>
                   {l.text}
                 </span>
               </div>
@@ -232,7 +232,7 @@ export function LoadingScreen() {
           </div>
         </div>
 
-        <div className="flex items-center gap-3 font-mono" style={{ fontSize: "0.7rem", color: "var(--color-ink-dim)" }}>
+        <div className="flex items-center gap-3 font-mono" style={{ fontSize: "0.7rem", color: "var(--color-code-ink-dim)" }}>
           <span>loading</span>
           <div
             className="flex-1 h-1 rounded-full overflow-hidden"

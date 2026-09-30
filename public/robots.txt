@@ -1,0 +1,5 @@
+# https://the-coder-james.github.io/the-portfolio/
+User-agent: *
+Allow: /
+
+Sitemap: https://the-coder-james.github.io/the-portfolio/sitemap-index.xml

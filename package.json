@@ -10,10 +10,12 @@
     "shadcn": "npx shadcn@latest",
     "astro": "astro",
     "images": "node scripts/optimize-images.mjs",
+    "og": "node scripts/make-og-image.mjs",
     "inspect": "node scripts/inspect-layout.mjs"
   },
   "dependencies": {
     "@astrojs/react": "^4.3.1",
+    "@astrojs/sitemap": "^3.7.4",
     "@babel/runtime": "^7.28.4",
     "@radix-ui/react-aspect-ratio": "^1.1.7",
     "@radix-ui/react-dialog": "^1.1.15",

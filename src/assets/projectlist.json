@@ -361,7 +361,7 @@
       "alt" : "epa"
     },
     "description" : "A corporate landing page for a business support service branded as “ EPA（Exective Partner Assistant）” focused on executive‑level assistant development and placement. It promotes training and deployment of strategic assistant personnel who go beyond traditional secretarial tasks to support executive decision‑making, information organization, internal/external communication and administrative alignment so that leaders can focus on core business priorities. It includes a summary of EPA roles, outcomes, service offerings, and a contact form.",
-    "siteurl" : "http://secretary-voyage.com/"
+    "siteurl" : "https://secretary-voyage.com/"
   },
   {
     "title" : "Nagoya Unagi",
@@ -515,7 +515,7 @@
       "alt" : "portfolio"
     },
     "description" : "This portfolio that I have created and vibe-coded. Not purely though.",
-    "siteurl" : "https://alejandrejames.github.io/the-portfolio/"
+    "siteurl" : "https://the-coder-james.github.io/the-portfolio/"
   },
   {
     "title" : "the-gym-app",
@@ -544,7 +544,7 @@
       "alt" : "usagemonitor"
     },
     "description" : "A macOS menu-bar app that shows your Claude subscription usage (5-hour session % and 7-day weekly %) with Liquid Glass styling (macOS 26). macOS-only. ",
-    "siteurl" : "https://github.com/alejandrejames/the-usage-monitor"
+    "siteurl" : "https://github.com/the-coder-james/the-usage-monitor"
   },
   {
     "title" : "Site Monitoring System Sauron",

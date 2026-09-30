@@ -34,6 +34,11 @@ jobs:
 
       - name: Build Astro site
         run: yarn build
+        env:
+          # Set this as a repository secret to enable analytics in production.
+          # Unset, the GTM loader and the consent banner both no-op, so the
+          # build is simply analytics-free rather than broken.
+          PUBLIC_GTM_ID: ${{ secrets.PUBLIC_GTM_ID }}
 
       - name: Setup Pages
         uses: actions/configure-pages@v5

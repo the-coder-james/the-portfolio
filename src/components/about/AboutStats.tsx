@@ -2,7 +2,6 @@ import { useEffect, useRef, useState } from "react";
 
 import { SlidingNumber } from "@/components/motion-primitives/sliding-number";
 import { RevealGroup } from "@/components/common/tsx/RevealGroup";
-import { WindowCard } from "@/components/common/tsx/WindowCard";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { useRevealed } from "@/hooks/useRevealed";
 
@@ -69,23 +68,25 @@ export function AboutStats({ stats }: AboutStatsProps) {
 
   return (
     <div ref={ref}>
-      <RevealGroup className="grid grid-cols-2 gap-4" preset="scale" margin="-80px">
+      {/* Columns follow the count. grid-cols-4 dates from when there were four
+          stats; with two it left each card at a quarter width and the pair
+          floating in a third of the row. */}
+      <RevealGroup className="stats-grid grid gap-2 sm:gap-2.5" preset="scale" margin="-80px">
         {stats.map((stat) => (
-          <WindowCard
+          <div
             key={stat.label}
-            title={`${stat.label.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`}
+            className="stat-card card-glow rounded-xl text-center"
+            style={{ background: "var(--color-card-surface)", border: "1px solid var(--color-card-border)" }}
           >
-            <div className="text-2xl mb-2" aria-hidden="true">{stat.icon}</div>
-            <div
-              className="gradient-text"
-              style={{ fontSize: "1.8rem", fontWeight: 700, lineHeight: 1, fontFamily: "'Space Grotesk', sans-serif" }}
-            >
+            {/* Sized in CSS, not inline: an inline style outranks every
+                stylesheet rule regardless of media query, so a per-viewport
+                scale could never reach these here. */}
+            <div className="stat-icon leading-none" aria-hidden="true">{stat.icon}</div>
+            <div className="stat-value gradient-text">
               <StatValue value={stat.value} start={revealed} />
             </div>
-            <div style={{ fontSize: "0.78rem", color: "var(--color-ink-dim)", marginTop: "4px", fontFamily: "'Space Grotesk', sans-serif" }}>
-              {stat.label}
-            </div>
-          </WindowCard>
+            <div className="stat-label">{stat.label}</div>
+          </div>
         ))}
       </RevealGroup>
     </div>

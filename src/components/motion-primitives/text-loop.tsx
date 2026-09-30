@@ -52,10 +52,12 @@ export function TextLoop({
     <div className={cn('relative inline-block whitespace-nowrap', className)}>
       {/* Reserves layout space: the animated items are absolutely positioned so
           the outgoing and incoming strings never share a line. */}
-      <span aria-hidden='true' className='invisible block'>
-        {items.reduce((a, b) =>
-          String(a).length >= String(b).length ? a : b
-        )}
+      <span aria-hidden='true' className='invisible grid'>
+        {items.map((item, i) => (
+          <span key={i} style={{ gridArea: '1 / 1' }}>
+            {item}
+          </span>
+        ))}
       </span>
       <AnimatePresence mode={mode} initial={false}>
         <motion.div

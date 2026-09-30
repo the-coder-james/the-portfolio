@@ -1,12 +1,40 @@
 {
   "nav": [
-    { "label": "About", "href": "#about" },
-    { "label": "Skills", "href": "#skills" },
-    { "label": "Projects", "href": "#projects" },
-    { "label": "Experience", "href": "#experience" },
-    { "label": "Contact", "href": "#contact" }
+    {
+      "label": "Home",
+      "href": "#home"
+    },
+    {
+      "label": "About",
+      "href": "#about"
+    },
+    {
+      "label": "Projects",
+      "href": "#projects"
+    },
+    {
+      "label": "Contact",
+      "href": "#contact"
+    }
   ],
-
+  "seo": {
+    "siteName": "James the Dev",
+    "title": "James — Full Stack Developer",
+    "description": "Full stack developer building e-commerce platforms, business sites and landing pages with PHP, React and Node.js. Professional since 2019.",
+    "keywords": [
+      "full stack developer",
+      "LAMP stack",
+      "MERN stack",
+      "PHP developer",
+      "React developer",
+      "e-commerce development",
+      "web developer portfolio"
+    ],
+    "ogImage": "og-image.png",
+    "jobTitle": "Full Stack Developer",
+    "locale": "en_US",
+    "googleSiteVerification": "NoJZPoZHOdQpxa7VPqrwJ_ThOBdiWvdHWySu3ZbtewE"
+  },
   "user": {
     "image": {
       "path": "mainimage.png",
@@ -23,97 +51,248 @@
     ],
     "since": 2015,
     "professional": 2019,
-    "stackLabels": ["LAMP", "MERN", "AI"],
+    "stackLabels": [
+      "LAMP",
+      "MERN",
+      "AI"
+    ],
     "techstack": [
       {
         "name": "LAMP Stack",
         "icon": "Server",
         "description": "Linux, Apache, MySQL, PHP",
         "tools": [
-          { "icon": "SiLinux", "color": "text-orange-500", "title": "Linux" },
-          { "icon": "SiApache", "color": "text-red-600", "title": "Apache" },
-          { "icon": "SiMysql", "color": "text-blue-600", "title": "MySQL" },
-          { "icon": "SiPhp", "color": "text-indigo-700", "title": "PHP" }
+          {
+            "icon": "SiLinux",
+            "color": "text-orange-500",
+            "title": "Linux"
+          },
+          {
+            "icon": "SiApache",
+            "color": "text-red-600",
+            "title": "Apache"
+          },
+          {
+            "icon": "SiMysql",
+            "color": "text-blue-600",
+            "title": "MySQL"
+          },
+          {
+            "icon": "SiPhp",
+            "color": "text-indigo-700",
+            "title": "PHP"
+          }
         ],
-        "badge": { "label": "Currently Using", "icon": "BadgeCheck", "color": "bg-primary/10 text-primary" }
+        "badge": {
+          "label": "Currently Using",
+          "icon": "BadgeCheck",
+          "color": "bg-primary/10 text-primary"
+        }
       },
       {
         "name": "MERN Stack",
         "icon": "Layers",
         "description": "MongoDB, Express, React, Node.js",
         "tools": [
-          { "icon": "SiMongodb", "color": "text-green-600", "title": "MongoDB" },
-          { "icon": "SiExpress", "color": "text-gray-700 dark:text-gray-300", "title": "Express" },
-          { "icon": "SiReact", "color": "text-cyan-500", "title": "React" },
-          { "icon": "SiNodedotjs", "color": "text-green-500", "title": "Node.js" }
+          {
+            "icon": "SiMongodb",
+            "color": "text-green-600",
+            "title": "MongoDB"
+          },
+          {
+            "icon": "SiExpress",
+            "color": "text-gray-700 dark:text-gray-300",
+            "title": "Express"
+          },
+          {
+            "icon": "SiReact",
+            "color": "text-cyan-500",
+            "title": "React"
+          },
+          {
+            "icon": "SiNodedotjs",
+            "color": "text-green-500",
+            "title": "Node.js"
+          }
         ],
-        "badge": { "label": "Currently Learning", "icon": "BookOpen", "color": "bg-muted text-muted-foreground" }
+        "badge": {
+          "label": "Currently Learning",
+          "icon": "BookOpen",
+          "color": "bg-muted text-muted-foreground"
+        }
       },
       {
         "name": "Generative AI Stack",
         "icon": "Bot",
         "description": "LLMs, Vector DBs, Embeddings, Prompt Engineering",
         "tools": [
-          { "icon": "SiOpenai", "color": "text-cyan-600", "title": "OpenAI" },
-          { "icon": "SiOllama", "color": "text-gray-800 dark:text-gray-200", "title": "Ollama" },
-          { "icon": "SiHuggingface", "color": "text-yellow-500", "title": "Hugging Face" },
-          { "icon": "SiTensorflow", "color": "text-orange-500", "title": "TensorFlow" }
+          {
+            "icon": "SiOpenai",
+            "color": "text-cyan-600",
+            "title": "OpenAI"
+          },
+          {
+            "icon": "SiOllama",
+            "color": "text-gray-800 dark:text-gray-200",
+            "title": "Ollama"
+          },
+          {
+            "icon": "SiHuggingface",
+            "color": "text-yellow-500",
+            "title": "Hugging Face"
+          },
+          {
+            "icon": "SiTensorflow",
+            "color": "text-orange-500",
+            "title": "TensorFlow"
+          }
         ],
-        "badge": { "label": "Currently Learning", "icon": "BookOpen", "color": "bg-muted text-muted-foreground" }
+        "badge": {
+          "label": "Currently Learning",
+          "icon": "BookOpen",
+          "color": "bg-muted text-muted-foreground"
+        }
       }
     ],
     "extraSkills": {
-      "frontend": ["JavaScript", "TypeScript", "HTML", "CSS", "Tailwind CSS"],
-      "backend": ["REST APIs"],
-      "tools": ["Git", "GitHub", "Docker", "VS Code", "Figma"]
+      "frontend": [
+        "JavaScript",
+        "TypeScript",
+        "HTML",
+        "CSS",
+        "Tailwind CSS"
+      ],
+      "backend": [
+        "REST APIs"
+      ],
+      "tools": [
+        "Git",
+        "GitHub",
+        "Docker",
+        "VS Code",
+        "Figma"
+      ]
     }
   },
-
   "mainvisual": {
     "greeting": "// Hello, World! 👋",
     "headlinePrefix": "Hi! I'm",
     "rolePrefix": "I'm a",
     "description": "Building everything from small business sites to full-scale e-commerce platforms — bridging the gap between design and functionality since 2015.",
     "ctas": [
-      { "label": "View My Work", "href": "#projects", "variant": "primary" },
-      { "label": "Get In Touch", "href": "#contact", "variant": "outline" }
+      {
+        "label": "View My Work",
+        "href": "#projects",
+        "variant": "primary"
+      },
+      {
+        "label": "Know Me More",
+        "href": "#about",
+        "variant": "outline"
+      }
     ],
     "socialsLabel": "Let's connect",
     "floaters": [
-      { "text": "const x = () => {}", "x": "8%", "y": "20%" },
-      { "text": "npm run dev", "x": "82%", "y": "18%" },
-      { "text": "<Component />", "x": "5%", "y": "75%" },
-      { "text": "git commit -m '✨'", "x": "78%", "y": "72%" },
-      { "text": "// TODO: ship it", "x": "70%", "y": "40%" }
+      {
+        "text": "const x = () => {}",
+        "x": "8%",
+        "y": "20%"
+      },
+      {
+        "text": "npm run dev",
+        "x": "82%",
+        "y": "18%"
+      },
+      {
+        "text": "<Component />",
+        "x": "3%",
+        "y": "88%"
+      },
+      {
+        "text": "git commit -m '✨'",
+        "x": "78%",
+        "y": "84%"
+      },
+      {
+        "text": "// TODO: ship it",
+        "x": "70%",
+        "y": "40%"
+      }
     ]
   },
-
   "about": {
-    "eyebrow": "01. about_me.tsx",
+    "eyebrow": "whoami",
     "headline": "The Human Behind",
     "headlineAccent": "the Code",
     "bio": [
-      "I've been coding since {{since}}, and began working professionally in {{professional}}, building everything from small business sites to full-scale e-commerce platforms and high-performing landing pages.",
-      "I enjoy bridging the gap between design and functionality — bringing ideas to life through code that's scalable, maintainable, and user-focused.",
-      "Beyond coding, I'm constantly exploring new technologies — from LAMP and MERN stacks to Generative AI — always finding ways to grow as a developer."
+      "I build for the web end to end — from small business sites to full-scale e-commerce platforms and high-performing landing pages.",
+      "I enjoy bridging the gap between design and functionality — bringing ideas to life through code that's scalable, maintainable, and user-focused."
     ],
     "stats": [
-      { "label": "Years Coding", "value": "10+", "icon": "💻" },
-      { "label": "Professional Since", "value": "2019", "icon": "🚀" },
-      { "label": "Projects Shipped", "value": "45+", "icon": "📦" },
-      { "label": "Cups of Coffee", "value": "∞", "icon": "☕" }
+      {
+        "label": "Projects Shipped",
+        "value": "45+",
+        "icon": "📦"
+      },
+      {
+        "label": "Cups of Coffee",
+        "value": "∞",
+        "icon": "☕"
+      }
+    ],
+    "tabs": [
+      {
+        "id": "profile",
+        "label": "Profile",
+        "icon": "👤"
+      },
+      {
+        "id": "arsenal",
+        "label": "Arsenal",
+        "icon": "⚙️"
+      },
+      {
+        "id": "journey",
+        "label": "Journey",
+        "icon": "📈"
+      }
     ]
   },
-
   "skills": {
-    "eyebrow": "02. skills.config.ts",
+    "eyebrow": "skills.config.ts",
     "headline": "My Tech",
     "headlineAccent": "Arsenal",
     "mindset": [
-      { "icon": "🎯", "title": "Clean Code", "desc": "Scalable, maintainable, and readable — always." },
-      { "icon": "🤝", "title": "Collaboration", "desc": "Love working with teams to ship great products." },
-      { "icon": "📐", "title": "Design Sense", "desc": "Bridging the gap between devs and designers." },
-      { "icon": "🔬", "title": "Always Learning", "desc": "Exploring new technologies every single day." }
+      {
+        "icon": "🎯",
+        "title": "Clean Code",
+        "desc": "Scalable, maintainable, and readable — always."
+      },
+      {
+        "icon": "🤝",
+        "title": "Collaboration",
+        "desc": "Love working with teams to ship great products."
+      },
+      {
+        "icon": "📐",
+        "title": "Design Sense",
+        "desc": "Bridging the gap between devs and designers."
+      },
+      {
+        "icon": "🔬",
+        "title": "Always Learning",
+        "desc": "Exploring new technologies every single day."
+      }
     ]
+  },
+  "flow": {
+    "about": {
+      "label": "See My Works",
+      "href": "#projects"
+    },
+    "projects": {
+      "label": "Interested? Contact Me",
+      "href": "#contact"
+    }
   }
 }
