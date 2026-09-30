@@ -71,6 +71,10 @@ const websiteSchema = {
 
 <link rel="icon" type="image/svg+xml" href={faviconHref} />
 
+{seo.googleSiteVerification && (
+  <meta name="google-site-verification" content={seo.googleSiteVerification} />
+)}
+
 <meta name="author" content={user.nameDisplay} />
 <meta name="robots" content={noindex ? "noindex, follow" : "index, follow, max-image-preview:large"} />
 <meta name="theme-color" content="#1d4ed8" />
