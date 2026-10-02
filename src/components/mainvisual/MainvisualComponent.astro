@@ -1,5 +1,4 @@
 ---
-import { ParticleCanvas } from "@/components/mainvisual/ParticleCanvas"
 import { TypingHeadline } from "@/components/mainvisual/TypingHeadline"
 import { TerminalCard } from "@/components/mainvisual/TerminalCard"
 import { TerminalBackdrop } from "@/components/mainvisual/TerminalBackdrop"
@@ -30,14 +29,13 @@ const socials = contactJson
   aria-labelledby="tab-home"
   tabindex="-1"
 >
-  <!-- The mesh backdrop is a fixed page-level layer (see .site-backdrop), so
-       the hero is transparent and it shows through. -->
+  <!-- The drafting sheet is a fixed page-level layer (see .site-backdrop), so
+       the hero is transparent and it shows through. A drifting particle field
+       used to sit over it; on paper it read as specks of dust, so the sheet is
+       left still. -->
 
-  <!-- Dynamic: drifting particles layered over the mesh -->
-  <ParticleCanvas client:load />
-
-  <!-- Static overlays -->
-  <div class="absolute inset-0 dot-grid opacity-30" aria-hidden="true" style="z-index: 0"></div>
+  <!-- Registration marks on the major grid crossings -->
+  <div class="absolute inset-0 dot-grid" aria-hidden="true" style="z-index: 0"></div>
 
   <!-- Mobile: the config card as a backdrop behind the copy. A sibling of the
        other decorative layers on purpose -- inside the content column it would

@@ -34,8 +34,9 @@ const gtmId = import.meta.env.PUBLIC_GTM_ID;
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     {/* Runs before first paint, so the theme never flashes. is:inline keeps
-        Astro from bundling and deferring it. Light is the default; an explicit
-        choice in localStorage always beats the OS preference. */}
+        Astro from bundling and deferring it. Manual (light) is the default and
+        Blueprint is .dark; an explicit choice in localStorage always beats the
+        OS preference. */}
     <script is:inline>
       (() => {
         try {

@@ -1,32 +1,25 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
-  <defs>
-    <radialGradient id="core" cx="42%" cy="35%" r="75%">
-      <stop offset="0%" stop-color="#2E7BFF"/>
-      <stop offset="100%" stop-color="#145BE8"/>
-    </radialGradient>
-    <linearGradient id="outer" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#0B4AA8"/>
-      <stop offset="100%" stop-color="#06327C"/>
-    </linearGradient>
-  </defs>
+  <!-- Blueprint badge: flat cyanotype navy, pale-cyan line art, a white
+       glyph. No gradients: the site prints in flat inks, and flat fills
+       also hold up better at 16px than a gradient does. -->
 
-  <!-- Outer badge -->
-  <circle cx="256" cy="256" r="246" fill="url(#outer)"/>
-  <circle cx="256" cy="256" r="220" fill="#062F73"/>
+  <!-- Paper disc, edged in a line-art rim -->
+  <circle cx="256" cy="256" r="246" fill="#0f2b4c"/>
+  <circle cx="256" cy="256" r="226" fill="none" stroke="#9ed2ff" stroke-width="6"/>
 
-  <!-- Inner blue field -->
-  <circle cx="256" cy="256" r="181" fill="url(#core)"/>
+  <!-- Inner field, a step lighter like a sheet laid on the paper -->
+  <circle cx="256" cy="256" r="181" fill="#14365e"/>
 
-  <!-- Decorative segmented arcs -->
+  <!-- Segmented arcs -->
   <path d="M 67 251 A 190 190 0 0 1 251 67"
-        fill="none" stroke="#2D7DFF" stroke-width="18"
+        fill="none" stroke="#9ed2ff" stroke-width="18"
         stroke-linecap="round"/>
   <path d="M 445 261 A 190 190 0 0 1 261 445"
-        fill="none" stroke="#2D7DFF" stroke-width="18"
+        fill="none" stroke="#9ed2ff" stroke-width="18"
         stroke-linecap="round"/>
 
   <!-- Code symbol -->
-  <g fill="none" stroke="#FFFFFF" stroke-width="20"
+  <g fill="none" stroke="#eef4fb" stroke-width="20"
      stroke-linecap="round" stroke-linejoin="round">
     <path d="M 214 210 L 157 256 L 214 302"/>
     <path d="M 298 210 L 355 256 L 298 302"/>

@@ -161,17 +161,6 @@ export function ProjectCard({ project, index, taglist, roles, providers, baseUrl
           }}
         />
 
-        <div
-          className={`absolute left-0 right-0 pointer-events-none${reduced ? "" : " scan-line"}`}
-          aria-hidden="true"
-          style={{
-            height: "2px",
-            top: "-10%",
-            background: `linear-gradient(90deg, transparent, ${tint(accent, 25)}, transparent)`,
-            zIndex: 2,
-          }}
-        />
-
         {/* Floating detail. Hidden from assistive tech: everything in it is
             already in the card body below, which is always present. */}
         <div

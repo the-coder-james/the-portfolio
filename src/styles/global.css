@@ -665,11 +665,6 @@
   transform: translateX(4px);
 }
 
-/* Project card scan sweep. Was el.style.animation. */
-.scan-line {
-  animation: scanLine 2.2s linear infinite;
-}
-
 /* Rotating dashed ring on the portrait. Was el.style.animation. */
 .spin-slow {
   animation: spin 12s linear infinite;
@@ -706,7 +701,10 @@
    crossing. The mark is a mask, so its colour comes from the theme like
    everything else, and the -60px offset centres each mark on a crossing. */
 .dot-grid {
-  background-color: var(--color-brand);
+  /* The strength is in the colour, not an opacity class: on phones this layer
+     runs a scroll-driven opacity fade, and an animation overrides any opacity
+     set in a class, which printed the marks at full strength there. */
+  background-color: color-mix(in srgb, var(--color-brand) 30%, transparent);
   -webkit-mask: var(--registration-mark) -60px -60px / var(--grid-major-step) var(--grid-major-step) repeat;
   mask: var(--registration-mark) -60px -60px / var(--grid-major-step) var(--grid-major-step) repeat;
 }
@@ -769,11 +767,6 @@
 @keyframes spin {
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }
-}
-
-@keyframes scanLine {
-  from { top: -10%; }
-  to { top: 110%; }
 }
 
 @keyframes pulse {
@@ -955,7 +948,7 @@
   width: min(560px, 52%);
   z-index: 0;
   pointer-events: none;
-  opacity: 0.18;
+  opacity: 0.12;
   display: none;
   -webkit-mask-image: linear-gradient(to left, #000 40%, transparent 100%);
   mask-image: linear-gradient(to left, #000 40%, transparent 100%);
@@ -963,7 +956,7 @@
 @media (min-width: 1024px) {
   .about-code-backdrop { display: block; }
 }
-.dark .about-code-backdrop { opacity: 0.24; }
+.dark .about-code-backdrop { opacity: 0.16; }
 
 /* The logo doubles as the Home control, so it needs the same active and focus
    affordances the tabs have. */
@@ -1462,10 +1455,10 @@
 }
 
 /* ── Mobile: pinned hero backdrop ──
-   The hero's decorative layers (particle canvas, dot grid, floating snippets)
-   are absolute inside #home, so they scroll away with it. Pinning them to the
-   viewport makes the hero copy appear to travel over a stationary field rather
-   than the whole scene sliding up together.
+   The hero's registration marks are absolute inside #home, so they would
+   scroll away with it. Pinned to the viewport they stay registered to the
+   fixed drafting grid behind them, and the hero copy travels over a still
+   sheet rather than the whole scene sliding up together.
 
    They are pinned for the height of the hero only, then faded: a fixed layer
    left visible behind #about would sit under the rest of the page as noise.
@@ -1477,7 +1470,6 @@
     overflow: visible;
   }
 
-  html[data-scroll-mode] #home canvas,
   html[data-scroll-mode] #home > .dot-grid {
     position: fixed;
     inset: 0;
@@ -1501,7 +1493,6 @@
      whole page. */
   @supports not (animation-timeline: view()) {
     html[data-scroll-mode] #home { overflow: hidden; }
-    html[data-scroll-mode] #home canvas,
     html[data-scroll-mode] #home > .dot-grid { position: absolute; height: 100%; }
   }
 }
@@ -1510,7 +1501,6 @@
    the layers with the section. */
 @media (max-width: 640px) and (prefers-reduced-motion: reduce) {
   html[data-scroll-mode] #home { overflow: hidden; }
-  html[data-scroll-mode] #home canvas,
   html[data-scroll-mode] #home > .dot-grid {
     position: absolute;
     height: 100%;
@@ -1731,17 +1721,17 @@ html[data-subtabs-ready] .about-pane[hidden] {
   width: auto;
   z-index: 1;
   pointer-events: none;
-  /* Lower than the About backdrop's 0.18: that one sits behind a portrait and
+  /* Lower than the About backdrop's 0.12: that one sits behind a portrait and
      short paragraphs, this sits behind a 2.5rem headline and body copy that
      have to stay legible over it. */
-  opacity: 0.14;
+  opacity: 0.1;
   transform: rotate(-1.5deg);
   -webkit-mask-image: linear-gradient(to top, #000 55%, transparent 100%);
   mask-image: linear-gradient(to top, #000 55%, transparent 100%);
 }
 
 .dark .hero-terminal-compact {
-  opacity: 0.2;
+  opacity: 0.14;
 }
 
 .hero-terminal-compact-body {
@@ -2162,7 +2152,6 @@ html[data-scroll-mode] .cookie-banner {
   /* Purely decorative infinite loops — removed rather than shortened. */
   .cursor-blink,
   .float-anim,
-  .scan-line,
   .spin-slow,
   .terminal-float,
   .pulse-ring {
