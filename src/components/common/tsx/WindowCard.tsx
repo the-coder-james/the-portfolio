@@ -41,11 +41,12 @@ export function WindowCard({
   return (
     <div
       className={`window-card rounded-xl overflow-hidden flex flex-col ${className}`}
+      // The border lives on .window-card rather than inline: an inline border
+      // outranks the stylesheet, so its hover strengthening never showed.
       style={{
         background: raised
           ? "var(--color-card-surface-raised)"
           : "var(--color-card-surface)",
-        border: "1px solid var(--color-card-border)",
         ...style,
       }}
     >

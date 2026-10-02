@@ -75,14 +75,14 @@ export function AboutStats({ stats }: AboutStatsProps) {
         {stats.map((stat) => (
           <div
             key={stat.label}
-            className="stat-card card-glow rounded-xl text-center"
+            className="stat-card card-lift rounded-xl text-center"
             style={{ background: "var(--color-card-surface)", border: "1px solid var(--color-card-border)" }}
           >
             {/* Sized in CSS, not inline: an inline style outranks every
                 stylesheet rule regardless of media query, so a per-viewport
                 scale could never reach these here. */}
             <div className="stat-icon leading-none" aria-hidden="true">{stat.icon}</div>
-            <div className="stat-value gradient-text">
+            <div className="stat-value spot-text">
               <StatValue value={stat.value} start={revealed} />
             </div>
             <div className="stat-label">{stat.label}</div>

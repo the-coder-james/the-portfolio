@@ -61,7 +61,7 @@ export function ContactForm() {
           initial={{ opacity: 0, scale: 0.85 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ type: "spring", visualDuration: 0.5, bounce: 0.05 }}
-          style={{ background: "var(--tint-brand-07)", border: "1px solid var(--tint-brand-25)", boxShadow: "0 0 40px var(--tint-brand-10)" }}
+          style={{ background: "var(--tint-brand-07)", border: "1px solid var(--tint-brand-25)" }}
         >
           <div className="text-4xl mb-4" aria-hidden="true">🚀</div>
           <h3 style={{ fontSize: "1.4rem", fontWeight: 700, color: "var(--color-ink)", marginBottom: "8px" }}>
@@ -149,9 +149,10 @@ export function ContactForm() {
             type="submit"
             size="lg"
             className="btn-lift w-full text-on-brand rounded-xl border-0 gap-2"
+            // No inline box-shadow: .btn-lift owns it, so its hover state can
+            // actually override the resting one.
             style={{
-              background: "linear-gradient(135deg, var(--color-brand-900), var(--color-brand-700))",
-              boxShadow: "0 4px 20px var(--tint-brand-30)",
+              background: "var(--color-brand-700)",
               fontWeight: 500,
             }}
           >

@@ -67,7 +67,7 @@ export function TypingHeadline({ name, sequences, headlinePrefix, rolePrefix }: 
           whole strings, and the list is exposed once to assistive tech below.
         */}
         {reduced ? (
-          <span className="gradient-text" style={roleStyle}>
+          <span className="spot-text" style={roleStyle}>
             {sequences[0]}
           </span>
         ) : (
@@ -75,7 +75,7 @@ export function TypingHeadline({ name, sequences, headlinePrefix, rolePrefix }: 
             {/* TextLoop only forwards className, so style and aria-hidden
                 live on a wrapper rather than being silently dropped. */}
             <span aria-hidden="true" style={roleStyle}>
-              <TextLoop className="gradient-text" interval={3} mode="wait" transition={{ duration: 0.22 }}>
+              <TextLoop className="spot-text" interval={3} mode="wait" transition={{ duration: 0.22 }}>
                 {sequences.map((role) => (
                   <span key={role}>{role}</span>
                 ))}

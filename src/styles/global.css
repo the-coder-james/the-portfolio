@@ -515,103 +515,46 @@
   --shadow-black-50: rgb(0 0 0 / 0.5);
 }
 
-/* ── CSS Variables ── */
+/* ── Print shadows ──
+   The manual is printed, not lit. Depth comes from a hard offset in ink, the
+   way one sheet laid over another throws its edge, never from a blurred glow:
+   zero blur is the point, since a soft edge reads as a screen effect. Three
+   steps -- resting, raised, floating -- and nothing else casts a shadow. */
 :root {
-  --blue-glow: 0 0 20px var(--tint-brand-40);
-  --blue-glow-lg: 0 0 40px var(--tint-brand-30);
-}
-
-/* ── Liquid glass ──
-   The nav is a floating pill rather than a full-width bar: a translucent
-   surface that samples the page through backdrop-filter, with saturation
-   pushed up so colour scrolling underneath bleeds through the way Apple's
-   material does. The highlight is two inset shadows -- a bright top edge and
-   a dim bottom one -- which is what reads as a curved piece of glass rather
-   than a flat panel. */
-:root {
-  --glass-bg: color-mix(in srgb, var(--color-surface-base) 62%, transparent);
-  --glass-border: rgb(255 255 255 / 0.55);
-  --glass-highlight: inset 0 1px 0 0 rgb(255 255 255 / 0.85);
-  --glass-lowlight: inset 0 -1px 0 0 rgb(15 23 42 / 0.06);
-  --glass-shadow: 0 8px 32px rgb(15 23 42 / 0.10), 0 2px 8px rgb(15 23 42 / 0.06);
-  --glass-blur: 20px;
-  --glass-saturate: 180%;
+  --print-shadow-color: rgb(15 23 42 / 0.22);
+  --shadow-print-sm: 2px 2px 0 var(--print-shadow-color);
+  --shadow-print: 4px 4px 0 var(--print-shadow-color);
+  --shadow-print-lg: 6px 6px 0 var(--print-shadow-color);
 }
 
 .dark {
-  --glass-bg: color-mix(in srgb, var(--color-surface-base) 55%, transparent);
-  --glass-border: rgb(255 255 255 / 0.12);
-  --glass-highlight: inset 0 1px 0 0 rgb(255 255 255 / 0.14);
-  --glass-lowlight: inset 0 -1px 0 0 rgb(0 0 0 / 0.30);
-  --glass-shadow: 0 8px 32px rgb(0 0 0 / 0.45), 0 2px 8px rgb(0 0 0 / 0.30);
-  --glass-blur: 22px;
-  --glass-saturate: 170%;
+  --print-shadow-color: rgb(0 0 0 / 0.6);
 }
 
-.glass-surface {
-  background: var(--glass-bg);
-  border: 1px solid var(--glass-border);
-  box-shadow: var(--glass-highlight), var(--glass-lowlight), var(--glass-shadow);
-  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
-  backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
-}
-
-/* Where backdrop-filter is unavailable the pill would read as a flat wash, so
-   fall back to a more opaque surface that still separates from the page. */
-@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
-  .glass-surface {
-    background: color-mix(in srgb, var(--color-surface-base) 94%, transparent);
-  }
+/* ── Paper sheet ──
+   The nav floats as a printed tab strip: an opaque sheet with a line-art edge
+   and a print shadow. It was liquid glass that blurred whatever lay behind
+   it; a manual has no glass, and an opaque sheet also stops the content
+   scrolling under the nav from bleeding through it. */
+.sheet-surface {
+  background: var(--color-card-surface);
+  border: 1px solid var(--color-card-border);
+  box-shadow: var(--shadow-print-sm);
 }
 
 /* The moving pill behind the active tab. Sits under the labels (z-0 vs z-10)
-   and animates via left/width from the tab bar. */
-.glass-pill {
-  background: color-mix(in srgb, var(--color-brand) 14%, transparent);
+   and animates via left/width from the tab bar. Flat, with no shadow of its
+   own: the active tab reads as inked rather than raised. */
+.tab-pill {
+  /* Mixed toward the sheet rather than toward transparent, so the fill reads
+     the same on the nav sheet as it does straight on the page. */
+  background: color-mix(in srgb, var(--color-brand) 14%, var(--color-card-surface));
   /* Full-strength brand, not a 30% mix. The pill is the only thing marking
      which tab is active, so its edge is a UI component boundary under
      SC 1.4.11 and needs 3:1 against what it sits on -- the mix measured
      1.54:1 on light and 1.44:1 on dark. Shared by the page tab bar and the
      About sub-tabs, so this fixes both. */
   border: 1px solid var(--color-brand);
-  box-shadow: inset 0 1px 0 0 rgb(255 255 255 / 0.25),
-              0 2px 10px color-mix(in srgb, var(--color-brand) 22%, transparent);
-}
-
-/* ── Wings of Light glow ──
-   box-shadow takes no gradient, so the prismatic bloom is built from stacked
-   shadows fanned out along x: each layer contributes one stop of the ramp and
-   they blend where they overlap.
-
-   Light and dark are tuned separately. A 22% chromatic bloom reads as energy
-   against near-black and as a smudge against #f8fafc, so the light theme runs
-   at roughly half the alpha and leans on a real depth shadow instead. */
-:root {
-  --wing-glow:
-    -10px 0 22px color-mix(in srgb, var(--color-wing-1) 12%, transparent),
-     -4px 0 20px color-mix(in srgb, var(--color-wing-2) 11%, transparent),
-      0    0 18px color-mix(in srgb, var(--color-wing-3) 10%, transparent),
-      4px 0 20px color-mix(in srgb, var(--color-wing-4) 11%, transparent),
-     10px 0 22px color-mix(in srgb, var(--color-wing-5) 12%, transparent),
-      0    8px 24px var(--shadow-black-40);
-  --wing-glow-sm:
-    -5px 0 12px color-mix(in srgb, var(--color-wing-1) 10%, transparent),
-     0   0 10px color-mix(in srgb, var(--color-wing-3) 9%, transparent),
-     5px 0 12px color-mix(in srgb, var(--color-wing-5) 10%, transparent),
-     0   4px 14px var(--shadow-black-40);
-}
-
-.dark {
-  --wing-glow:
-    -10px 0 22px color-mix(in srgb, var(--color-wing-1) 22%, transparent),
-     -4px 0 20px color-mix(in srgb, var(--color-wing-2) 20%, transparent),
-      0    0 18px color-mix(in srgb, var(--color-wing-3) 18%, transparent),
-      4px 0 20px color-mix(in srgb, var(--color-wing-4) 20%, transparent),
-     10px 0 22px color-mix(in srgb, var(--color-wing-5) 22%, transparent);
-  --wing-glow-sm:
-    -5px 0 12px color-mix(in srgb, var(--color-wing-1) 18%, transparent),
-     0   0 10px color-mix(in srgb, var(--color-wing-3) 16%, transparent),
-     5px 0 12px color-mix(in srgb, var(--color-wing-5) 18%, transparent);
 }
 
 /* ── Font overrides ──
@@ -704,14 +647,18 @@
   color: var(--color-brand-text);
 }
 
-/* Primary submit button */
+/* Primary submit button. The resting shadow lives here rather than inline on
+   the button: an inline box-shadow outranks the hover rule, which is why the
+   hover shadow used to never show. Lifting toward the light lengthens the
+   print shadow, so the two move together. */
 .btn-lift {
+  box-shadow: var(--shadow-print-sm);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 .btn-lift:hover,
 .btn-lift:focus-visible {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 25px var(--tint-brand-45);
+  transform: translate(-2px, -2px);
+  box-shadow: var(--shadow-print);
 }
 
 /* "See more" button */
@@ -780,59 +727,38 @@
   background-size: 28px 28px;
 }
 
-/* ── Card glow hover ──
-   The bloom is the Wings of Light ramp; see --wing-glow above. */
-.card-glow {
-  transition: box-shadow 0.3s ease, border-color 0.3s ease;
+/* ── Card lift ──
+   Hover raises a card off the page: its print shadow steps up to the raised
+   offset and the line-art edge strengthens. No transform -- most cards sit in
+   scroll regions that clip their overflow, and a card shifted up or left
+   would lose its leading edge there. */
+.card-lift {
+  transition: box-shadow 0.2s ease, border-color 0.2s ease;
 }
-.card-glow:hover,
-.card-glow:focus-within {
-  box-shadow: var(--wing-glow);
+.card-lift:hover,
+.card-lift:focus-within {
+  box-shadow: var(--shadow-print);
   border-color: var(--color-card-border-strong) !important;
 }
 
 /* Window-chrome cards. The border is the card's edge against the page, so it
-   strengthens rather than disappears on interaction.
-
-   Shadow order matters: the 1px ring sits tight to the edge, the wing bloom
-   is chromatic light around it, and the depth shadow lands last so the card
-   still reads as lifted rather than merely glowing. */
+   strengthens rather than disappears on interaction, and the card lifts the
+   same way .card-lift does. */
 .window-card {
-  transition: border-color 0.25s ease, box-shadow 0.25s ease, transform 0.25s ease;
+  border: 1px solid var(--color-card-border);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 .window-card:hover,
 .window-card:focus-within {
   border-color: var(--color-card-border-strong);
-  box-shadow: 0 0 0 1px var(--tint-brand-15), var(--wing-glow);
+  box-shadow: var(--shadow-print);
 }
 
-/* ── Gradient text — Wings of Light ── */
-.gradient-text {
-  background: linear-gradient(
-    115deg,
-    var(--color-wing-1) 0%,
-    var(--color-wing-2) 20%,
-    var(--color-wing-3) 40%,
-    var(--color-wing-4) 60%,
-    var(--color-wing-5) 80%,
-    var(--color-wing-6) 100%
-  );
-  background-size: 300% 100%;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-/* The wings drift only when motion is welcome. */
-@media (prefers-reduced-motion: no-preference) {
-  .gradient-text {
-    animation: wingShift 6s linear infinite;
-  }
-}
-
-@keyframes wingShift {
-  from { background-position: 0% 0; }
-  to { background-position: -200% 0; }
+/* ── Spot ink ──
+   Accent type in the manual's spot colour. It replaces the Wings-of-Light
+   gradient, which a printed sheet cannot carry: one flat ink, and no drift. */
+.spot-text {
+  color: var(--color-brand-text);
 }
 
 /* ── Floating animation ── */
@@ -1085,11 +1011,9 @@
   font-family: var(--font-mono);
   font-size: 0.62rem;
   color: var(--color-ink-dim);
-  background: var(--glass-bg);
-  border: 1px solid var(--glass-border);
-  -webkit-backdrop-filter: blur(10px) saturate(160%);
-  backdrop-filter: blur(10px) saturate(160%);
-  box-shadow: var(--glass-shadow);
+  background: var(--color-card-surface);
+  border: 1px solid var(--color-card-border);
+  box-shadow: var(--shadow-print-sm);
 }
 
 .scroll-hint-arrow {
@@ -1198,7 +1122,8 @@
 .view-toggle-btn[aria-pressed="true"] {
   background: var(--color-card-surface);
   color: var(--color-brand-text);
-  box-shadow: 0 1px 2px var(--shadow-black-40);
+  /* Outlined like the other sheets rather than lifted on a soft shadow. */
+  box-shadow: 0 0 0 1px var(--color-card-border);
 }
 
 /* ── Career pipeline ──
@@ -1251,13 +1176,14 @@
   background: var(--color-brand);
   border-color: var(--color-brand);
   color: var(--color-on-brand);
-  box-shadow: 0 0 0 5px var(--tint-brand-20), 0 4px 14px var(--tint-brand-40);
+  /* A flat ring printed around the node, not a glow under it. */
+  box-shadow: 0 0 0 5px var(--tint-brand-20);
 }
 .pipeline-node[data-state="running"][data-selected] {
   background: var(--color-success);
   border-color: var(--color-success);
   color: var(--color-surface-code);
-  box-shadow: 0 0 0 5px var(--tint-success-20), 0 4px 14px var(--tint-success-30);
+  box-shadow: 0 0 0 5px var(--tint-success-20);
 }
 
 /* The track up to and including the selected stage reads as the run so far. */
@@ -1590,10 +1516,10 @@ html[data-tabs-ready] .tabpanel[hidden] {
    are toggled by the same `hidden` mechanism as the page tabs and gated the
    same way, so without JS all three stack into a readable document.
 
-   Distinct from the page tab bar on purpose: that one is mono/uppercase in a
-   floating glass pill at the top of the viewport, this one is a small inline
-   segmented control inside the panel. Two tablists that looked alike would
-   read as one broken control. */
+   Distinct from the page tab bar on purpose: that one is mono/uppercase on a
+   floating paper tab strip at the top of the viewport, this one is a small
+   inline segmented control inside the panel. Two tablists that looked alike
+   would read as one broken control. */
 html[data-subtabs-ready] .about-pane[hidden] {
   display: none;
 }
@@ -1901,7 +1827,7 @@ html[data-subtabs-ready] .about-pane[hidden] {
   display: none;
 }
 
-/* Built like the page tab bar: a transparent track, with one .glass-pill
+/* Built like the page tab bar: a transparent track, with one .tab-pill
    sliding behind the labels. The pill carries both the active fill and the
    non-text contrast (SC 1.4.11) via its own brand border, so the triggers
    themselves need no background, border or underline of their own -- the
@@ -1919,8 +1845,8 @@ html[data-subtabs-ready] .about-pane[hidden] {
 }
 
 /* ── Cookie consent banner ──
-   Bottom-anchored glass card, the same material as the nav and sub-tabs. Sits
-   above the panels but below the nav pill, so it never covers navigation.
+   Bottom-anchored paper sheet, the same material as the nav. Sits above the
+   panels but below the nav, so it never covers navigation.
 
    Accept and Decline share a size and shape; only the fill differs. A banner
    that makes declining harder than accepting is not valid consent under GDPR,
@@ -1941,16 +1867,9 @@ html[data-subtabs-ready] .about-pane[hidden] {
   gap: 0.75rem 1rem;
   padding: 0.85rem 1rem;
   border-radius: 14px;
-  background: var(--glass-bg);
-  box-shadow: var(--glass-highlight), var(--glass-lowlight), var(--glass-shadow);
-  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
-  backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
-}
-
-@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
-  .cookie-banner {
-    background: color-mix(in srgb, var(--color-surface-base) 96%, transparent);
-  }
+  background: var(--color-card-surface);
+  border: 1px solid var(--color-card-border);
+  box-shadow: var(--shadow-print);
 }
 
 @media (prefers-reduced-motion: no-preference) {
@@ -2038,9 +1957,9 @@ html[data-scroll-mode] .cookie-banner {
 }
 
 /* ── Flow link ──
-   The forward step out of a section. Liquid glass like the nav and sub-tabs,
-   borderless, with the arrow easing right on hover to read as "onward" rather
-   than "submit". Sized past the 24x24 minimum for SC 2.5.8. */
+   The forward step out of a section. A paper sheet like the nav, lifting
+   toward the light on hover while the arrow eases right, so it reads as
+   "onward" rather than "submit". Sized past the 24x24 minimum for SC 2.5.8. */
 .flow-link {
   display: inline-flex;
   align-items: center;
@@ -2053,17 +1972,10 @@ html[data-scroll-mode] .cookie-banner {
   text-decoration: none;
   white-space: nowrap;
   color: var(--color-brand-text);
-  background: var(--glass-bg);
-  box-shadow: var(--glass-highlight), var(--glass-lowlight), var(--glass-shadow);
-  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
-  backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
-  transition: color 0.2s ease, background-color 0.2s ease, transform 0.2s ease;
-}
-
-@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
-  .flow-link {
-    background: color-mix(in srgb, var(--color-surface-base) 94%, transparent);
-  }
+  background: var(--color-card-surface);
+  border: 1px solid var(--color-card-border);
+  box-shadow: var(--shadow-print-sm);
+  transition: color 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
 }
 
 .flow-link svg {
@@ -2073,8 +1985,11 @@ html[data-scroll-mode] .cookie-banner {
 }
 
 .flow-link:hover {
-  background: color-mix(in srgb, var(--color-brand) 16%, transparent);
+  /* Mixed toward the sheet, not toward transparent: the link is opaque now. */
+  background: color-mix(in srgb, var(--color-brand) 10%, var(--color-card-surface));
   color: var(--color-brand-text);
+  transform: translate(-2px, -2px);
+  box-shadow: var(--shadow-print);
 }
 
 .flow-link:hover svg {

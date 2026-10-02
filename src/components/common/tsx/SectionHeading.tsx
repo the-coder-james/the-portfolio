@@ -60,15 +60,19 @@ export function SectionHeading({
             fontSize: "clamp(1.8rem, 4vw, 2.8rem)",
             fontWeight: 700,
             lineHeight: 1.2,
+            color: "var(--color-ink)",
           }}
           {...step(1)}
         >
-          {/* The gradient spans the whole heading rather than the accent alone,
-              so the Wings ramp travels the full line instead of a fragment. */}
-          <span className="gradient-text">
-            {headline}
-            {headlineAccent ? ` ${headlineAccent}` : ""}
-          </span>
+          {/* Set like a manual's section title: the line in ink, the accent
+              words picked out in the spot colour. */}
+          {headline}
+          {headlineAccent && (
+            <>
+              {" "}
+              <span className="spot-text">{headlineAccent}</span>
+            </>
+          )}
         </motion.h2>
       )}
       {sub && (

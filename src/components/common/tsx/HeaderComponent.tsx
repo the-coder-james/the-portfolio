@@ -351,7 +351,7 @@ export function HeaderComponent() {
       style={{ opacity: 0 }}
       aria-label="Primary"
     >
-      <div className="glass-surface rounded-full px-2.5 sm:px-4 py-2.5 sm:py-2 flex items-center justify-between gap-1 sm:gap-3 relative">
+      <div className="sheet-surface rounded-full px-2.5 sm:px-4 py-2.5 sm:py-2 flex items-center justify-between gap-1 sm:gap-3 relative">
         <button
           onClick={() => selectTab(DEFAULT_TAB)}
           aria-label="Home"
@@ -382,7 +382,7 @@ export function HeaderComponent() {
           >
             <div
               ref={indicatorRef}
-              className="glass-pill absolute top-0 bottom-0 rounded-full pointer-events-none z-0"
+              className="tab-pill absolute top-0 bottom-0 rounded-full pointer-events-none z-0"
               style={{ left: 0, width: 0, opacity: 0 }}
               aria-hidden="true"
             />

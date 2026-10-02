@@ -97,7 +97,7 @@ const socials = contactJson
               href={cta.href}
               class={`px-6 py-3 rounded-lg transition-all duration-200 ${cta.variant === "primary" ? "hero-btn-primary" : "hero-btn-outline text-ink"}`}
               style={cta.variant === "primary"
-                ? "color: var(--color-on-brand); background: linear-gradient(135deg, var(--color-brand-900), var(--color-brand-700)); box-shadow: 0 4px 20px var(--tint-brand-35); font-size: 0.9rem; font-weight: 500; text-decoration: none"
+                ? "color: var(--color-on-brand); background: var(--color-brand-700); box-shadow: var(--shadow-print-sm); font-size: 0.9rem; font-weight: 500; text-decoration: none"
                 : "background: transparent; border: 1px solid var(--color-card-border); font-size: 0.9rem; font-weight: 500; text-decoration: none"}
             >
               {cta.label}
@@ -144,9 +144,11 @@ const socials = contactJson
 </section>
 
 <style>
+  /* A flat spot-ink plate that lifts toward the light: the print shadow
+     lengthens as the button moves up and left. */
   .hero-btn-primary:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 25px var(--tint-brand-50) !important;
+    transform: translate(-2px, -2px);
+    box-shadow: var(--shadow-print) !important;
   }
   .hero-btn-outline:hover {
     border-color: var(--tint-brand-60) !important;

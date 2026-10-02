@@ -48,7 +48,8 @@ export function TerminalCard({ name, since, professional, stackLabels }: Termina
         filename="developer.config.ts"
         style={{
           border: "1px solid var(--tint-brand-20)",
-          boxShadow: "0 0 50px var(--tint-brand-10), 0 30px 60px var(--shadow-black-50)",
+          // The hero's one floating sheet, so it takes the deepest print shadow.
+          boxShadow: "var(--shadow-print-lg)",
         }}
         bodyClassName="px-6 py-6 font-mono"
         bodyStyle={{ fontSize: "0.82rem", lineHeight: 1.8 }}

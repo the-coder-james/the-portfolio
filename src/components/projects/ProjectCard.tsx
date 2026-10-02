@@ -57,6 +57,14 @@ const ACCENTS = [
 const tint = (accent: string, pct: number) =>
   `color-mix(in srgb, ${accent} ${pct}%, transparent)`;
 
+/**
+ * Opaque variant: the accent printed onto the card sheet. For anything that
+ * sits over the screenshot, where a translucent tint needed a backdrop blur to
+ * stay legible and a printed sheet has no such thing.
+ */
+const sheetTint = (accent: string, pct: number) =>
+  `color-mix(in srgb, ${accent} ${pct}%, var(--color-card-surface))`;
+
 export function ProjectCard({ project, index, taglist, roles, providers, baseUrl, view = "grid" }: ProjectCardProps) {
   const isList = view === "list";
   const { ref, revealed } = useRevealed<HTMLDivElement>("-60px");
@@ -108,7 +116,7 @@ export function ProjectCard({ project, index, taglist, roles, providers, baseUrl
       style={{
         background: "var(--color-card-surface)",
         border: `1px solid ${showDetail ? tint(accent, 55) : "var(--color-card-border)"}`,
-        boxShadow: showDetail ? `0 0 30px ${tint(accent, 12)}, 0 12px 32px var(--shadow-black-40)` : "none",
+        boxShadow: showDetail ? "var(--shadow-print)" : "none",
         transition: "border-color 0.3s ease, box-shadow 0.3s ease",
       }}
     >
@@ -180,11 +188,9 @@ export function ProjectCard({ project, index, taglist, roles, providers, baseUrl
           <div
             className="rounded-lg p-3 max-h-full overflow-hidden"
             style={{
-              background: "var(--glass-bg)",
+              background: "var(--color-card-surface)",
               border: `1px solid ${tint(accent, 35)}`,
-              boxShadow: `var(--glass-shadow)`,
-              WebkitBackdropFilter: "blur(14px) saturate(160%)",
-              backdropFilter: "blur(14px) saturate(160%)",
+              boxShadow: "var(--shadow-print-sm)",
               transform: showDetail || reduced ? "translateY(0)" : "translateY(10px)",
               transition: "transform 0.32s cubic-bezier(0.22, 1, 0.36, 1)",
             }}
@@ -226,7 +232,7 @@ export function ProjectCard({ project, index, taglist, roles, providers, baseUrl
               key={t}
               variant="outline"
               className="font-mono rounded-md"
-              style={{ fontSize: "0.6rem", color: accent, background: tint(accent, 14), border: `1px solid ${tint(accent, 30)}`, backdropFilter: "blur(6px)" }}
+              style={{ fontSize: "0.6rem", color: accent, background: sheetTint(accent, 14), border: `1px solid ${tint(accent, 30)}` }}
             >
               {taglist[t]?.name || t}
             </Badge>
@@ -303,7 +309,7 @@ export function ProjectCard({ project, index, taglist, roles, providers, baseUrl
                   color: "var(--color-code-ink-dim)",
                   fontSize: "0.78rem",
                   padding: "8px 12px",
-                  boxShadow: `0 8px 24px var(--shadow-black-50), 0 0 20px ${tint(accent, 8)}`,
+                  boxShadow: "var(--shadow-print-sm)",
                 }}
               >
                 {project["siteurl-reason"] ?? "No live URL available."}

@@ -32,22 +32,15 @@ export function AboutImage({ name, imagePath, hoverImagePath, baseUrl }: AboutIm
     >
       <div className="relative">
         <div
-          className="absolute inset-0 rounded-full"
-          style={{
-            background: "linear-gradient(135deg, var(--color-brand), var(--color-brand-900), var(--color-surface-code))",
-            padding: "3px",
-            borderRadius: "9999px",
-            boxShadow: "0 0 40px var(--tint-brand-45), 0 0 80px var(--tint-brand-15)",
-          }}
-        />
-        <div
           className={`absolute -inset-2 rounded-full pointer-events-none${reduced ? "" : " spin-slow"}`}
           aria-hidden="true"
           style={{ border: "1.5px dashed var(--tint-brand-30)", borderRadius: "9999px" }}
         />
         <motion.div
           className="relative rounded-full overflow-hidden"
-          style={{ width: "var(--portrait-size, 170px)", height: "var(--portrait-size, 170px)", border: "3px solid var(--tint-brand-60)", boxShadow: "0 0 30px var(--tint-brand-35)" }}
+          // A printed plate: a solid spot-ink rim and a hard print shadow, where
+          // there used to be a gradient disc glowing out from behind it.
+          style={{ width: "var(--portrait-size, 170px)", height: "var(--portrait-size, 170px)", border: "3px solid var(--color-brand)", boxShadow: "var(--shadow-print)" }}
           initial={reduced ? false : { rotate: -12 }}
           animate={revealed ? { rotate: 0 } : undefined}
           transition={{ delay: 0.25, type: "spring", visualDuration: 0.7, bounce: 0.05 }}
@@ -83,7 +76,7 @@ export function AboutImage({ name, imagePath, hoverImagePath, baseUrl }: AboutIm
         </motion.div>
         <motion.div
           className="absolute -bottom-1 -right-1 flex items-center gap-1.5 px-2.5 py-1 rounded-full"
-          style={{ background: "var(--color-surface-code)", border: "1px solid var(--tint-brand-35)", boxShadow: "0 4px 12px var(--shadow-black-40)" }}
+          style={{ background: "var(--color-surface-code)", border: "1px solid var(--tint-brand-35)", boxShadow: "var(--shadow-print-sm)" }}
           {...reveal(0.45, { scale: 0 })}
         >
           <span className="w-1.5 h-1.5 rounded-full bg-success cursor-blink" />
