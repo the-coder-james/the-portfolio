@@ -10,7 +10,8 @@ npm run build     # Production build → dist/
 npm run preview   # Preview production build locally
 npm run shadcn    # Run shadcn CLI to add/update components
 npm run images    # Optimise source images (scripts/optimize-images.mjs)
-npm run og        # Regenerate public/og-image.png from the hero; needs `npm run preview`
+npm run og        # Regenerate public/og-image.png (Blueprint hero); needs `npm run preview`
+                  # (OG_URL=http://localhost:<port>/the-portfolio/ if not on :4321)
 npm run inspect   # Playwright layout check; needs `npm run preview` running
 ```
 
@@ -92,39 +93,73 @@ Consequences to keep in mind:
 - Without JS every panel stays visible, so the page degrades to a plain scroll.
   The hiding CSS is gated on `html[data-tabs-ready]`.
 
-### Theming: dual, light by default
+### Theming: the Gunpla manual, Manual by default
 
-Light ("standby") is the default; `.dark` is "combat mode". The palette is the
-Destiny Gundam (ZGMF-X42S): armour white, Destiny blue, crimson, gold, sensor
-green, and the prismatic Wings of Light.
+The site prints like a mobile-suit instruction manual. Manual (light, the
+default) is the printed sheet: off-white stock, ink line art, and Destiny blue,
+crimson and gold reduced to flat spot inks. `.dark` is Blueprint, its cyanotype
+twin: Prussian-blue paper with white linework, where the spot blue turns pale
+cyan because blue type cannot sit on blue. The stored theme values are still
+`light` / `dark`, so visitors' earlier choices carry over.
 
 Tailwind v4 compiles `@theme` keys into utilities at build time, so a
 `--color-*` declared there **cannot** be redefined by `.dark`. All of it lives
 in `src/styles/global.css`:
 
-- `@theme` — structural tokens only (radius, breakpoint).
+- `@theme` — structural tokens that are the same in both themes: radius,
+  breakpoint, and the three font tokens.
 - `@theme inline` — every colour token, each pointing at a `--t-*` var.
   `inline` matters: it makes the utility body resolve to `var(--t-x)` directly
   instead of adding a `--color-x` hop.
 - `:root` / `.dark` — the two palettes as plain `--t-*` declarations.
 
-Token groups that do **not** flip with the page, and why:
+Tokens whose rules are easy to break:
 
-- `--color-syn-*` and `--color-code-ink*` — terminal and editor surfaces stay
-  dark in both themes (the developer identity of the site), so text on them is
-  fixed. Using `--color-ink-*` on a code surface is a bug.
-- `--color-on-brand` — labels on a brand-blue fill. Measured against
-  `--color-brand-700`, so use that as the fill, not `--color-brand`.
+- `--color-code-ink*` and `--color-syn-*` — measured against each theme's own
+  `--t-surface-code`: the listing prints a shade off the sheet in Manual and on
+  a deeper panel in Blueprint. Using `--color-ink-*` on a code surface is a bug.
+- `--color-on-brand` — the label on a brand fill (`-700`, its `-900` hover, or
+  `brand`). It flips: paper white on Manual's deep blue, navy on Blueprint's
+  pale cyan. Never hardcode white on a brand fill; on Blueprint it is ~1.6:1.
+- `--color-brand-300` — decorative only; it fails 3:1 on the Manual stock.
+  Focus outlines use `--color-ring`, read text `--color-brand-text`.
 - `--tint-white-*` — historical name; it means "a faint film lifting a surface
-  off the page", and inverts to near-black on light.
+  off the page", and inverts to the ink on Manual.
+
+**No glass, no glow.** A printed sheet has neither, so depth is a hard offset
+in ink (`--shadow-print-sm` / `--shadow-print` / `--shadow-print-lg`, zero
+blur), surfaces are opaque sheets edged in `--color-card-border`, and accent
+type is one flat spot ink. Don't bring back backdrop-filter, blurred or
+coloured glows, or gradient text. The classes were renamed when their effect
+died: `.sheet-surface` (the nav), `.tab-pill`, `.card-lift`, `.spot-text`.
+
+The page itself is drafting stock: `.site-backdrop` draws a 24px grid with a
+heavier rule every 120px under a fibre grain, and `.dot-grid` prints
+registration marks on the major crossings. It is all gradients and data-URI
+SVG, so it themes itself and needs no file under the base path.
 
 `ThemeProvider.tsx` is a module-level store read via `useSyncExternalStore`,
 not a context: each Astro island is its own React root, so a provider in one
 island cannot reach another. The source of truth is `.dark` on `<html>`, set
-before first paint by an inline script in `layout.astro`.
+before first paint by an inline script in `layout.astro`. `ThemeToggle` keeps
+one accessible name ("Blueprint mode") and reports the state through
+`aria-pressed`; only its tooltip names the action.
 
-Contrast ratios in the token comments are measured, not estimated. Re-measure
-if you change a surface.
+Contrast ratios in the token comments are measured, not estimated, against the
+surface each token actually sits on. Re-measure if you change a surface.
+
+### Type: self-hosted, never from Google's CDN
+
+Barlow Condensed is the display face (h1–h3; h1/h2 set uppercase), IBM Plex
+Sans the body, IBM Plex Mono the code and labels. Use the tokens — `font-sans`
+/ `font-display` / `font-mono`, or `var(--font-*)` inline — never a family name.
+
+The faces are self-hosted through Fontsource, imported in `layout.astro`, with
+the body and hero faces preloaded. **Never load fonts from fonts.googleapis.com**:
+the request hands the visitor's IP to Google before the consent banner has been
+answered, which is exactly what the GTM gate below exists to prevent. Only the
+weights in use are imported (400–700, no italics); add a weight file if you
+need one rather than switching to a CDN.
 
 ### Analytics: GTM behind a consent gate
 
@@ -175,8 +210,8 @@ Components import these directly.
   tab bar, the About sub-tabs, and the Skills category tabs inside Arsenal. All
   three are DOM siblings rather than nested, so their roving tabindexes cannot
   trap each other. Keep them visually distinct — the page bar is a floating
-  glass pill, the About sub-tabs an inline segmented control, the Skills tabs
-  filled pills.
+  paper tab strip, the About sub-tabs an inline segmented control, the Skills
+  tabs filled pills.
 
 ### Path alias
 
