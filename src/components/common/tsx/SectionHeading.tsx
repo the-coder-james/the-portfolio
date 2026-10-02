@@ -59,7 +59,6 @@ export function SectionHeading({
           style={{
             fontSize: "clamp(1.8rem, 4vw, 2.8rem)",
             fontWeight: 700,
-            fontFamily: "'Space Grotesk', sans-serif",
             lineHeight: 1.2,
           }}
           {...step(1)}

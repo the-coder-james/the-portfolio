@@ -194,7 +194,6 @@ export function ProjectCard({ project, index, taglist, roles, providers, baseUrl
                 fontSize: "0.76rem",
                 lineHeight: 1.55,
                 color: "var(--color-ink)",
-                fontFamily: "'Space Grotesk', sans-serif",
                 display: "-webkit-box",
                 WebkitBoxOrient: "vertical",
                 WebkitLineClamp: 5,
@@ -236,7 +235,7 @@ export function ProjectCard({ project, index, taglist, roles, providers, baseUrl
       </div>
 
       <div className={`flex flex-col flex-1 min-w-0 ${isList ? "px-4 py-2.5 gap-1.5" : "p-3 gap-1.5"}`}>
-        <h3 style={{ fontSize: "0.92rem", fontWeight: 700, color: "var(--color-ink)", fontFamily: "'Space Grotesk', sans-serif" }}>
+        <h3 style={{ fontSize: "0.92rem", fontWeight: 700, color: "var(--color-ink)" }}>
           {project.title}
         </h3>
 
@@ -246,7 +245,6 @@ export function ProjectCard({ project, index, taglist, roles, providers, baseUrl
               fontSize: "0.78rem",
               color: "var(--color-ink-dim)",
               lineHeight: 1.55,
-              fontFamily: "'Space Grotesk', sans-serif",
               display: "-webkit-box",
               WebkitBoxOrient: "vertical",
               WebkitLineClamp: 2,
@@ -286,7 +284,6 @@ export function ProjectCard({ project, index, taglist, roles, providers, baseUrl
                   className="ml-auto inline-flex items-center gap-2 px-3 py-2 rounded-lg cursor-default select-none"
                   style={{
                     fontSize: "0.8rem",
-                    fontFamily: "'Space Grotesk'",
                     background: "var(--tint-white-02)",
                     border: "1px solid var(--tint-white-05)",
                     color: "var(--color-ink-faint)",
@@ -299,7 +296,7 @@ export function ProjectCard({ project, index, taglist, roles, providers, baseUrl
               <TooltipContent
                 side="top"
                 align="end"
-                className="max-w-xs font-[Space_Grotesk] leading-relaxed"
+                className="max-w-xs leading-relaxed"
                 style={{
                   background: "var(--color-surface-code)",
                   border: `1px solid ${tint(accent, 25)}`,
@@ -320,7 +317,6 @@ export function ProjectCard({ project, index, taglist, roles, providers, baseUrl
               className="ml-auto group inline-flex items-center gap-2 px-3 py-2 rounded-lg transition-all duration-300"
               style={{
                 fontSize: "0.8rem",
-                fontFamily: "'Space Grotesk'",
                 background: hovered ? tint(accent, 13) : "var(--tint-white-04)",
                 border: `1px solid ${hovered ? tint(accent, 25) : "var(--tint-white-07)"}`,
                 color: hovered ? accent : "var(--color-ink-dim)",

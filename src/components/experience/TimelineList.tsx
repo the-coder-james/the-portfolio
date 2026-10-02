@@ -129,7 +129,6 @@ export function TimelineList({ items }: { items: TimelineItem[] }) {
                       fontSize: "0.7rem",
                       fontWeight: selected ? 600 : 400,
                       color: selected ? "var(--color-ink)" : "var(--color-ink-faint)",
-                      fontFamily: "'Space Grotesk', sans-serif",
                     }}
                   >
                     {entry.title}
@@ -164,7 +163,7 @@ export function TimelineList({ items }: { items: TimelineItem[] }) {
               >
                 {item.hash}
               </Badge>
-              <span style={{ fontSize: "0.8rem", color: "var(--color-brand-text)", fontFamily: "'JetBrains Mono'", fontWeight: 700 }}>
+              <span style={{ fontSize: "0.8rem", color: "var(--color-brand-text)", fontFamily: "var(--font-mono)", fontWeight: 700 }}>
                 {item.year}
               </span>
               <Badge
@@ -190,19 +189,19 @@ export function TimelineList({ items }: { items: TimelineItem[] }) {
             </div>
 
             <h3
-              style={{ fontSize: "1.2rem", fontWeight: 700, color: "var(--color-ink)", fontFamily: "'Space Grotesk', sans-serif", lineHeight: 1.2, marginBottom: "2px" }}
+              style={{ fontSize: "1.2rem", fontWeight: 700, color: "var(--color-ink)", lineHeight: 1.2, marginBottom: "2px" }}
             >
               {item.title}
             </h3>
             <p
-              style={{ fontSize: "0.82rem", color: "var(--color-brand-text)", fontFamily: "'Space Grotesk', sans-serif", marginBottom: "10px" }}
+              style={{ fontSize: "0.82rem", color: "var(--color-brand-text)", marginBottom: "10px" }}
             >
               {item.company}
             </p>
 
             <p
               className="min-h-0"
-              style={{ fontSize: "0.88rem", color: "var(--color-ink-dim)", lineHeight: 1.65, fontFamily: "'Space Grotesk', sans-serif", marginBottom: "12px", maxWidth: "62ch" }}
+              style={{ fontSize: "0.88rem", color: "var(--color-ink-dim)", lineHeight: 1.65, marginBottom: "12px", maxWidth: "62ch" }}
             >
               {item.description}
             </p>

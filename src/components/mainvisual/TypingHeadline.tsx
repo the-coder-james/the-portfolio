@@ -14,18 +14,23 @@ export function TypingHeadline({ name, sequences, headlinePrefix, rolePrefix }: 
   const headline = `${headlinePrefix} ${name}`;
 
   const headingStyle = {
-    fontSize: "clamp(2.8rem, 7vw, 5.5rem)",
+    // A step larger than the old grotesque: condensed capitals set about 15%
+    // narrower, and the headline should keep its presence across the column.
+    fontSize: "clamp(2.8rem, 7.5vw, 6rem)",
     fontWeight: 700,
     lineHeight: 1.1,
     color: "var(--color-ink)",
-    letterSpacing: "-0.02em",
-    fontFamily: "'Space Grotesk', sans-serif",
+    // Condensed capitals want a touch of air, not the negative tracking a
+    // wide grotesque needed. The face itself comes from the base h1 rule.
+    letterSpacing: "0.01em",
   } as const;
 
+  // The role reads as the machine's designation, so it takes the display face
+  // the headline uses rather than the body face of the "I'm a" lead-in.
   const roleStyle = {
     fontSize: "clamp(1.1rem, 2.5vw, 1.6rem)",
     fontWeight: 600,
-    fontFamily: "'Space Grotesk', sans-serif",
+    fontFamily: "var(--font-display)",
   } as const;
 
   return (
@@ -53,7 +58,7 @@ export function TypingHeadline({ name, sequences, headlinePrefix, rolePrefix }: 
       </div>
 
       <div className="flex items-center gap-2 mb-6" style={{ height: "2.5rem" }}>
-        <span style={{ fontSize: "clamp(1.1rem, 2.5vw, 1.6rem)", color: "var(--color-ink-dim)", fontFamily: "'Space Grotesk', sans-serif" }}>
+        <span style={{ fontSize: "clamp(1.1rem, 2.5vw, 1.6rem)", color: "var(--color-ink-dim)" }}>
           {rolePrefix}{" "}
         </span>
         {/*

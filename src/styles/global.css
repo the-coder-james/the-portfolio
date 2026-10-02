@@ -1,5 +1,3 @@
-@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap');
-
 @import "tailwindcss";
 @import "tw-animate-css";
 
@@ -23,6 +21,15 @@
 
   /* container: center + 2rem padding + 1400px 2xl cap (was theme.container) */
   --breakpoint-2xl: 1400px;
+
+  /* Type: the voice of a technical manual. A condensed DIN-style grotesque
+     labels the sections, IBM Plex carries the reading and the code. The faces
+     are self-hosted -- see the Fontsource imports in layout.astro -- and these
+     are the only place a family name may appear; components use the tokens
+     (font-sans / font-display / font-mono, or var(--font-*) inline). */
+  --font-sans: "IBM Plex Sans Variable", "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Barlow Condensed", "Arial Narrow", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 }
 
 /* Themed tokens — the indirection layer. */
@@ -394,7 +401,18 @@
   body {
     background-color: var(--color-background);
     color: var(--color-foreground);
-    font-family: 'Space Grotesk', sans-serif;
+    font-family: var(--font-sans);
+  }
+
+  /* Headings take the condensed display face, the way a manual labels its
+     sections. Only h1/h2 go uppercase: h3 is a card or entry title, where a
+     long project name in capitals would read as shouting. */
+  h1, h2, h3 {
+    font-family: var(--font-display);
+  }
+  h1, h2 {
+    text-transform: uppercase;
+    letter-spacing: 0.01em;
   }
 
   html {
@@ -596,9 +614,11 @@
      5px 0 12px color-mix(in srgb, var(--color-wing-5) 18%, transparent);
 }
 
-/* ── Font overrides ── */
+/* ── Font overrides ──
+   !important so the class still wins over an inline font-family on the same
+   element, which the utility alone (layered, not important) would lose to. */
 .font-mono {
-  font-family: 'JetBrains Mono', monospace !important;
+  font-family: var(--font-mono) !important;
 }
 
 /* Fades the hard left/right cut where marquee content enters and exits.
@@ -863,7 +883,6 @@
   border-radius: 0 0 10px 10px;
   background: var(--color-brand-900); /* 6.7:1 with white — AA at this size */
   color: #fff;
-  font-family: 'Space Grotesk', sans-serif;
   font-size: 0.85rem;
   font-weight: 500;
   text-decoration: none;
@@ -1063,7 +1082,7 @@
   gap: 0.4rem;
   padding: 0.25rem 0.7rem;
   border-radius: 999px;
-  font-family: 'JetBrains Mono', monospace;
+  font-family: var(--font-mono);
   font-size: 0.62rem;
   color: var(--color-ink-dim);
   background: var(--glass-bg);
@@ -1483,7 +1502,7 @@
     align-items: center;
     gap: 0.4rem;
     margin-bottom: 0.75rem;
-    font-family: 'JetBrains Mono', monospace;
+    font-family: var(--font-mono);
     font-size: 0.7rem;
     text-transform: uppercase;
     letter-spacing: 0.08em;
@@ -1715,7 +1734,7 @@ html[data-subtabs-ready] .about-pane[hidden] {
   align-items: center;
   gap: 0.35rem;
   margin-top: 0.4rem;
-  font-family: 'JetBrains Mono', monospace;
+  font-family: var(--font-mono);
   font-size: 0.62rem;
   color: var(--color-ink-faint);
   transition: opacity 0.25s ease;
@@ -1821,7 +1840,6 @@ html[data-subtabs-ready] .about-pane[hidden] {
   font-size: clamp(0.92rem, 0.75rem + 0.45vw, 1.08rem);
   color: var(--color-ink-dim);
   line-height: 1.7;
-  font-family: 'Space Grotesk', sans-serif;
   margin: 0;
 }
 
@@ -1852,7 +1870,7 @@ html[data-subtabs-ready] .about-pane[hidden] {
   font-size: clamp(1.25rem, 1rem + 0.8vw, 1.85rem);
   font-weight: 700;
   line-height: 1.1;
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: var(--font-display);
 }
 
 .stat-label {
@@ -1860,7 +1878,6 @@ html[data-subtabs-ready] .about-pane[hidden] {
   color: var(--color-ink-dim);
   margin-top: 3px;
   line-height: 1.25;
-  font-family: 'Space Grotesk', sans-serif;
 }
 
 /* Short viewports keep the old compact end of each range: the panel has no
@@ -1951,7 +1968,6 @@ html[data-subtabs-ready] .about-pane[hidden] {
   flex: 1 1 15rem;
   min-width: 0;
   margin: 0;
-  font-family: 'Space Grotesk', sans-serif;
   font-size: 0.76rem;
   line-height: 1.55;
   color: var(--color-ink-dim);
@@ -1969,7 +1985,6 @@ html[data-subtabs-ready] .about-pane[hidden] {
   min-width: 5rem;
   padding: 0.4rem 0.9rem;
   border-radius: 999px;
-  font-family: 'Space Grotesk', sans-serif;
   font-size: 0.78rem;
   font-weight: 500;
   cursor: pointer;
@@ -2033,7 +2048,6 @@ html[data-scroll-mode] .cookie-banner {
   padding: 0.6rem 1.15rem;
   min-height: 2.5rem;
   border-radius: 999px;
-  font-family: 'Space Grotesk', sans-serif;
   font-size: 0.85rem;
   font-weight: 500;
   text-decoration: none;

@@ -2,6 +2,26 @@
 import BaseHead from '@/components/common/astro/BaseHead.astro';
 import { LoadingScreen } from '@/components/common/tsx/LoadingScreen';
 import { CookieBanner } from '@/components/common/tsx/CookieBanner';
+
+// Fonts are self-hosted through Fontsource, never fetched from Google's CDN: a
+// request to fonts.googleapis.com hands every visitor's IP to Google before the
+// consent banner has been answered, which is exactly what the GTM gate in
+// ConsentStore exists to prevent. Vite fingerprints the files and serves them
+// from _astro/ under the base path. Only the weights in use are imported, and a
+// browser downloads a face only when something on the page renders in it.
+import '@fontsource-variable/ibm-plex-sans';
+import '@fontsource/barlow-condensed/500.css';
+import '@fontsource/barlow-condensed/600.css';
+import '@fontsource/barlow-condensed/700.css';
+import '@fontsource/ibm-plex-mono/400.css';
+import '@fontsource/ibm-plex-mono/500.css';
+import '@fontsource/ibm-plex-mono/600.css';
+import '@fontsource/ibm-plex-mono/700.css';
+// Body copy and the hero headline are on the first screen, so those two faces
+// are preloaded to arrive alongside the CSS rather than after it.
+import plexSansLatin from '@fontsource-variable/ibm-plex-sans/files/ibm-plex-sans-latin-wght-normal.woff2?url';
+import barlowLatin700 from '@fontsource/barlow-condensed/files/barlow-condensed-latin-700-normal.woff2?url';
+
 const { title, noindex } = Astro.props;
 
 // GTM is injected from ConsentStore after the visitor accepts, not from a tag
@@ -28,6 +48,8 @@ const gtmId = import.meta.env.PUBLIC_GTM_ID;
         } catch {}
       })();
     </script>
+    <link rel="preload" href={plexSansLatin} as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href={barlowLatin700} as="font" type="font/woff2" crossorigin />
     <BaseHead title={title} noindex={noindex}/>
     <style is:global>
       #preboot-veil {

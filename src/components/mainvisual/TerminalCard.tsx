@@ -56,9 +56,9 @@ export function TerminalCard({ name, since, professional, stackLabels }: Termina
           <>
             <div className="flex items-center gap-2">
               <span className="w-2 h-2 rounded-full bg-brand" aria-hidden="true" />
-              <span style={{ fontSize: "0.65rem", color: "var(--color-code-ink-dim)", fontFamily: "'JetBrains Mono'" }}>TypeScript</span>
+              <span style={{ fontSize: "0.65rem", color: "var(--color-code-ink-dim)", fontFamily: "var(--font-mono)" }}>TypeScript</span>
             </div>
-            <span style={{ fontSize: "0.65rem", color: "var(--color-code-ink-dim)", fontFamily: "'JetBrains Mono'" }}>UTF-8</span>
+            <span style={{ fontSize: "0.65rem", color: "var(--color-code-ink-dim)", fontFamily: "var(--font-mono)" }}>UTF-8</span>
           </>
         }
       >

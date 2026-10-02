@@ -145,7 +145,7 @@ export function ProjectsGrid({
               className="field-interactive projects-search w-full pl-9 pr-9 rounded-lg outline-none"
               style={{
                 color: "var(--color-ink-muted)",
-                fontFamily: "'JetBrains Mono', monospace",
+                fontFamily: "var(--font-mono)",
               }}
             />
             {query && (
@@ -262,7 +262,6 @@ export function ProjectsGrid({
             background: "var(--color-card-surface)",
             border: "1px solid var(--color-card-border)",
             color: "var(--color-ink-dim)",
-            fontFamily: "'Space Grotesk', sans-serif",
           }}
         >
           <p style={{ fontSize: "0.95rem" }}>No projects match your filters.</p>

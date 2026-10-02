@@ -20,7 +20,7 @@ const fieldClass =
   "placeholder:text-[var(--color-ink-faint)] rounded-[10px] " +
   "focus-visible:border-[var(--tint-brand-50)] focus-visible:bg-[var(--tint-brand-05)] " +
   "focus-visible:ring-0 focus-visible:ring-offset-0 " +
-  "[font-family:'Space_Grotesk',sans-serif] text-[0.88rem]";
+  "text-[0.88rem]";
 
 export function ContactForm() {
   const [form, setForm] = useState({ name: "", email: "", message: "" });
@@ -64,10 +64,10 @@ export function ContactForm() {
           style={{ background: "var(--tint-brand-07)", border: "1px solid var(--tint-brand-25)", boxShadow: "0 0 40px var(--tint-brand-10)" }}
         >
           <div className="text-4xl mb-4" aria-hidden="true">🚀</div>
-          <h3 style={{ fontSize: "1.4rem", fontWeight: 700, color: "var(--color-ink)", fontFamily: "'Space Grotesk'", marginBottom: "8px" }}>
+          <h3 style={{ fontSize: "1.4rem", fontWeight: 700, color: "var(--color-ink)", marginBottom: "8px" }}>
             Your draft is ready
           </h3>
-          <p style={{ color: "var(--color-ink-dim)", fontFamily: "'Space Grotesk'", fontSize: "0.9rem" }}>
+          <p style={{ color: "var(--color-ink-dim)", fontSize: "0.9rem" }}>
             I've opened your mail app with the message filled in — press send there and
             I'll reply within 24 hours. Nothing left this page on its own.
           </p>
@@ -82,14 +82,14 @@ export function ContactForm() {
               type="button"
               onClick={() => setSubmitted(false)}
               className="btn-soft inline-flex items-center gap-2 px-5 py-2.5 rounded-xl transition-all duration-200"
-              style={{ color: "var(--color-brand-text)", fontFamily: "'Space Grotesk', sans-serif", fontSize: "0.85rem", fontWeight: 500 }}
+              style={{ color: "var(--color-brand-text)", fontSize: "0.85rem", fontWeight: 500 }}
             >
               Write another
             </button>
             <a
               href={`mailto:${CONTACT_EMAIL}`}
               className="btn-soft inline-flex items-center gap-2 px-5 py-2.5 rounded-xl transition-all duration-200"
-              style={{ color: "var(--color-brand-text)", fontFamily: "'Space Grotesk', sans-serif", fontSize: "0.85rem", fontWeight: 500, textDecoration: "none" }}
+              style={{ color: "var(--color-brand-text)", fontSize: "0.85rem", fontWeight: 500, textDecoration: "none" }}
             >
               Email directly
             </a>
@@ -152,7 +152,6 @@ export function ContactForm() {
             style={{
               background: "linear-gradient(135deg, var(--color-brand-900), var(--color-brand-700))",
               boxShadow: "0 4px 20px var(--tint-brand-30)",
-              fontFamily: "'Space Grotesk', sans-serif",
               fontWeight: 500,
             }}
           >
