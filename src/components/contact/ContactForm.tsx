@@ -15,11 +15,15 @@ import { trackEvent } from "@/components/common/tsx/ConsentStore";
 const CONTACT_EMAIL =
   contactJson.find((c) => c.url.startsWith("mailto:"))?.url.replace("mailto:", "") ?? "";
 
+// Fields print as ink-line boxes (a 3:1 boundary). Focus has to stand out from
+// that resting line, so it takes the solid spot ink plus a 3px halo: a border
+// tint alone changed only the hue and nearly vanished on Blueprint, where the
+// line and the spot ink are both pale.
 const fieldClass =
   "bg-[var(--tint-white-03)] border-[var(--color-card-border)] text-[var(--color-ink-muted)] " +
   "placeholder:text-[var(--color-ink-faint)] rounded-[10px] " +
-  "focus-visible:border-[var(--tint-brand-50)] focus-visible:bg-[var(--tint-brand-05)] " +
-  "focus-visible:ring-0 focus-visible:ring-offset-0 " +
+  "focus-visible:border-[var(--color-brand)] focus-visible:bg-[var(--tint-brand-05)] " +
+  "focus-visible:ring-[3px] focus-visible:ring-[var(--tint-brand-25)] focus-visible:ring-offset-0 " +
   "text-[0.88rem]";
 
 export function ContactForm() {
