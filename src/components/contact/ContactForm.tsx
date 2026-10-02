@@ -16,7 +16,7 @@ const CONTACT_EMAIL =
   contactJson.find((c) => c.url.startsWith("mailto:"))?.url.replace("mailto:", "") ?? "";
 
 const fieldClass =
-  "bg-[var(--tint-white-03)] border-[var(--tint-white-08)] text-[var(--color-ink-muted)] " +
+  "bg-[var(--tint-white-03)] border-[var(--color-card-border)] text-[var(--color-ink-muted)] " +
   "placeholder:text-[var(--color-ink-faint)] rounded-[10px] " +
   "focus-visible:border-[var(--tint-brand-50)] focus-visible:bg-[var(--tint-brand-05)] " +
   "focus-visible:ring-0 focus-visible:ring-offset-0 " +

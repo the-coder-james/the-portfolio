@@ -47,7 +47,6 @@ export function TerminalCard({ name, since, professional, stackLabels }: Termina
       <TerminalShell
         filename="developer.config.ts"
         style={{
-          border: "1px solid var(--tint-brand-20)",
           // The hero's one floating sheet, so it takes the deepest print shadow.
           boxShadow: "var(--shadow-print-lg)",
         }}

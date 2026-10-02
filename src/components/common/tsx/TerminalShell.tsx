@@ -51,7 +51,7 @@ export function TerminalShell({
       className={`rounded-2xl overflow-hidden ${className}`}
       style={{
         background: "var(--color-surface-code)",
-        border: "1px solid var(--tint-brand-15)",
+        border: "1px solid var(--color-card-border)",
         boxShadow: "var(--shadow-print)",
         ...style,
       }}

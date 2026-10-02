@@ -207,7 +207,7 @@ export function LoadingScreen() {
           className="rounded-xl overflow-hidden mb-6"
           style={{
             background: "var(--color-surface-code)",
-            border: "1px solid var(--tint-brand-18)",
+            border: "1px solid var(--color-card-border)",
             boxShadow: "var(--shadow-print)",
           }}
         >
