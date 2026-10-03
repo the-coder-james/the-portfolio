@@ -12,11 +12,21 @@ npm run shadcn    # Run shadcn CLI to add/update components
 npm run images    # Optimise source images (scripts/optimize-images.mjs)
 npm run og        # Regenerate public/og-image.png (Blueprint hero); needs `npm run preview`
                   # (OG_URL=http://localhost:<port>/the-portfolio/ if not on :4321)
-npm run inspect   # Playwright layout check; needs `npm run preview` running
+
+npm test               # Everything below, in order (~5 min)
+npm run check:types    # astro check, fails on warnings
+npm run test:static    # Vitest: palette contrast (flat + textured), source invariants
+npm run test:unit      # Vitest: ConsentStore and ThemeProvider
+npm run test:dist      # Builds dist/ and dist-e2e/, then checks both builds
+npm run test:e2e       # Builds dist-e2e/ (test GTM ID), then Playwright on :4410
+npm run check:contrast # Contrast report for src/styles/global.css
+npm run check:source   # Source invariants + advisory unused-code report
 ```
 
-Requires Node >= 18.20.8 (Astro 5). No linting or unit-test scripts are configured;
-`npx astro check` is the type check.
+Requires Node >= 18.20.8 (Astro 5). There is no linter. Tests: Vitest (`tests/static`,
+`tests/unit`, `tests/dist`) and Playwright (`tests/e2e`, against `astro preview` of
+`dist-e2e/` on port 4410). Mark a known, unfixed defect as `test.fail` /
+`it.fails` with its ID, so fixing it flips the test; none are open now.
 
 ## Architecture
 
@@ -83,7 +93,8 @@ Consequences to keep in mind:
 - **Never use `client:visible` inside a panel.** A hidden panel never
   intersects, so the island would never hydrate. Use `client:idle`.
 - `useRevealed` (`src/hooks/`) has a 1200ms fallback precisely so reveals still
-  fire in a hidden panel. `motion-primitives/in-view.tsx` has no such fallback.
+  fire in a hidden panel. A bare IntersectionObserver reveal has no such
+  fallback and would leave content invisible there.
 - Tabs are driven by the location hash, which is what makes back/forward work
   and lets plain `<a href="#contact">` links switch tabs. Hashes that do not
   name a tab (the skip link's `#main`) are ignored rather than reset.
@@ -91,7 +102,11 @@ Consequences to keep in mind:
   effect*. Seeding it during the first render leaves Radix's own markup stuck on
   the server-rendered default.
 - Without JS every panel stays visible, so the page degrades to a plain scroll.
-  The hiding CSS is gated on `html[data-tabs-ready]`.
+  The hiding CSS is gated on `html[data-tabs-ready]`, and a `<noscript>` style
+  in `layout.astro` removes the pre-render veil and loader and pins every
+  `[data-reveal]` node visible (reveals are server-rendered at opacity 0). Tag
+  any new reveal's animated node `data-reveal`, or it stays invisible there and
+  under reduced motion.
 
 ### Theming: the Gunpla manual, Manual by default
 
@@ -101,6 +116,10 @@ crimson and gold reduced to flat spot inks. `.dark` is Blueprint, its cyanotype
 twin: Prussian-blue paper with white linework, where the spot blue turns pale
 cyan because blue type cannot sit on blue. The stored theme values are still
 `light` / `dark`, so visitors' earlier choices carry over.
+
+Tailwind's class detection is scoped to `src/` (`@import "tailwindcss"
+source("..")`); unscoped, it scanned `tests/`, `scripts/` and this file and
+shipped utilities nothing uses, `.backdrop-filter` among them.
 
 Tailwind v4 compiles `@theme` keys into utilities at build time, so a
 `--color-*` declared there **cannot** be redefined by `.dark`. All of it lives
@@ -163,20 +182,26 @@ need one rather than switching to a CDN.
 
 ### Analytics: GTM behind a consent gate
 
-Off unless `PUBLIC_GTM_ID` is set. Without it the loader, the `<noscript>`
-fallback and the banner all no-op, so local dev and any build lacking the
-variable ship no analytics at all. Production reads it from the `PUBLIC_GTM_ID`
+Off unless `PUBLIC_GTM_ID` is set. Without it the loader and the banner both
+no-op, so local dev and any build lacking the variable ship no analytics at
+all. Production reads it from the `PUBLIC_GTM_ID`
 repository secret, passed to `yarn build` in the deploy workflow.
 
 **GTM is injected from `ConsentStore.ts` after the visitor accepts — never from
-a tag in `<head>`.** Loading it in the head and asking afterwards is not
-consent; it is a notice shown after the data has already gone. The store is a
+a tag in the HTML.** Loading it in the head and asking afterwards is not
+consent; it is a notice shown after the data has already gone. That includes
+GTM's usual `<noscript>` iframe: without script the banner never renders, so
+that visitor can never consent. The store is a
 module-level `useSyncExternalStore`, same as `ThemeProvider` and for the same
 reason (each island is its own React root).
 
 - `grant()` writes localStorage and injects the loader; `deny()` writes and
   injects nothing. `initConsent()` re-injects on later visits for someone who
   already accepted, so they are not asked twice.
+- Consent can be withdrawn as easily as given (GDPR Art. 7(3)): once a choice
+  exists, the footer's "Cookie settings" (`ConsentSettingsButton`) reopens the
+  banner. Declining after a grant clears the `_ga*` / `_gcl*` cookies and
+  reloads, since a running GTM cannot be unloaded.
 - `trackEvent()` is a no-op without consent — events are dropped, not queued,
   or a later grant would leak what a declining visitor did.
 - The only custom event is `contact_submit` from `ContactForm`, carrying
