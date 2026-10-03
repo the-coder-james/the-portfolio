@@ -36,6 +36,9 @@ export function Reveal({
   return (
     <motion.div
       ref={ref}
+      // Covers the frames before the hook reports reduced motion, while this
+      // still renders the animated branch.
+      data-reveal=""
       className={className}
       initial={{ opacity: 0, x, y }}
       animate={revealed ? { opacity: 1, x: 0, y: 0 } : undefined}

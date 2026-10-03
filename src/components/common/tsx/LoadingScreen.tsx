@@ -176,14 +176,10 @@ export function LoadingScreen() {
       aria-live="polite"
       aria-busy="true"
       aria-label="Loading site"
-      className="fixed inset-0 flex items-center justify-center"
-      style={{
-        zIndex: 9999,
-        background: "var(--color-surface-base)",
-        backgroundImage:
-          "radial-gradient(ellipse at center, var(--tint-brand-08) 0%, transparent 60%), linear-gradient(var(--tint-brand-04) 1px, transparent 1px), linear-gradient(90deg, var(--tint-brand-04) 1px, transparent 1px)",
-        backgroundSize: "auto, 40px 40px, 40px 40px",
-      }}
+      // The same drafting sheet as the page (.drafting-sheet in global.css),
+      // so when this lifts nothing underneath re-draws.
+      className="drafting-sheet fixed inset-0 flex items-center justify-center"
+      style={{ zIndex: 9999 }}
     >
       <div className="w-full max-w-md px-8">
         <div
@@ -194,7 +190,6 @@ export function LoadingScreen() {
             fontWeight: 700,
             letterSpacing: "-0.02em",
             color: "var(--color-code-ink)",
-            textShadow: "0 0 20px var(--tint-brand-40)",
             opacity: 0,
           }}
         >
@@ -207,8 +202,8 @@ export function LoadingScreen() {
           className="rounded-xl overflow-hidden mb-6"
           style={{
             background: "var(--color-surface-code)",
-            border: "1px solid var(--tint-brand-18)",
-            boxShadow: "0 0 40px var(--tint-brand-08)",
+            border: "1px solid var(--color-card-border)",
+            boxShadow: "var(--shadow-print)",
           }}
         >
           <div
@@ -243,8 +238,7 @@ export function LoadingScreen() {
               className="h-full"
               style={{
                 width: "0%",
-                background: "linear-gradient(90deg, var(--color-brand-900), var(--color-brand), var(--color-brand-400))",
-                boxShadow: "0 0 12px var(--tint-brand-60)",
+                background: "var(--color-brand)",
               }}
             />
           </div>

@@ -46,7 +46,9 @@ function TooltipContent({
         {...props}
       >
         {children}
-        <TooltipPrimitive.Arrow className="z-50 size-2.5 translate-y-[calc(-50%_-_2px)] rotate-45 rounded-[2px] bg-foreground fill-foreground" />
+        {/* The arrow follows --tooltip-bg when a caller sets one, so it matches a
+            restyled body; otherwise it keeps the default foreground. */}
+        <TooltipPrimitive.Arrow className="z-50 size-2.5 translate-y-[calc(-50%_-_2px)] rotate-45 rounded-[2px] bg-[var(--tooltip-bg,var(--color-foreground))] fill-[var(--tooltip-bg,var(--color-foreground))]" />
       </TooltipPrimitive.Content>
     </TooltipPrimitive.Portal>
   )

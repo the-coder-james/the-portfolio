@@ -111,11 +111,12 @@ export function AboutTabs({ tabs }: { tabs: TabDef[] }) {
       className="gap-0 shrink-0"
       activationMode="manual"
     >
-      {/* Built like the page tab bar: a transparent track with one glass pill
+      {/* Built like the page tab bar: a transparent track with one tab pill
           sliding behind the labels, rather than a filled track with a styled
           active stop. after:hidden kills the line variant's own ::after bar --
-          2px of bg-foreground at bottom:-5px, which hangs below the control and
-          reads near-black in dark mode. The header suppresses it the same way. */}
+          2px of bg-foreground at bottom:-5px, which hangs below the control as
+          a stray ink rule in either theme. The header suppresses it the same
+          way. */}
       <TabsList
         variant="line"
         aria-label="About sections"
@@ -123,7 +124,7 @@ export function AboutTabs({ tabs }: { tabs: TabDef[] }) {
       >
         <div
           ref={indicatorRef}
-          className="glass-pill absolute top-0 bottom-0 rounded-full pointer-events-none z-0"
+          className="tab-pill absolute top-0 bottom-0 rounded-full pointer-events-none z-0"
           style={{ left: 0, width: 0, opacity: 0 }}
           aria-hidden="true"
         />

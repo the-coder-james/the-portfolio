@@ -48,10 +48,10 @@ export function ContactCard({ contact }: ContactCardProps) {
         )}
       </div>
       <div>
-        <div style={{ fontSize: "0.82rem", color: "var(--color-ink-muted)", fontFamily: "'Space Grotesk'", fontWeight: 500 }}>
+        <div style={{ fontSize: "0.82rem", color: "var(--color-ink-muted)", fontWeight: 500 }}>
           {contact.name}
         </div>
-        <div style={{ fontSize: "0.72rem", color: "var(--color-ink-dim)", fontFamily: "'JetBrains Mono'" }}>
+        <div style={{ fontSize: "0.72rem", color: "var(--color-ink-dim)", fontFamily: "var(--font-mono)" }}>
           {displayUrl}
         </div>
       </div>

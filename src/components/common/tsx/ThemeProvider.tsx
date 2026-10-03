@@ -1,6 +1,8 @@
 /**
- * Theme state for the Destiny palette: light ("standby") by default, dark
- * ("combat mode") on request.
+ * Theme state for the Gunpla-manual palette: light ("manual", the printed
+ * sheet) by default, dark ("blueprint", its cyanotype twin) on request. The
+ * stored values stay "light" / "dark", so a visitor's earlier choice carries
+ * over unchanged.
  *
  * This is a module-level store read through useSyncExternalStore rather than a
  * React context. Every Astro island is its own React root, so a provider

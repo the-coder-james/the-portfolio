@@ -23,10 +23,10 @@ interface WindowCardProps {
  * so they are marked aria-hidden and are not focusable. Making them look
  * interactive without acting interactive would be worse than leaving them out.
  *
- * The visible border is doing real work: cards were previously white at 2%
- * alpha over a near-black page, leaving their edge at ~1.03:1 against the
- * background. --color-card-border sits at 2.9:1 against the darkest section,
- * so the card boundary is actually perceivable.
+ * The visible border is doing real work: it is the sheet's line-art edge
+ * against the drafting paper. --color-card-border measures 4.2:1 on the page
+ * and 4.5:1 on a sheet in Manual, 6.4:1 and 5.4:1 in Blueprint, above the 3:1
+ * a component boundary needs (SC 1.4.11).
  */
 export function WindowCard({
   title,
@@ -41,11 +41,12 @@ export function WindowCard({
   return (
     <div
       className={`window-card rounded-xl overflow-hidden flex flex-col ${className}`}
+      // The border lives on .window-card rather than inline: an inline border
+      // outranks the stylesheet, so its hover strengthening never showed.
       style={{
         background: raised
           ? "var(--color-card-surface-raised)"
           : "var(--color-card-surface)",
-        border: "1px solid var(--color-card-border)",
         ...style,
       }}
     >

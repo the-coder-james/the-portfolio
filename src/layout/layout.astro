@@ -2,56 +2,83 @@
 import BaseHead from '@/components/common/astro/BaseHead.astro';
 import { LoadingScreen } from '@/components/common/tsx/LoadingScreen';
 import { CookieBanner } from '@/components/common/tsx/CookieBanner';
+
+// Fonts are self-hosted through Fontsource, never fetched from Google's CDN: a
+// request to fonts.googleapis.com hands every visitor's IP to Google before the
+// consent banner has been answered, which is exactly what the GTM gate in
+// ConsentStore exists to prevent. Vite fingerprints the files and serves them
+// from _astro/ under the base path. Only the weights in use are imported, and a
+// browser downloads a face only when something on the page renders in it.
+import '@fontsource-variable/ibm-plex-sans';
+import '@fontsource/barlow-condensed/600.css';
+import '@fontsource/barlow-condensed/700.css';
+import '@fontsource/ibm-plex-mono/400.css';
+import '@fontsource/ibm-plex-mono/500.css';
+import '@fontsource/ibm-plex-mono/700.css';
+// Body copy and the hero headline are on the first screen, so those two faces
+// are preloaded to arrive alongside the CSS rather than after it.
+import plexSansLatin from '@fontsource-variable/ibm-plex-sans/files/ibm-plex-sans-latin-wght-normal.woff2?url';
+import barlowLatin700 from '@fontsource/barlow-condensed/files/barlow-condensed-latin-700-normal.woff2?url';
+
 const { title, noindex } = Astro.props;
 
-// GTM is injected from ConsentStore after the visitor accepts, not from a tag
-// here: loading it in <head> and asking afterwards is not consent. This only
-// supplies the <noscript> fallback, which must sit immediately after <body>.
-const gtmId = import.meta.env.PUBLIC_GTM_ID;
+// GTM is injected from ConsentStore after the visitor accepts, never from a tag
+// here: loading it in <head> and asking afterwards is not consent. There is no
+// <noscript> GTM fallback either -- without script the banner never renders,
+// so that visitor can never consent, and the iframe would track them anyway.
 ---
 <html lang="en">
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     {/* Runs before first paint, so the theme never flashes. is:inline keeps
-        Astro from bundling and deferring it. Light is the default; an explicit
-        choice in localStorage always beats the OS preference. */}
+        Astro from bundling and deferring it. Manual (light) is the default and
+        Blueprint is .dark; an explicit choice in localStorage always beats the
+        OS preference. */}
     <script is:inline>
       (() => {
-        try {
-          const saved = localStorage.getItem('theme');
-          const dark = saved
-            ? saved === 'dark'
-            : matchMedia('(prefers-color-scheme: dark)').matches;
-          if (dark) document.documentElement.classList.add('dark');
-          document.documentElement.style.colorScheme = dark ? 'dark' : 'light';
-        } catch {}
+        // Storage is read on its own: when site data is blocked the read
+        // throws, and that must not also skip the OS preference -- the theme
+        // store follows the OS in that case, so this has to agree with it.
+        let saved = null;
+        try { saved = localStorage.getItem('theme'); } catch {}
+        let dark = saved === 'dark';
+        if (!saved) {
+          try { dark = matchMedia('(prefers-color-scheme: dark)').matches; } catch {}
+        }
+        if (dark) document.documentElement.classList.add('dark');
+        document.documentElement.style.colorScheme = dark ? 'dark' : 'light';
       })();
     </script>
+    <link rel="preload" href={plexSansLatin} as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href={barlowLatin700} as="font" type="font/woff2" crossorigin />
     <BaseHead title={title} noindex={noindex}/>
+    {/* Without JavaScript nothing removes the pre-render veil or the
+        server-rendered loader, and reveals ship at their start values
+        (opacity 0), so the page was blank. This applies only when scripts
+        do not run; is:inline keeps Astro from hoisting it out of <noscript>.
+        Every panel is already visible then (the hiding is gated on
+        html[data-tabs-ready]), so the page reads as one plain scroll. */}
+    <noscript>
+      <style is:inline>
+        #preboot-veil,
+        [role="status"][aria-label="Loading site"] { display: none !important; }
+        [data-reveal] { opacity: 1 !important; transform: none !important; filter: none !important; }
+      </style>
+    </noscript>
     <style is:global>
+      /* Its paper comes from .drafting-sheet, the same sheet the page and the
+         loading screen draw. */
       #preboot-veil {
         position: fixed;
         inset: 0;
         z-index: 9998;
-        background: var(--color-surface-base);
         pointer-events: none;
       }
     </style>
   </head>
   <body style="min-height: 100vh; overflow-x: hidden;">
-    {gtmId && (
-      <noscript>
-        <iframe
-          src={`https://www.googletagmanager.com/ns.html?id=${gtmId}`}
-          height="0"
-          width="0"
-          style="display:none;visibility:hidden"
-          title="Google Tag Manager"
-        ></iframe>
-      </noscript>
-    )}
-    <div id="preboot-veil"></div>
+    <div id="preboot-veil" class="drafting-sheet"></div>
     {/* Fixed page backdrop. Stays put while the content scrolls over it.
         Its gradients live in .site-backdrop so they follow the theme. */}
     <div class="site-backdrop" aria-hidden="true"></div>

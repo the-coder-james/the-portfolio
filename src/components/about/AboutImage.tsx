@@ -16,30 +16,27 @@ export function AboutImage({ name, imagePath, hoverImagePath, baseUrl }: AboutIm
   const reduced = useReducedMotion();
   const [hovered, setHovered] = useState(false);
 
+  // `initial` never branches on reduced motion (see SectionHeading): the
+  // targets stay the same, the duration drops to zero, and `data-reveal` lets
+  // the CSS guarantee the end state.
+  const settle = { duration: 0 };
   const reveal = (delay: number, from: Record<string, number>) => ({
-    initial: reduced ? false : { opacity: 0, ...from },
+    "data-reveal": "",
+    initial: { opacity: 0, ...from },
     animate: revealed ? { opacity: 1, scale: 1, x: 0, rotate: 0 } : undefined,
-    transition: { delay, type: "spring" as const, visualDuration: 0.5, bounce: 0.2 },
+    transition: reduced ? settle : { delay, type: "spring" as const, visualDuration: 0.5, bounce: 0.2 },
   });
 
   return (
     <motion.div
       ref={wrapperRef}
+      data-reveal=""
       className="flex justify-center px-3 pt-6 [--portrait-size:120px] sm:[--portrait-size:170px]"
-      initial={reduced ? false : { opacity: 0, scale: 0.85 }}
+      initial={{ opacity: 0, scale: 0.85 }}
       animate={revealed ? { opacity: 1, scale: 1 } : undefined}
-      transition={{ delay: 0.15, type: "spring", visualDuration: 0.6, bounce: 0.25 }}
+      transition={reduced ? settle : { delay: 0.15, type: "spring", visualDuration: 0.6, bounce: 0.25 }}
     >
       <div className="relative">
-        <div
-          className="absolute inset-0 rounded-full"
-          style={{
-            background: "linear-gradient(135deg, var(--color-brand), var(--color-brand-900), var(--color-surface-code))",
-            padding: "3px",
-            borderRadius: "9999px",
-            boxShadow: "0 0 40px var(--tint-brand-45), 0 0 80px var(--tint-brand-15)",
-          }}
-        />
         <div
           className={`absolute -inset-2 rounded-full pointer-events-none${reduced ? "" : " spin-slow"}`}
           aria-hidden="true"
@@ -47,10 +44,12 @@ export function AboutImage({ name, imagePath, hoverImagePath, baseUrl }: AboutIm
         />
         <motion.div
           className="relative rounded-full overflow-hidden"
-          style={{ width: "var(--portrait-size, 170px)", height: "var(--portrait-size, 170px)", border: "3px solid var(--tint-brand-60)", boxShadow: "0 0 30px var(--tint-brand-35)" }}
-          initial={reduced ? false : { rotate: -12 }}
+          // A printed plate: a solid spot-ink rim and a hard print shadow.
+          style={{ width: "var(--portrait-size, 170px)", height: "var(--portrait-size, 170px)", border: "3px solid var(--color-brand)", boxShadow: "var(--shadow-print)" }}
+          data-reveal=""
+          initial={{ rotate: -12 }}
           animate={revealed ? { rotate: 0 } : undefined}
-          transition={{ delay: 0.25, type: "spring", visualDuration: 0.7, bounce: 0.05 }}
+          transition={reduced ? settle : { delay: 0.25, type: "spring", visualDuration: 0.7, bounce: 0.05 }}
           onMouseEnter={() => setHovered(true)}
           onMouseLeave={() => setHovered(false)}
           onFocus={() => setHovered(true)}
@@ -83,7 +82,7 @@ export function AboutImage({ name, imagePath, hoverImagePath, baseUrl }: AboutIm
         </motion.div>
         <motion.div
           className="absolute -bottom-1 -right-1 flex items-center gap-1.5 px-2.5 py-1 rounded-full"
-          style={{ background: "var(--color-surface-code)", border: "1px solid var(--tint-brand-35)", boxShadow: "0 4px 12px var(--shadow-black-40)" }}
+          style={{ background: "var(--color-surface-code)", border: "1px solid var(--tint-brand-35)", boxShadow: "var(--shadow-print-sm)" }}
           {...reveal(0.45, { scale: 0 })}
         >
           <span className="w-1.5 h-1.5 rounded-full bg-success cursor-blink" />
@@ -91,7 +90,7 @@ export function AboutImage({ name, imagePath, hoverImagePath, baseUrl }: AboutIm
         </motion.div>
         <motion.div
           className="absolute -top-5 left-0 px-2.5 py-1 rounded-lg font-mono"
-          style={{ background: "var(--tint-brand-15)", border: "1px solid var(--tint-brand-30)", fontSize: "0.6rem", color: "var(--color-brand-300)", whiteSpace: "nowrap" }}
+          style={{ background: "var(--sheet-brand-15)", border: "1px solid var(--color-brand)", fontSize: "0.6rem", color: "var(--color-brand-text)", whiteSpace: "nowrap" }}
           {...reveal(0.35, { x: -12 })}
         >
           10+ yrs coding
