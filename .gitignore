@@ -1,5 +1,5 @@
 # build output
-dist/
+/dist/
 # generated types
 .astro/
 
@@ -27,3 +27,11 @@ pnpm-debug.log*
 
 # agent scratch state
 .claude/agent-memory/
+
+# test artefacts (QA suite)
+/dist-e2e/
+playwright-report/
+test-results/
+
+# generated audits and reports (kept out of git)
+docs/reports-audits/
