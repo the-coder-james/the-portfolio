@@ -1,5 +1,4 @@
 ---
-import { ParticleCanvas } from "@/components/mainvisual/ParticleCanvas"
 import { TypingHeadline } from "@/components/mainvisual/TypingHeadline"
 import { TerminalCard } from "@/components/mainvisual/TerminalCard"
 import { TerminalBackdrop } from "@/components/mainvisual/TerminalBackdrop"
@@ -30,14 +29,13 @@ const socials = contactJson
   aria-labelledby="tab-home"
   tabindex="-1"
 >
-  <!-- The mesh backdrop is a fixed page-level layer (see .site-backdrop), so
-       the hero is transparent and it shows through. -->
+  <!-- The drafting sheet is a fixed page-level layer (see .site-backdrop), so
+       the hero is transparent and it shows through. A drifting particle field
+       used to sit over it; on paper it read as specks of dust, so the sheet is
+       left still. -->
 
-  <!-- Dynamic: drifting particles layered over the mesh -->
-  <ParticleCanvas client:load />
-
-  <!-- Static overlays -->
-  <div class="absolute inset-0 dot-grid opacity-30" aria-hidden="true" style="z-index: 0"></div>
+  <!-- Registration marks on the major grid crossings -->
+  <div class="absolute inset-0 dot-grid" aria-hidden="true" style="z-index: 0"></div>
 
   <!-- Mobile: the config card as a backdrop behind the copy. A sibling of the
        other decorative layers on purpose -- inside the content column it would
@@ -48,6 +46,7 @@ const socials = contactJson
   {mainvisual.floaters.map((f) => (
     <div
       class="absolute hidden lg:block select-none pointer-events-none font-mono"
+      aria-hidden="true"
       style={`left: ${f.x}; top: ${f.y}; font-size: 0.7rem; color: var(--tint-brand-25); z-index: 1`}
     >
       {f.text}
@@ -60,12 +59,14 @@ const socials = contactJson
       <!-- Left column -->
       <div>
         <!-- Static: "Available for hire" badge -->
+        <!-- An opaque tint printed on the sheet, so the grid does not run
+             behind its small label; brand-text holds 4.5:1 there. -->
         <div
           class="inline-flex items-center gap-2 mb-6 px-3 py-1.5 rounded-full"
-          style="background: var(--tint-brand-10); border: 1px solid var(--tint-brand-25)"
+          style="background: var(--sheet-brand-10); border: 1px solid var(--color-brand)"
         >
-          <span class="w-1.5 h-1.5 rounded-full bg-brand-400 cursor-blink"></span>
-          <span class="font-mono" style="font-size: 0.7rem; color: var(--color-brand-400)">Available for hire</span>
+          <span class="w-1.5 h-1.5 rounded-full bg-brand cursor-blink" aria-hidden="true"></span>
+          <span class="font-mono" style="font-size: 0.75rem; color: var(--color-brand-text)">Available for hire</span>
         </div>
 
         <!-- Static: greeting line -->
@@ -85,7 +86,7 @@ const socials = contactJson
         <!-- Static: description -->
         <p
           class="mb-8"
-          style="font-size: 1rem; color: var(--color-ink-dim); line-height: 1.7; max-width: 480px; font-family: 'Space Grotesk', sans-serif"
+          style="font-size: 1rem; color: var(--color-ink-dim); line-height: 1.7; max-width: 480px"
         >
           {mainvisual.description}
         </p>
@@ -95,10 +96,7 @@ const socials = contactJson
           {mainvisual.ctas.map((cta) => (
             <a
               href={cta.href}
-              class={`px-6 py-3 rounded-lg transition-all duration-200 ${cta.variant === "primary" ? "hero-btn-primary" : "hero-btn-outline text-ink"}`}
-              style={cta.variant === "primary"
-                ? "color: var(--color-on-brand); background: linear-gradient(135deg, var(--color-brand-900), var(--color-brand-700)); box-shadow: 0 4px 20px var(--tint-brand-35); font-family: 'Space Grotesk', sans-serif; font-size: 0.9rem; font-weight: 500; text-decoration: none"
-                : "background: transparent; border: 1px solid var(--color-card-border); font-family: 'Space Grotesk', sans-serif; font-size: 0.9rem; font-weight: 500; text-decoration: none"}
+              class={`${cta.variant === "primary" ? "btn-ink" : "btn-sheet"} px-6 py-3 text-[0.9rem]`}
             >
               {cta.label}
             </a>
@@ -113,8 +111,7 @@ const socials = contactJson
               <a
                 href={s.href}
                 aria-label={s.label}
-                class="w-9 h-9 rounded-lg flex items-center justify-center transition-all duration-200 hero-social-link"
-                style="background: var(--tint-white-04); border: 1px solid var(--tint-white-08); color: var(--color-ink-dim)"
+                class="btn-sheet-icon"
               >
                 {pathD && (
                   <svg viewBox="0 0 24 24" fill="currentColor" style="width: 16px; height: 16px" aria-hidden="true">
@@ -124,7 +121,7 @@ const socials = contactJson
               </a>
             )
           })}
-          <span style="color: var(--color-ink-faint); font-size: 0.75rem; margin-left: 4px; font-family: 'Space Grotesk'">
+          <span style="color: var(--color-ink-faint); font-size: 0.75rem; margin-left: 4px">
             {mainvisual.socialsLabel}
           </span>
         </div>
@@ -143,18 +140,6 @@ const socials = contactJson
   </div>
 </section>
 
-<style>
-  .hero-btn-primary:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 25px var(--tint-brand-50) !important;
-  }
-  .hero-btn-outline:hover {
-    border-color: var(--tint-brand-60) !important;
-    background: var(--tint-brand-08) !important;
-  }
-  .hero-social-link:hover {
-    color: var(--color-brand-400) !important;
-    border-color: var(--tint-brand-40) !important;
-    background: var(--tint-brand-10) !important;
-  }
-</style>
+<!-- The CTAs and social links take the shared button primitives (.btn-ink,
+     .btn-sheet, .btn-sheet-icon in global.css) rather than inline styles with
+     !important hover overrides. -->

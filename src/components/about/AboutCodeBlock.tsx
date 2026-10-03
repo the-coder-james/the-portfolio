@@ -79,7 +79,7 @@ export function AboutCodeBlock({ since, professional }: AboutCodeBlockProps) {
         footer={
           <div className="flex items-center gap-3">
             <div className="w-1.5 h-1.5 rounded-full" style={{ background: "var(--color-brand)" }} aria-hidden="true" />
-            <span style={{ fontSize: "0.62rem", color: "var(--color-code-ink-faint)", fontFamily: "'JetBrains Mono'" }}>
+            <span style={{ fontSize: "0.62rem", color: "var(--color-code-ink-faint)", fontFamily: "var(--font-mono)" }}>
               Ln 21, Col 1 · TypeScript · No errors
             </span>
           </div>

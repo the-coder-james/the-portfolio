@@ -47,7 +47,9 @@ export function RevealGroup({
           {children}
         </AnimatedGroup>
       ) : (
-        <div className={className} style={{ opacity: 0 }}>
+        // Server-rendered hidden; data-reveal keeps it visible under reduced
+        // motion before the hook has swapped this branch out.
+        <div className={className} style={{ opacity: 0 }} data-reveal="">
           {children}
         </div>
       )}

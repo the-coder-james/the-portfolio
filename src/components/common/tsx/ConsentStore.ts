@@ -17,6 +17,8 @@ export type Consent = "granted" | "denied" | "unset";
 
 const STORAGE_KEY = "analytics-consent";
 const EVENT = "consentchange";
+/** Asks the banner to reopen, so a decided visitor can change their mind. */
+const SETTINGS_EVENT = "consentsettings";
 
 /** Read once at module scope: the ID is inlined at build time. */
 const GTM_ID = import.meta.env.PUBLIC_GTM_ID as string | undefined;
@@ -68,9 +70,48 @@ export function grant() {
   injectGtm();
 }
 
-export function deny() {
+/**
+ * Analytics cookies GTM/GA set on the site's own host. Withdrawal removes them;
+ * every domain variant is tried because a cookie can only be deleted with the
+ * domain it was set on.
+ */
+function clearAnalyticsCookies() {
+  if (typeof document === "undefined") return;
+  const host = location.hostname;
+  const domains = ["", host, `.${host}`];
+  for (const raw of document.cookie.split(";")) {
+    const name = raw.split("=")[0].trim();
+    if (!/^(_ga|_gid|_gat|_gcl)/.test(name)) continue;
+    for (const d of domains) {
+      document.cookie = `${name}=; Max-Age=0; path=/${d ? `; domain=${d}` : ""}`;
+    }
+  }
+}
+
+/**
+ * Decline, or withdraw an earlier yes -- which has to be as easy as giving it
+ * (GDPR Art. 7(3)).
+ *
+ * Returns true when GTM was already running on this page. A loader that has
+ * run cannot be unloaded, so the caller reloads to finish withdrawing; the
+ * reload starts clean because nothing injects without a grant.
+ */
+export function deny(): boolean {
+  const wasActive =
+    injected || (typeof document !== "undefined" && document.getElementById("gtm-loader") !== null);
   write("denied");
-  // Nothing to tear down: without a grant, GTM was never injected.
+  if (wasActive) clearAnalyticsCookies();
+  return wasActive;
+}
+
+/** Reopen the banner from anywhere (the footer's "Cookie settings"). */
+export function openConsentSettings() {
+  window.dispatchEvent(new CustomEvent(SETTINGS_EVENT));
+}
+
+export function onConsentSettings(cb: () => void) {
+  window.addEventListener(SETTINGS_EVENT, cb);
+  return () => window.removeEventListener(SETTINGS_EVENT, cb);
 }
 
 /**

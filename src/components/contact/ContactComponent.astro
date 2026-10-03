@@ -14,19 +14,11 @@ import contactJson from "@/assets/contact.json"
   sub="Whether you have a project in mind, want to collaborate, or just want to say hi"
   headingClass="contact-heading text-center"
 >
-  <div
-    slot="backdrop"
-    class="absolute inset-0 pointer-events-none"
-    aria-hidden="true"
-    style="background: radial-gradient(ellipse 50% 50% at 50% 100%, var(--tint-brand-06) 0%, transparent 70%)"
-  >
-  </div>
-
   <div class="contact-grid grid lg:grid-cols-5 gap-4 lg:gap-12 items-start">
     <!-- Left column -->
     <div class="lg:col-span-2 flex flex-col gap-3 lg:gap-6">
       <!-- Static: terminal info card -->
-      <div class="hidden md:block rounded-2xl overflow-hidden" style="background: var(--color-surface-code); border: 1px solid var(--tint-brand-15)">
+      <div class="hidden md:block rounded-2xl overflow-hidden" style="background: var(--color-surface-code); border: 1px solid var(--color-card-border)">
         <div class="flex items-center gap-2 px-4 py-3" style="background: var(--color-surface-code-head); border-bottom: 1px solid var(--tint-white-05)">
           <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--color-brand)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <polyline points="4 17 10 11 4 5"></polyline>

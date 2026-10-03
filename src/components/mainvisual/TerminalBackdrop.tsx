@@ -47,7 +47,7 @@ export function TerminalBackdrop({ name, stackLabels }: TerminalBackdropProps) {
         footer={
           <div className="flex items-center gap-2">
             <span className="w-1.5 h-1.5 rounded-full bg-brand" aria-hidden="true" />
-            <span style={{ fontSize: "0.58rem", color: "var(--color-code-ink-dim)", fontFamily: "'JetBrains Mono'" }}>TypeScript</span>
+            <span style={{ fontSize: "0.58rem", color: "var(--color-code-ink-dim)", fontFamily: "var(--font-mono)" }}>TypeScript</span>
           </div>
         }
       >

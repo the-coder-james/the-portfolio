@@ -31,10 +31,10 @@ export function SkillsMindset({ cards }: SkillsMindsetProps) {
             {card.icon}
           </div>
           <div>
-            <div className="mindset-title" style={{ fontWeight: 600, color: "var(--color-ink-muted)", fontFamily: "'Space Grotesk', sans-serif" }}>
+            <div className="mindset-title" style={{ fontWeight: 600, color: "var(--color-ink-muted)" }}>
               {card.title}
             </div>
-            <div className="mindset-desc" style={{ color: "var(--color-ink-dim)", marginTop: "2px", fontFamily: "'Space Grotesk', sans-serif" }}>
+            <div className="mindset-desc" style={{ color: "var(--color-ink-dim)", marginTop: "2px" }}>
               {card.desc}
             </div>
           </div>

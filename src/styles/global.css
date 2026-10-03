@@ -1,6 +1,8 @@
-@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap');
-
-@import "tailwindcss";
+/* Class detection is scoped to src/, where every component lives. Tailwind
+   otherwise scans the whole repo, and the tests, check scripts and CLAUDE.md
+   all name banned utilities (backdrop-filter, say) in order to forbid them --
+   which made Tailwind generate and ship exactly those classes. */
+@import "tailwindcss" source("..");
 @import "tw-animate-css";
 
 /* v3 used `darkMode: ["class"]`. In v4 that is declared in CSS. */
@@ -23,6 +25,15 @@
 
   /* container: center + 2rem padding + 1400px 2xl cap (was theme.container) */
   --breakpoint-2xl: 1400px;
+
+  /* Type: the voice of a technical manual. A condensed DIN-style grotesque
+     labels the sections, IBM Plex carries the reading and the code. The faces
+     are self-hosted -- see the Fontsource imports in layout.astro -- and these
+     are the only place a family name may appear; components use the tokens
+     (font-sans / font-display / font-mono, or var(--font-*) inline). */
+  --font-sans: "IBM Plex Sans Variable", "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Barlow Condensed", "Arial Narrow", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 }
 
 /* Themed tokens — the indirection layer. */
@@ -63,25 +74,26 @@
   --color-surface-code: var(--t-surface-code);
   --color-surface-code-head: var(--t-surface-code-head);
 
-  /* Destiny blue ramp */
+  /* Spot blue ramp -- Destiny blue printed as a flat ink. -700 and its -900
+     hover are fills (label them with --color-on-brand); brand and -400 clear
+     AA as text; -300 is decorative only. */
   --color-brand-900: var(--t-brand-900);
   --color-brand-700: var(--t-brand-700);
   --color-brand: var(--t-brand);
   --color-brand-400: var(--t-brand-400);
   --color-brand-300: var(--t-brand-300);
 
-  /* Brand blue at body-text size. The -300/-400 steps are tuned for glow and
-     large display type and fail AA as small text on the light surfaces, so
-     anything that is *read* rather than decorative points here instead. */
+  /* Brand blue at body-text size: the ink for anything that is *read*. */
   --color-brand-text: var(--t-brand-text);
 
-  /* Destiny trim */
+  /* Spot inks */
   --color-crimson: var(--t-crimson);
   --color-gold: var(--t-gold);
 
-  /* Label for anything sitting on a brand-coloured fill. The brand blue is
-     the same in both themes, so this must not flip with the surface the way
-     --color-primary-foreground does. */
+  /* Label for anything sitting on a brand fill (-700, its -900 hover, or the
+     brand itself). It flips with the theme: paper white on Manual's deep spot
+     blue, navy on Blueprint's pale cyan -- each measured against those fills,
+     not against the page. */
   --color-on-brand: var(--t-on-brand);
 
   /* Text ramp — measured against the page surface, so it flips with it. */
@@ -90,15 +102,15 @@
   --color-ink-dim: var(--t-ink-dim);
   --color-ink-faint: var(--t-ink-faint);
 
-  /* Text ramp for anything sitting on a code surface. Those surfaces stay dark
-     in both themes (see --t-surface-code), so this ramp must NOT flip with the
-     page or the light theme puts dark text on a dark terminal. */
+  /* Text ramp for anything sitting on a code surface. Measured against that
+     theme's --t-surface-code, never the page: the listing prints a shade off
+     the sheet in Manual and on a deeper panel in Blueprint, so text tuned for
+     the page is not guaranteed to hold on it. */
   --color-code-ink: var(--t-code-ink);
   --color-code-ink-dim: var(--t-code-ink-dim);
   --color-code-ink-faint: var(--t-code-ink-faint);
-  /* Status green as it appears *inside* a terminal card. The page-level
-     --color-success is tuned for that theme's own surface and drops to
-     3.3:1 on the fixed-dark code surface. */
+  /* Status green as it appears *inside* a code listing, measured against the
+     code surface rather than the page. */
   --color-code-success: var(--t-code-success);
 
   /* Status */
@@ -107,8 +119,8 @@
   --color-success-soft: var(--t-success-soft);
   --color-danger: var(--t-danger);
 
-  /* Syntax highlighting — identical in both themes; the code surface stays
-     dark either way, so these need no light variant. */
+  /* Syntax highlighting -- the spot inks of a printed listing. Each theme
+     measures them against its own code surface. */
   --color-syn-keyword: var(--t-syn-keyword);
   --color-syn-ident: var(--t-syn-ident);
   --color-syn-fn: var(--t-syn-fn);
@@ -141,237 +153,211 @@
   --color-accent-4: var(--t-accent-4);
   --color-accent-5: var(--t-accent-5);
   --color-accent-6: var(--t-accent-6);
-
-  /* Wings of Light — the prismatic ramp (gradient text + card bloom) */
-  --color-wing-1: var(--t-wing-1);
-  --color-wing-2: var(--t-wing-2);
-  --color-wing-3: var(--t-wing-3);
-  --color-wing-4: var(--t-wing-4);
-  --color-wing-5: var(--t-wing-5);
-  --color-wing-6: var(--t-wing-6);
 }
 
-/* ── Palette: Destiny (ZGMF-X42S) ──
-   White/light-grey armour, Destiny blue, crimson vents, gold V-fin, green
-   sensors, and the prismatic Wings of Light.
+/* ── Palette: the Gunpla manual ──
+   The site prints like a mobile-suit instruction manual. Manual (light, the
+   default) is the sheet itself: off-white stock, ink line art, and Destiny
+   blue, crimson and gold reduced to flat spot inks. Blueprint (.dark) is its
+   engineering twin, a cyanotype: Prussian-blue paper with white linework,
+   where the spot blue turns pale cyan because blue type cannot sit on blue.
 
-   Light is the default ("standby"); .dark is "combat mode". Contrast ratios
-   in the comments are measured against that theme's own surface-base. */
+   Contrast ratios in the comments are measured, not estimated, against the
+   surface each token actually sits on: the page, a sheet, the code listing,
+   or the fill it labels. Re-measure if you change a surface. */
 
 :root {
   color-scheme: light;
 
-  /* Surfaces — armour white / light plating */
-  --t-surface-base: #f8fafc;
-  --t-surface-alt: #eef2f7;
-  --t-surface-deep: #e2e8f0;
-  /* Light editor chrome, in the spirit of GitHub Light. The terminal cards
-     used to stay dark in both themes; they now theme like everything else, so
-     the whole on-code ramp below has a light variant too. */
-  --t-surface-code: #f6f8fa;
-  --t-surface-code-head: #eaeef2;
+  /* Surfaces — manual stock */
+  --t-surface-base: #f3f1ea;          /* page */
+  --t-surface-alt: #ebe8de;
+  --t-surface-deep: #e6e2d6;          /* footer band */
+  /* The code listing prints a shade off the sheet. */
+  --t-surface-code: #efece4;
+  --t-surface-code-head: #e6e2d7;
 
-  /* Destiny blue */
-  --t-brand-900: #1e3a8a;             /* 8.6:1 */
-  --t-brand-700: #1d4ed8;             /* 6.9:1 — AA body text */
-  --t-brand: #2563eb;                 /* 5.2:1 — AA */
-  --t-brand-400: #3b82f6;             /* 3.6:1 — large text / UI only */
-  --t-brand-300: #60a5fa;             /* decorative only */
+  /* Spot blue — Destiny blue as a flat printing ink */
+  --t-brand-900: #142f73;             /* hover fill — on-brand 11.9:1 */
+  --t-brand-700: #1a3f99;             /* fill — on-brand 9.1:1 */
+  --t-brand: #1d4fbf;                 /* 6.4:1 page (4.8 on grid + grain), 6.9:1 sheet */
+  --t-brand-400: #2854b9;             /* 6.1:1 page (4.6 on grid + grain), 6.6:1 sheet — AA text */
+  --t-brand-300: #7d9fe6;             /* decorative only */
 
-  /* Trim */
-  --t-brand-text: #1d4ed8;            /* 6.9:1 on surface-base — AA at any size */
-  --t-crimson: #be123c;               /* 5.9:1 — chest vents */
-  --t-on-brand: #f8fafc;              /* 4.9:1 on --t-brand-700, the fill colour */
-  --t-gold: #a16207;                  /* 4.9:1 — V-fin, AA on light */
+  /* Spot inks */
+  --t-brand-text: #1a3f99;            /* 8.4:1 page (6.4 on grid + grain), 9.1:1 sheet */
+  --t-crimson: #b0132e;               /* 6.2:1 page (4.8 on grid + grain), 6.8:1 sheet */
+  --t-gold: #7d5200;                  /* 6.0:1 page (4.6 on grid + grain), 6.5:1 sheet */
+  --t-on-brand: #fbfaf6;              /* 9.1:1 on brand-700, 11.9:1 on brand-900 */
 
-  /* Text ramp */
-  --t-ink: #0b1220;                   /* 17.9:1 headings */
-  --t-ink-muted: #1e293b;             /* 13.6:1 body */
-  --t-ink-dim: #475569;               /* 7.5:1 secondary */
-  --t-ink-faint: #64748b;             /* 4.8:1 — passes AA normal text */
+  /* Ink */
+  --t-ink: #15171c;                   /* 15.9:1 page (12.1 on grid + grain), 17.2:1 sheet — headings */
+  --t-ink-muted: #262a31;             /* 12.7:1 page (9.7 on grid + grain), 13.8:1 sheet — body */
+  --t-ink-dim: #474c55;               /* 7.6:1 page (5.8 on grid + grain), 8.3:1 sheet — secondary */
+  --t-ink-faint: #50555e;             /* 6.6:1 page (5.1 on grid + grain), 7.2:1 sheet — AA; 5.8:1 footer */
 
   /* Status — sensor green */
-  --t-success: #047857;               /* 4.9:1 */
-  --t-success-strong: #065f46;        /* 6.9:1 */
-  --t-success-soft: #059669;          /* 3.9:1 — UI only */
-  --t-danger: #b91c1c;                /* 6.4:1 */
+  --t-success: #1c683d;               /* 6.0:1 page (4.6 on grid + grain), 6.5:1 sheet */
+  --t-success-strong: #14522f;        /* 8.2:1 page (6.2 on grid + grain), 8.8:1 sheet */
+  --t-success-soft: #2f8a55;          /* 3.8:1 page, 4.1:1 sheet — UI, SC 1.4.11 */
+  --t-danger: #ae251d;                /* 6.0:1 page (4.6 on grid + grain), 6.5:1 sheet */
 
-  /* Cards */
-  --t-card-surface: #ffffff;
-  --t-card-surface-raised: #f1f5f9;
-  --t-card-border: #7c8ca1;           /* 3.4:1 on card, 3.3:1 on page — WCAG 1.4.11 */
-  --t-card-border-strong: #6b7b90;    /* 4.3:1 — hover/focus */
-  --t-card-titlebar: #e2e8f0;
+  /* Cards — sheets laid on the stock, edged in line art */
+  --t-card-surface: #fbfaf6;          /* sheet */
+  --t-card-surface-raised: #f4f2eb;
+  --t-card-border: #6f747d;           /* 4.2:1 page, 4.5:1 sheet — UI, SC 1.4.11 */
+  --t-card-border-strong: #4a4f57;    /* 7.3:1 page, 7.9:1 sheet — UI, SC 1.4.11 */
+  --t-card-titlebar: #e9e6dc;         /* ink-dim 6.9:1 */
 
-  /* Editor chrome. The dots are decorative; the line-number colour is measured
-     against --t-surface-code (dark), not the page. */
-  --t-chrome-red: #ef4444;
-  --t-chrome-yellow: #eab308;
-  --t-chrome-green: #22c55e;
-  --t-chrome-line: #57606a;           /* 6.0:1 on surface-code */
+  /* Editor chrome. The dots are decorative; line numbers are read. */
+  --t-chrome-red: #c4314b;
+  --t-chrome-yellow: #c9961a;
+  --t-chrome-green: #2f8a55;
+  --t-chrome-line: #5a606a;           /* 5.4:1 on code */
 
-  /* Project accents — each ≥4.5:1 on the light surfaces */
-  --t-accent-1: #2563eb;
-  --t-accent-2: #4f46e5;
-  --t-accent-3: #047857;
-  --t-accent-4: #b45309;
-  --t-accent-5: #be185d;
-  --t-accent-6: #0369a1;
-
-  /* Wings of Light — deeper stops so the ramp holds on a pale ground */
-  --t-wing-1: #2563eb;
-  --t-wing-2: #7c3aed;
-  --t-wing-3: #be123c;
-  --t-wing-4: #b45309;
-  --t-wing-5: #047857;
-  --t-wing-6: #0369a1;
+  /* Project accents. Tag text prints on a 14% tint of its own accent. */
+  --t-accent-1: #1d4fbf;              /* 6.9:1 sheet, 5.5:1 on its tint */
+  --t-accent-2: #5b3cc4;              /* 7.0:1 sheet, 5.6:1 on its tint */
+  --t-accent-3: #1d6b3f;              /* 6.2:1 sheet, 5.1:1 on its tint */
+  --t-accent-4: #8f5300;              /* 5.9:1 sheet, 4.8:1 on its tint */
+  --t-accent-5: #b0132e;              /* 6.8:1 sheet, 5.3:1 on its tint */
+  --t-accent-6: #0e6a8a;              /* 5.8:1 sheet, 4.8:1 on its tint */
 
   /* shadcn semantic set */
-  --t-border: #cbd5e1;
-  --t-input: #cbd5e1;
-  --t-ring: #2563eb;
-  --t-background: #f8fafc;
-  --t-foreground: #0b1220;
-  --t-primary: #2563eb;
-  --t-primary-foreground: #f8fafc;
-  --t-secondary: #e2e8f0;
-  --t-secondary-foreground: #0b1220;
-  --t-destructive: #b91c1c;
-  --t-destructive-foreground: #f8fafc;
-  --t-muted: #e2e8f0;
-  --t-muted-foreground: #475569;
-  --t-accent: #e2e8f0;
-  --t-accent-foreground: #0b1220;
-  --t-popover: #ffffff;
-  --t-popover-foreground: #0b1220;
-  --t-card: #ffffff;
-  --t-card-foreground: #0b1220;
+  --t-border: #d9d4c7;
+  --t-input: #cfc9ba;
+  --t-ring: #1d4fbf;
+  --t-background: #f3f1ea;
+  --t-foreground: #15171c;
+  --t-primary: #1a3f99;
+  --t-primary-foreground: #fbfaf6;
+  --t-secondary: #e6e2d7;
+  --t-secondary-foreground: #15171c;
+  --t-destructive: #ae251d;
+  --t-destructive-foreground: #fbfaf6;
+  --t-muted: #e6e2d7;
+  --t-muted-foreground: #474c55;
+  --t-accent: #e6e2d7;
+  --t-accent-foreground: #15171c;
+  --t-popover: #fbfaf6;
+  --t-popover-foreground: #15171c;
+  --t-card: #fbfaf6;
+  --t-card-foreground: #15171c;
 
-  /* On-code text and syntax for the light editor surface. Every value is
-     measured against --t-surface-code (#f6f8fa), not the page. */
-  --t-code-ink: #1f2328;              /* 14.8:1 */
-  --t-code-ink-dim: #4b535d;          /* 7.3:1  */
-  --t-code-ink-faint: #57606a;        /* 6.0:1 body, 5.5:1 titlebar */
-  --t-code-success: #116329;          /* 6.9:1  */
+  /* Printed code listing. Measured against --t-surface-code, never the page. */
+  --t-code-ink: #1b1e24;              /* 14.1:1 on code */
+  --t-code-ink-dim: #474c55;          /* 7.3:1 on code */
+  --t-code-ink-faint: #5a606a;        /* 5.4:1 on code */
+  --t-code-success: #1d6b3f;          /* 5.5:1 on code */
 
-  --t-syn-keyword: #cf222e;           /* 5.0:1  */
-  --t-syn-ident: #0550ae;             /* 7.1:1  */
-  --t-syn-fn: #6639ba;                /* 6.9:1  */
-  --t-syn-string: #0a3069;            /* 12.0:1 */
-  --t-syn-number: #0550ae;            /* 7.1:1  */
-  --t-syn-punct: #57606a;             /* 6.0:1  */
-  --t-syn-plain: #1f2328;             /* 14.8:1 */
-  --t-syn-comment: #656d76;           /* 4.9:1  */
-  --t-syn-attr: #0550ae;              /* 7.1:1  */
-  --t-syn-tag: #116329;               /* 6.9:1  */
-  --t-syn-violet: #6639ba;            /* 6.9:1  */
+  --t-syn-keyword: #b0132e;           /* 6.0:1 on code */
+  --t-syn-ident: #1a3f99;             /* 8.0:1 on code */
+  --t-syn-fn: #5b3cc4;                /* 6.2:1 on code */
+  --t-syn-string: #1d6b3f;            /* 5.5:1 on code */
+  --t-syn-number: #875800;            /* 5.2:1 on code */
+  --t-syn-punct: #5a606a;             /* 5.4:1 on code */
+  --t-syn-plain: #1b1e24;             /* 14.1:1 on code */
+  --t-syn-comment: #5f646c;           /* 5.0:1 on code */
+  --t-syn-attr: #1a3f99;              /* 8.0:1 on code */
+  --t-syn-tag: #1d6b3f;               /* 5.5:1 on code */
+  --t-syn-violet: #5b3cc4;            /* 6.2:1 on code */
 }
 
 .dark {
-  /* On-code ramp and syntax for the dark editor surface (#0d1117). These
-     mirror the light set in :root -- both are measured against their own
-     --t-surface-code, never against the page. */
-  --t-code-ink: #e2e8f0;              /* 15.4:1 */
-  --t-code-ink-dim: #94a3b8;          /* 7.4:1  */
-  --t-code-ink-faint: #8b98ad;        /* 6.5:1  */
-  --t-code-success: #4ade80;          /* 12.1:1 */
-
-  --t-syn-keyword: #c084fc;
-  --t-syn-ident: #60a5fa;
-  --t-syn-fn: #fcd34d;
-  --t-syn-string: #86efac;
-  --t-syn-number: #a5b4fc;
-  --t-syn-punct: #94a3b8;
-  --t-syn-plain: #e2e8f0;
-  --t-syn-comment: #94a3b8;
-  --t-syn-attr: #93c5fd;
-  --t-syn-tag: #f9a8d4;
-  --t-syn-violet: #c4b5fd;
-
   color-scheme: dark;
 
-  /* Surfaces */
-  --t-surface-base: #05080f;
-  --t-surface-alt: #0a1020;
-  --t-surface-deep: #020509;
-  --t-surface-code: #0d1117;
-  --t-surface-code-head: #161b22;
+  /* Surfaces — cyanotype paper */
+  --t-surface-base: #0f2b4c;          /* page */
+  --t-surface-alt: #123359;
+  --t-surface-deep: #0b2340;          /* footer band */
+  /* The code listing is a deeper blue panel. */
+  --t-surface-code: #0a2140;
+  --t-surface-code-head: #0d2a4f;
 
-  /* Destiny blue */
-  --t-brand-900: #1d4ed8;
-  --t-brand-700: #2563eb;
-  --t-brand: #3b82f6;                 /* 6.0:1 */
-  --t-brand-400: #60a5fa;             /* 8.7:1 */
-  --t-brand-300: #93c5fd;             /* 11.4:1 */
+  /* Spot blue, inverted: pale cyan linework. Fills are pale, so on-brand is navy. */
+  --t-brand-900: #6fb4ef;             /* hover fill — on-brand 7.1:1 */
+  --t-brand-700: #8cc8fb;             /* fill — on-brand 8.9:1 */
+  --t-brand: #9ed2ff;                 /* 8.9:1 page (6.8 on grid + grain), 7.6:1 sheet */
+  --t-brand-400: #b9defc;             /* 10.1:1 page (7.8 on grid + grain), 8.7:1 sheet — AA text */
+  --t-brand-300: #d3ebff;             /* decorative only */
 
-  /* Trim */
-  --t-brand-text: #93c5fd;            /* 11.4:1 on surface-base */
-  --t-crimson: #f43f5e;               /* 6.2:1 */
-  --t-on-brand: #f8fafc;              /* 6.4:1 on --t-brand-700, the fill colour */
-  --t-gold: #fbbf24;                  /* 11.1:1 */
+  /* Spot inks */
+  --t-brand-text: #a9d8ff;            /* 9.5:1 page (7.3 on grid + grain), 8.1:1 sheet */
+  --t-crimson: #ff8d9b;               /* 6.5:1 page (5.0 on grid + grain), 5.5:1 sheet */
+  --t-gold: #ffd166;                  /* 9.9:1 page (7.6 on grid + grain), 8.5:1 sheet */
+  --t-on-brand: #0b2340;              /* 8.9:1 on brand-700, 7.1:1 on brand-900 */
 
-  /* Text ramp */
-  --t-ink: #f1f5f9;
-  --t-ink-muted: #e2e8f0;
-  --t-ink-dim: #94a3b8;               /* 7.9:1 */
-  --t-ink-faint: #748499;             /* 5.3:1 on surface-base */
+  /* Ink */
+  --t-ink: #eef4fb;                   /* 12.9:1 page (9.9 on grid + grain), 11.0:1 sheet — headings */
+  --t-ink-muted: #dde8f4;             /* 11.5:1 page (8.8 on grid + grain), 9.8:1 sheet — body */
+  --t-ink-dim: #b2c4da;               /* 8.0:1 page (6.1 on grid + grain), 6.9:1 sheet — secondary */
+  --t-ink-faint: #9cb1ca;             /* 6.5:1 page (5.0 on grid + grain), 5.6:1 sheet — AA; 7.2:1 footer */
 
-  /* Status */
-  --t-success: #4ade80;
-  --t-success-strong: #22c55e;
-  --t-success-soft: #6ee7b7;
-  --t-danger: #f87171;                /* 6.0:1 — was #dc2626 at 3.1:1 (AA fail) */
+  /* Status — sensor green */
+  --t-success: #7ee2a8;               /* 9.1:1 page (6.9 on grid + grain), 7.8:1 sheet */
+  --t-success-strong: #5fd391;        /* 7.6:1 page (5.8 on grid + grain), 6.5:1 sheet */
+  --t-success-soft: #a6efc4;          /* 10.7:1 page, 9.2:1 sheet — UI, SC 1.4.11 */
+  --t-danger: #ff8d8d;                /* 6.4:1 page (4.9 on grid + grain), 5.5:1 sheet */
 
-  /* Cards. A fill alone cannot separate a card from a near-black page (even a
-     much lighter card only reaches ~1.2:1), so the border carries it. */
-  --t-card-surface: #111827;
-  --t-card-surface-raised: #161f33;
-  --t-card-border: #5a6d90;           /* 3.4:1 on card, 3.8:1 on page — WCAG 1.4.11 */
-  --t-card-border-strong: #6b7f9c;    /* 4.3:1 — hover/focus */
-  --t-card-titlebar: #1b2437;
+  /* Cards — panels a step lighter than the paper, edged in white line */
+  --t-card-surface: #14365e;          /* sheet */
+  --t-card-surface-raised: #183d69;
+  --t-card-border: #8fb0d6;           /* 6.4:1 page, 5.4:1 sheet — UI, SC 1.4.11 */
+  --t-card-border-strong: #b7cde6;    /* 8.8:1 page, 7.5:1 sheet — UI, SC 1.4.11 */
+  --t-card-titlebar: #17406e;         /* ink-dim 5.9:1 */
 
-  /* Editor chrome */
-  --t-chrome-red: #ff5f57;
-  --t-chrome-yellow: #febc2e;
-  --t-chrome-green: #28c840;
-  --t-chrome-line: #8b98ad;           /* 6.5:1 on surface-code */
+  /* Editor chrome. The dots are decorative; line numbers are read. */
+  --t-chrome-red: #ff8d9b;
+  --t-chrome-yellow: #ffd166;
+  --t-chrome-green: #7ee2a8;
+  --t-chrome-line: #93a9c4;           /* 6.7:1 on code */
 
-  /* Project accents */
-  --t-accent-1: #3b82f6;
-  --t-accent-2: #818cf8;
-  --t-accent-3: #34d399;
-  --t-accent-4: #f59e0b;
-  --t-accent-5: #ec4899;
-  --t-accent-6: #60a5fa;
-
-  /* Wings of Light — brighter stops for the dark ground */
-  --t-wing-1: #60a5fa;
-  --t-wing-2: #a78bfa;
-  --t-wing-3: #fb7185;
-  --t-wing-4: #fbbf24;
-  --t-wing-5: #34d399;
-  --t-wing-6: #38bdf8;
+  /* Project accents. Tag text prints on a 14% tint of its own accent. */
+  --t-accent-1: #9ed2ff;              /* 7.6:1 sheet, 5.5:1 on its tint */
+  --t-accent-2: #c3b5ff;              /* 6.6:1 sheet, 5.0:1 on its tint */
+  --t-accent-3: #7ee2a8;              /* 7.8:1 sheet, 5.6:1 on its tint */
+  --t-accent-4: #ffd166;              /* 8.5:1 sheet, 6.2:1 on its tint */
+  --t-accent-5: #ff9fc0;              /* 6.4:1 sheet, 4.9:1 on its tint */
+  --t-accent-6: #7fd8f0;              /* 7.6:1 sheet, 5.5:1 on its tint */
 
   /* shadcn semantic set */
-  --t-border: #1e293b;
-  --t-input: #1e293b;
-  --t-ring: #3b82f6;
-  --t-background: #05080f;
-  --t-foreground: #f1f5f9;
-  --t-primary: #3b82f6;
-  --t-primary-foreground: #05080f;
-  --t-secondary: #1e293b;
-  --t-secondary-foreground: #f1f5f9;
-  --t-destructive: #f87171;
-  --t-destructive-foreground: #05080f;
-  --t-muted: #1e293b;
-  --t-muted-foreground: #94a3b8;
-  --t-accent: #1e293b;
-  --t-accent-foreground: #f1f5f9;
-  --t-popover: #0a1020;
-  --t-popover-foreground: #f1f5f9;
-  --t-card: #0a1020;
-  --t-card-foreground: #f1f5f9;
+  --t-border: #2c5482;
+  --t-input: #3a5f8c;
+  --t-ring: #9ed2ff;
+  --t-background: #0f2b4c;
+  --t-foreground: #eef4fb;
+  --t-primary: #8cc8fb;
+  --t-primary-foreground: #0b2340;
+  --t-secondary: #17406e;
+  --t-secondary-foreground: #eef4fb;
+  --t-destructive: #ff8d8d;
+  --t-destructive-foreground: #0b2340;
+  --t-muted: #17406e;
+  --t-muted-foreground: #b2c4da;
+  --t-accent: #17406e;
+  --t-accent-foreground: #eef4fb;
+  --t-popover: #123359;
+  --t-popover-foreground: #eef4fb;
+  --t-card: #14365e;
+  --t-card-foreground: #eef4fb;
+
+  /* Code listing on the deep panel. Measured against --t-surface-code. */
+  --t-code-ink: #e6eef8;              /* 13.8:1 on code */
+  --t-code-ink-dim: #b2c4da;          /* 9.0:1 on code */
+  --t-code-ink-faint: #93a9c4;        /* 6.7:1 on code */
+  --t-code-success: #7ee2a8;          /* 10.2:1 on code */
+
+  --t-syn-keyword: #ff9fb0;           /* 8.3:1 on code */
+  --t-syn-ident: #9ed2ff;             /* 10.1:1 on code */
+  --t-syn-fn: #ffd166;                /* 11.2:1 on code */
+  --t-syn-string: #a6efc4;            /* 12.1:1 on code */
+  --t-syn-number: #c3b5ff;            /* 8.7:1 on code */
+  --t-syn-punct: #93a9c4;             /* 6.7:1 on code */
+  --t-syn-plain: #e6eef8;             /* 13.8:1 on code */
+  --t-syn-comment: #8fa6c1;           /* 6.4:1 on code */
+  --t-syn-attr: #b9defc;              /* 11.4:1 on code */
+  --t-syn-tag: #ffb3cf;               /* 9.7:1 on code */
+  --t-syn-violet: #c3b5ff;            /* 8.7:1 on code */
 }
 
 /* v3's `container` config has no direct v4 equivalent; express it as a utility. */
@@ -394,7 +380,18 @@
   body {
     background-color: var(--color-background);
     color: var(--color-foreground);
-    font-family: 'Space Grotesk', sans-serif;
+    font-family: var(--font-sans);
+  }
+
+  /* Headings take the condensed display face, the way a manual labels its
+     sections. Only h1/h2 go uppercase: h3 is a card or entry title, where a
+     long project name in capitals would read as shouting. */
+  h1, h2, h3 {
+    font-family: var(--font-display);
+  }
+  h1, h2 {
+    text-transform: uppercase;
+    letter-spacing: 0.01em;
   }
 
   html {
@@ -441,40 +438,39 @@
   --tint-success-30: color-mix(in srgb, var(--color-success) 30%, transparent);
   --tint-success-60: color-mix(in srgb, var(--color-success) 60%, transparent);
 
-  --tint-violet-07: rgb(139 92 246 / 0.07);
-  --tint-violet-20: rgb(139 92 246 / 0.2);
+  --tint-violet-07: color-mix(in srgb, var(--color-syn-violet) 7%, transparent);
+  --tint-violet-20: color-mix(in srgb, var(--color-syn-violet) 20%, transparent);
 }
 
 /* ── Contrast films and scrims ──
    NOTE the historical name: `--tint-white-*` means "a faint film that lifts a
-   surface away from the page", not literally white. On the dark theme that
-   film is white; on the light theme it has to invert to near-black, or it
-   disappears. The 31 call sites are unchanged — only the values flip.
+   surface away from the page", not literally white. On Blueprint that film
+   is white; on Manual it inverts to the ink, or it disappears. The 31 call
+   sites are unchanged — only the values flip.
 
-   The light alphas are roughly 1.5x their dark counterparts: dark-on-light at
-   2-8% is far less visible than white-on-black at the same alpha. */
+   Manual's alphas are roughly 1.5x Blueprint's: ink on paper at 2-8% is far
+   less visible than white on blue at the same alpha. */
 :root {
-  --tint-white-02: rgb(15 23 42 / 0.03);
-  --tint-white-03: rgb(15 23 42 / 0.045);
-  --tint-white-04: rgb(15 23 42 / 0.06);
-  --tint-white-05: rgb(15 23 42 / 0.07);
-  --tint-white-06: rgb(15 23 42 / 0.085);
-  --tint-white-07: rgb(15 23 42 / 0.10);
-  --tint-white-08: rgb(15 23 42 / 0.12);
-  --tint-white-15: rgb(15 23 42 / 0.20);
+  --tint-white-02: rgb(21 23 28 / 0.03);
+  --tint-white-03: rgb(21 23 28 / 0.045);
+  --tint-white-04: rgb(21 23 28 / 0.06);
+  --tint-white-05: rgb(21 23 28 / 0.07);
+  --tint-white-06: rgb(21 23 28 / 0.085);
+  --tint-white-07: rgb(21 23 28 / 0.10);
+  --tint-white-08: rgb(21 23 28 / 0.12);
+  --tint-white-15: rgb(21 23 28 / 0.20);
 
   /* Scrims sit under the sticky header and the mobile drawer, so they take the
      page colour, not a fixed near-black. */
-  --scrim-soft: rgb(248 250 252 / 0.35);
-  --scrim-strong: rgb(248 250 252 / 0.7);
-  --scrim-base-35: rgb(248 250 252 / 0.35);
-  --scrim-base-90: rgb(248 250 252 / 0.9);
-  --scrim-base-98: rgb(248 250 252 / 0.98);
+  --scrim-soft: rgb(243 241 234 / 0.35);
+  --scrim-strong: rgb(243 241 234 / 0.7);
+  --scrim-base-35: rgb(243 241 234 / 0.35);
+  --scrim-base-90: rgb(243 241 234 / 0.9);
+  --scrim-base-98: rgb(243 241 234 / 0.98);
 
-  /* Pure black over a pale surface reads as dirt; tint the shadow with the
-     surface hue instead. */
-  --shadow-black-40: rgb(15 23 42 / 0.12);
-  --shadow-black-50: rgb(15 23 42 / 0.16);
+  /* Pure black over paper reads as dirt; shadows are cut from the ink. */
+  --shadow-black-40: rgb(21 23 28 / 0.12);
+  --shadow-black-50: rgb(21 23 28 / 0.16);
 }
 
 .dark {
@@ -487,118 +483,66 @@
   --tint-white-08: rgb(255 255 255 / 0.08);
   --tint-white-15: rgb(255 255 255 / 0.15);
 
-  --scrim-soft: rgb(10 15 26 / 0.35);
-  --scrim-strong: rgb(10 15 26 / 0.7);
-  --scrim-base-35: rgb(3 7 18 / 0.35);
-  --scrim-base-90: rgb(3 7 18 / 0.9);
-  --scrim-base-98: rgb(3 7 18 / 0.98);
+  /* Scrims are the blue paper (base) or its deeper footer band (soft/strong). */
+  --scrim-soft: rgb(11 35 64 / 0.35);
+  --scrim-strong: rgb(11 35 64 / 0.7);
+  --scrim-base-35: rgb(15 43 76 / 0.35);
+  --scrim-base-90: rgb(15 43 76 / 0.9);
+  --scrim-base-98: rgb(15 43 76 / 0.98);
 
-  --shadow-black-40: rgb(0 0 0 / 0.4);
-  --shadow-black-50: rgb(0 0 0 / 0.5);
+  /* Navy-black, not black: shadows on blue paper still read as blue. */
+  --shadow-black-40: rgb(4 14 28 / 0.45);
+  --shadow-black-50: rgb(4 14 28 / 0.55);
 }
 
-/* ── CSS Variables ── */
+/* ── Print shadows ──
+   The manual is printed, not lit. Depth comes from a hard offset in ink, the
+   way one sheet laid over another throws its edge, never from a blurred glow:
+   zero blur is the point, since a soft edge reads as a screen effect. Three
+   steps -- resting, raised, floating -- and nothing else casts a shadow. */
 :root {
-  --blue-glow: 0 0 20px var(--tint-brand-40);
-  --blue-glow-lg: 0 0 40px var(--tint-brand-30);
-}
-
-/* ── Liquid glass ──
-   The nav is a floating pill rather than a full-width bar: a translucent
-   surface that samples the page through backdrop-filter, with saturation
-   pushed up so colour scrolling underneath bleeds through the way Apple's
-   material does. The highlight is two inset shadows -- a bright top edge and
-   a dim bottom one -- which is what reads as a curved piece of glass rather
-   than a flat panel. */
-:root {
-  --glass-bg: color-mix(in srgb, var(--color-surface-base) 62%, transparent);
-  --glass-border: rgb(255 255 255 / 0.55);
-  --glass-highlight: inset 0 1px 0 0 rgb(255 255 255 / 0.85);
-  --glass-lowlight: inset 0 -1px 0 0 rgb(15 23 42 / 0.06);
-  --glass-shadow: 0 8px 32px rgb(15 23 42 / 0.10), 0 2px 8px rgb(15 23 42 / 0.06);
-  --glass-blur: 20px;
-  --glass-saturate: 180%;
+  --print-shadow-color: rgb(21 23 28 / 0.22);
+  --shadow-print-sm: 2px 2px 0 var(--print-shadow-color);
+  --shadow-print: 4px 4px 0 var(--print-shadow-color);
+  --shadow-print-lg: 6px 6px 0 var(--print-shadow-color);
 }
 
 .dark {
-  --glass-bg: color-mix(in srgb, var(--color-surface-base) 55%, transparent);
-  --glass-border: rgb(255 255 255 / 0.12);
-  --glass-highlight: inset 0 1px 0 0 rgb(255 255 255 / 0.14);
-  --glass-lowlight: inset 0 -1px 0 0 rgb(0 0 0 / 0.30);
-  --glass-shadow: 0 8px 32px rgb(0 0 0 / 0.45), 0 2px 8px rgb(0 0 0 / 0.30);
-  --glass-blur: 22px;
-  --glass-saturate: 170%;
+  /* Darker than the blue paper, so the offset reads as a sheet's shadow. */
+  --print-shadow-color: rgb(4 14 28 / 0.6);
 }
 
-.glass-surface {
-  background: var(--glass-bg);
-  border: 1px solid var(--glass-border);
-  box-shadow: var(--glass-highlight), var(--glass-lowlight), var(--glass-shadow);
-  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
-  backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
-}
-
-/* Where backdrop-filter is unavailable the pill would read as a flat wash, so
-   fall back to a more opaque surface that still separates from the page. */
-@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
-  .glass-surface {
-    background: color-mix(in srgb, var(--color-surface-base) 94%, transparent);
-  }
+/* ── Paper sheet ──
+   The nav floats as a printed tab strip: an opaque sheet with a line-art edge
+   and a print shadow. It was liquid glass that blurred whatever lay behind
+   it; a manual has no glass, and an opaque sheet also stops the content
+   scrolling under the nav from bleeding through it. */
+.sheet-surface {
+  background: var(--color-card-surface);
+  border: 1px solid var(--color-card-border);
+  box-shadow: var(--shadow-print-sm);
 }
 
 /* The moving pill behind the active tab. Sits under the labels (z-0 vs z-10)
-   and animates via left/width from the tab bar. */
-.glass-pill {
-  background: color-mix(in srgb, var(--color-brand) 14%, transparent);
+   and animates via left/width from the tab bar. Flat, with no shadow of its
+   own: the active tab reads as inked rather than raised. */
+.tab-pill {
+  /* Mixed toward the sheet rather than toward transparent, so the fill reads
+     the same on the nav sheet as it does straight on the page. */
+  background: var(--sheet-brand-14);
   /* Full-strength brand, not a 30% mix. The pill is the only thing marking
      which tab is active, so its edge is a UI component boundary under
      SC 1.4.11 and needs 3:1 against what it sits on -- the mix measured
      1.54:1 on light and 1.44:1 on dark. Shared by the page tab bar and the
      About sub-tabs, so this fixes both. */
   border: 1px solid var(--color-brand);
-  box-shadow: inset 0 1px 0 0 rgb(255 255 255 / 0.25),
-              0 2px 10px color-mix(in srgb, var(--color-brand) 22%, transparent);
 }
 
-/* ── Wings of Light glow ──
-   box-shadow takes no gradient, so the prismatic bloom is built from stacked
-   shadows fanned out along x: each layer contributes one stop of the ramp and
-   they blend where they overlap.
-
-   Light and dark are tuned separately. A 22% chromatic bloom reads as energy
-   against near-black and as a smudge against #f8fafc, so the light theme runs
-   at roughly half the alpha and leans on a real depth shadow instead. */
-:root {
-  --wing-glow:
-    -10px 0 22px color-mix(in srgb, var(--color-wing-1) 12%, transparent),
-     -4px 0 20px color-mix(in srgb, var(--color-wing-2) 11%, transparent),
-      0    0 18px color-mix(in srgb, var(--color-wing-3) 10%, transparent),
-      4px 0 20px color-mix(in srgb, var(--color-wing-4) 11%, transparent),
-     10px 0 22px color-mix(in srgb, var(--color-wing-5) 12%, transparent),
-      0    8px 24px var(--shadow-black-40);
-  --wing-glow-sm:
-    -5px 0 12px color-mix(in srgb, var(--color-wing-1) 10%, transparent),
-     0   0 10px color-mix(in srgb, var(--color-wing-3) 9%, transparent),
-     5px 0 12px color-mix(in srgb, var(--color-wing-5) 10%, transparent),
-     0   4px 14px var(--shadow-black-40);
-}
-
-.dark {
-  --wing-glow:
-    -10px 0 22px color-mix(in srgb, var(--color-wing-1) 22%, transparent),
-     -4px 0 20px color-mix(in srgb, var(--color-wing-2) 20%, transparent),
-      0    0 18px color-mix(in srgb, var(--color-wing-3) 18%, transparent),
-      4px 0 20px color-mix(in srgb, var(--color-wing-4) 20%, transparent),
-     10px 0 22px color-mix(in srgb, var(--color-wing-5) 22%, transparent);
-  --wing-glow-sm:
-    -5px 0 12px color-mix(in srgb, var(--color-wing-1) 18%, transparent),
-     0   0 10px color-mix(in srgb, var(--color-wing-3) 16%, transparent),
-     5px 0 12px color-mix(in srgb, var(--color-wing-5) 18%, transparent);
-}
-
-/* ── Font overrides ── */
+/* ── Font overrides ──
+   !important so the class still wins over an inline font-family on the same
+   element, which the utility alone (layered, not important) would lose to. */
 .font-mono {
-  font-family: 'JetBrains Mono', monospace !important;
+  font-family: var(--font-mono) !important;
 }
 
 /* Fades the hard left/right cut where marquee content enters and exits.
@@ -614,20 +558,55 @@
    in CSS means keyboard users get the same affordance as mouse users, which
    the JS versions never provided (they only listened for mouse events). */
 
-/* Text/search field */
-.field-interactive {
-  background: var(--tint-white-03);
-  border: 1px solid var(--tint-white-08);
-  transition: border-color 0.2s ease, background 0.2s ease;
+/* ── Sheet tints ──
+   The opaque counterpart of --tint-brand-*: the spot ink printed onto a
+   sheet rather than a film over whatever lies behind it. Anything that sits
+   on the drafting grid takes these, so the grid never runs through a
+   control. */
+:root {
+  --sheet-brand-05: color-mix(in srgb, var(--color-brand) 5%, var(--color-card-surface));
+  --sheet-brand-06: color-mix(in srgb, var(--color-brand) 6%, var(--color-card-surface));
+  --sheet-brand-07: color-mix(in srgb, var(--color-brand) 7%, var(--color-card-surface));
+  --sheet-brand-08: color-mix(in srgb, var(--color-brand) 8%, var(--color-card-surface));
+  --sheet-brand-10: color-mix(in srgb, var(--color-brand) 10%, var(--color-card-surface));
+  --sheet-brand-14: color-mix(in srgb, var(--color-brand) 14%, var(--color-card-surface));
+  --sheet-brand-15: color-mix(in srgb, var(--color-brand) 15%, var(--color-card-surface));
 }
-.field-interactive:hover {
-  border-color: var(--tint-brand-30);
+
+/* ── Fields ──
+   One recipe for every input (the contact form applies the same values
+   through its own classes): an ink-line box on an opaque sheet, and a focus
+   state that stands out from that resting line -- solid spot ink plus a 3px
+   halo. A tinted border alone measured 1.6-2.3:1 against the page, under the
+   3:1 a focus indicator needs. */
+.field-interactive,
+.filter-select {
+  background: var(--color-card-surface);
+  border: 1px solid var(--color-card-border);
+  transition: color 0.2s ease, border-color 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease;
+}
+.field-interactive:hover,
+.filter-select:hover {
+  border-color: var(--color-card-border-strong);
 }
 .field-interactive:focus-visible,
-.field-interactive:focus {
+.filter-select:focus-visible {
   outline: none;
-  border-color: var(--tint-brand-50);
-  background: var(--tint-brand-05);
+  border-color: var(--color-brand);
+  box-shadow: 0 0 0 3px var(--tint-brand-25);
+}
+/* Preflight's 50% currentColor placeholder measured 2.9:1. */
+.field-interactive::placeholder {
+  color: var(--color-ink-faint);
+  opacity: 1;
+}
+.filter-select {
+  color: var(--color-ink-dim);
+}
+.filter-select[data-active] {
+  color: var(--color-brand-text);
+  border-color: var(--color-brand);
+  background: var(--sheet-brand-10);
 }
 
 /* Icon button that tints on interaction */
@@ -644,31 +623,35 @@
    to assistive tech instead of living only in a JS variable. */
 .filter-chip {
   color: var(--color-ink-dim);
-  border: 1px solid var(--tint-white-08);
-  background: var(--tint-white-03);
-  transition: color 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+  border: 1px solid var(--color-card-border);
+  background: var(--color-card-surface);
+  transition: color 0.2s ease, border-color 0.2s ease, background-color 0.2s ease;
 }
 .filter-chip:hover,
 .filter-chip:focus-visible {
   color: var(--color-brand-text);
-  border-color: var(--tint-brand-30);
+  border-color: var(--color-card-border-strong);
+}
+.filter-chip:focus-visible {
+  outline: 2px solid var(--color-ring);
+  outline-offset: 2px;
 }
 .filter-chip[aria-pressed="true"] {
   color: var(--color-brand-text);
-  border-color: var(--tint-brand-50);
-  background: var(--tint-brand-15);
+  border-color: var(--color-brand);
+  background: var(--sheet-brand-15);
 }
 
-/* Skill badge */
+/* Skill badge — a spot-ink tint printed on the sheet. */
 .skill-badge-interactive {
-  background: var(--tint-brand-07);
-  border: 1px solid var(--tint-brand-16);
-  transition: background 0.2s ease, border-color 0.2s ease;
+  background: var(--sheet-brand-07);
+  border: 1px solid var(--tint-brand-25);
+  transition: background-color 0.2s ease, border-color 0.2s ease;
 }
 .skill-badge-interactive:hover,
 .skill-badge-interactive:focus-visible {
-  background: var(--tint-brand-16);
-  border-color: var(--tint-brand-42);
+  background: var(--sheet-brand-15);
+  border-color: var(--color-brand);
 }
 
 /* Nav link */
@@ -684,44 +667,97 @@
   color: var(--color-brand-text);
 }
 
-/* Primary submit button */
-.btn-lift {
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+/* ── Buttons ──
+   Three primitives cover every button-like control, so one role always
+   looks and moves the same way:
+     .btn-ink        the primary action, a flat spot-ink plate;
+     .btn-sheet      a secondary action, a sheet edged in line art;
+     .btn-sheet-icon the square icon version of .btn-sheet.
+   One radius for all three, the same as the fields. Hover and keyboard
+   focus share one lift toward the light, and :active presses the sheet flat
+   to the page. Link cards, the flow link and the cookie buttons keep their
+   own shapes but join the same motion below. */
+.btn-ink,
+.btn-sheet,
+.btn-sheet-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border-radius: 10px;
+  font-weight: 500;
+  text-decoration: none;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease,
+              border-color 0.2s ease, color 0.2s ease;
 }
-.btn-lift:hover,
-.btn-lift:focus-visible {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 25px var(--tint-brand-45);
+.btn-ink {
+  color: var(--color-on-brand);
+  background: var(--color-brand-700);
+  border: 1px solid var(--color-brand-700);
+  box-shadow: var(--shadow-print-sm);
+}
+.btn-ink:hover {
+  background: var(--color-brand-900);
+  border-color: var(--color-brand-900);
+}
+.btn-sheet {
+  color: var(--color-ink);
+  background: var(--color-card-surface);
+  border: 1px solid var(--color-card-border);
+}
+.btn-sheet-icon {
+  width: 2.25rem;
+  height: 2.25rem;
+  color: var(--color-ink-dim);
+  background: var(--color-card-surface);
+  border: 1px solid var(--color-card-border);
+}
+.btn-sheet:hover,
+.btn-sheet-icon:hover {
+  color: var(--color-brand-text);
+  background: var(--sheet-brand-08);
+  border-color: var(--color-card-border-strong);
+}
+.btn-ink:focus-visible,
+.btn-sheet:focus-visible,
+.btn-sheet-icon:focus-visible {
+  outline: 2px solid var(--color-ring);
+  outline-offset: 2px;
 }
 
-/* "See more" button */
-.btn-soft {
-  background: var(--tint-brand-08);
-  border: 1px solid var(--tint-brand-25);
-  transition: background 0.2s ease, border-color 0.2s ease;
-}
-.btn-soft:hover,
-.btn-soft:focus-visible {
-  background: var(--tint-brand-15);
-  border-color: var(--tint-brand-45);
-}
-
-/* Contact link card */
+/* Contact link card. An opaque sheet like the others: a translucent fill let
+   the drafting grid run straight through it. */
 .contact-card {
-  background: var(--tint-white-02);
-  border: 1px solid var(--tint-white-06);
-  transition: background 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+  background: var(--color-card-surface);
+  border: 1px solid var(--color-card-border);
+  transition: background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
 }
 .contact-card:hover,
 .contact-card:focus-visible {
-  background: var(--tint-brand-08);
-  border-color: var(--tint-brand-25);
-  transform: translateX(4px);
+  background: var(--sheet-brand-06);
+  border-color: var(--color-card-border-strong);
 }
 
-/* Project card scan sweep. Was el.style.animation. */
-.scan-line {
-  animation: scanLine 2.2s linear infinite;
+/* The shared motion. Hover and keyboard focus lift the same way, so keyboard
+   users get the affordance mouse users do; pressing flattens the sheet. The
+   :active rule comes last so it wins over hover at equal specificity. */
+.btn-ink:hover, .btn-ink:focus-visible,
+.btn-sheet:hover, .btn-sheet:focus-visible,
+.btn-sheet-icon:hover, .btn-sheet-icon:focus-visible,
+.contact-card:hover, .contact-card:focus-visible,
+.cookie-btn:hover, .cookie-btn:focus-visible {
+  transform: translate(-2px, -2px);
+  box-shadow: var(--shadow-print);
+}
+.btn-ink:active,
+.btn-sheet:active,
+.btn-sheet-icon:active,
+.contact-card:active,
+.cookie-btn:active,
+.flow-link:active {
+  transform: none;
+  box-shadow: none;
 }
 
 /* Rotating dashed ring on the portrait. Was el.style.animation. */
@@ -754,65 +790,52 @@
 ::-webkit-scrollbar-track { background: var(--color-surface-alt); }
 ::-webkit-scrollbar-thumb { background: var(--color-brand); border-radius: 4px; }
 
-/* ── Dot grid background ── */
+/* ── Registration marks ──
+   The hero used to carry a dot field; on the drafting sheet it prints the
+   crosshair a press uses to line up a plate, one at every major grid
+   crossing. The mark is a mask, so its colour comes from the theme like
+   everything else, and the -60px offset centres each mark on a crossing. */
 .dot-grid {
-  background-image: radial-gradient(circle, var(--tint-brand-15) 1px, transparent 1px);
-  background-size: 28px 28px;
+  /* The strength is in the colour, not an opacity class: on phones this layer
+     runs a scroll-driven opacity fade, and an animation overrides any opacity
+     set in a class, which printed the marks at full strength there. */
+  background-color: color-mix(in srgb, var(--color-brand) 30%, transparent);
+  -webkit-mask: var(--registration-mark) -60px -60px / var(--grid-major-step) var(--grid-major-step) repeat;
+  mask: var(--registration-mark) -60px -60px / var(--grid-major-step) var(--grid-major-step) repeat;
 }
 
-/* ── Card glow hover ──
-   The bloom is the Wings of Light ramp; see --wing-glow above. */
-.card-glow {
-  transition: box-shadow 0.3s ease, border-color 0.3s ease;
+/* ── Card lift ──
+   Hover raises a card off the page: its print shadow steps up to the raised
+   offset and the line-art edge strengthens. No transform -- most cards sit in
+   scroll regions that clip their overflow, and a card shifted up or left
+   would lose its leading edge there. */
+.card-lift {
+  transition: box-shadow 0.2s ease, border-color 0.2s ease;
 }
-.card-glow:hover,
-.card-glow:focus-within {
-  box-shadow: var(--wing-glow);
+.card-lift:hover,
+.card-lift:focus-within {
+  box-shadow: var(--shadow-print);
   border-color: var(--color-card-border-strong) !important;
 }
 
 /* Window-chrome cards. The border is the card's edge against the page, so it
-   strengthens rather than disappears on interaction.
-
-   Shadow order matters: the 1px ring sits tight to the edge, the wing bloom
-   is chromatic light around it, and the depth shadow lands last so the card
-   still reads as lifted rather than merely glowing. */
+   strengthens rather than disappears on interaction, and the card lifts the
+   same way .card-lift does. */
 .window-card {
-  transition: border-color 0.25s ease, box-shadow 0.25s ease, transform 0.25s ease;
+  border: 1px solid var(--color-card-border);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 .window-card:hover,
 .window-card:focus-within {
   border-color: var(--color-card-border-strong);
-  box-shadow: 0 0 0 1px var(--tint-brand-15), var(--wing-glow);
+  box-shadow: var(--shadow-print);
 }
 
-/* ── Gradient text — Wings of Light ── */
-.gradient-text {
-  background: linear-gradient(
-    115deg,
-    var(--color-wing-1) 0%,
-    var(--color-wing-2) 20%,
-    var(--color-wing-3) 40%,
-    var(--color-wing-4) 60%,
-    var(--color-wing-5) 80%,
-    var(--color-wing-6) 100%
-  );
-  background-size: 300% 100%;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-/* The wings drift only when motion is welcome. */
-@media (prefers-reduced-motion: no-preference) {
-  .gradient-text {
-    animation: wingShift 6s linear infinite;
-  }
-}
-
-@keyframes wingShift {
-  from { background-position: 0% 0; }
-  to { background-position: -200% 0; }
+/* ── Spot ink ──
+   Accent type in the manual's spot colour. It replaces the Wings-of-Light
+   gradient, which a printed sheet cannot carry: one flat ink, and no drift. */
+.spot-text {
+  color: var(--color-brand-text);
 }
 
 /* ── Floating animation ── */
@@ -841,11 +864,6 @@
   to { transform: rotate(360deg); }
 }
 
-@keyframes scanLine {
-  from { top: -10%; }
-  to { top: 110%; }
-}
-
 @keyframes pulse {
   0%, 100% { transform: scale(1); opacity: 0.6; }
   50% { transform: scale(2.2); opacity: 0; }
@@ -861,9 +879,10 @@
   z-index: 10000;
   padding: 10px 18px;
   border-radius: 0 0 10px 10px;
-  background: var(--color-brand-900); /* 6.7:1 with white — AA at this size */
-  color: #fff;
-  font-family: 'Space Grotesk', sans-serif;
+  /* The measured fill/label pair. A hardcoded white label would sit at
+     1.6:1 on Blueprint's pale cyan fill. */
+  background: var(--color-brand-700);
+  color: var(--color-on-brand);
   font-size: 0.85rem;
   font-weight: 500;
   text-decoration: none;
@@ -872,26 +891,63 @@
 .skip-link:focus-visible,
 .skip-link:focus {
   transform: translate(-50%, 0);
-  outline: 2px solid var(--color-brand-300);
+  outline: 2px solid var(--color-ring);
   outline-offset: 2px;
 }
 
-/* Fixed page backdrop — the hero mesh, pinned behind everything. Content
+/* ── Paper surface ──
+   The page is a sheet of drafting stock: a fine grid with a heavier rule every
+   fifth line, printed in the spot blue on Manual and in white on Blueprint,
+   under a faint fibre grain. The rules are gradients and the grain and marks
+   are inline SVG, so all of it themes itself. A file under public/ would have
+   meant baking Astro's BASE_URL into CSS, which does not resolve under
+   base: '/the-portfolio/'. */
+:root {
+  --grid-step: 24px;
+  --grid-major-step: 120px;
+  /* Faint enough that body copy printed over a rule stays easy to read. */
+  --grid-minor: color-mix(in srgb, var(--color-brand) 4.5%, transparent);
+  --grid-major: color-mix(in srgb, var(--color-brand) 8.5%, transparent);
+  /* Fractal noise with its alpha capped at 7% inside the SVG (peaking near
+     6.4%), so the grain reads the same over either paper and needs no blend
+     mode. Page text is measured against it: see the "on grid + grain" ratios
+     in the palette comments. */
+  --paper-grain: url("data:image/svg+xml,%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20width%3D'240'%20height%3D'240'%3E%3Cfilter%20id%3D'g'%3E%3CfeTurbulence%20type%3D'fractalNoise'%20baseFrequency%3D'0.9'%20numOctaves%3D'3'%20stitchTiles%3D'stitch'%2F%3E%3CfeColorMatrix%20values%3D'0%200%200%200%200%200%200%200%200%200%200%200%200%200%200%200%200%200%200.07%200'%2F%3E%3C%2Ffilter%3E%3Crect%20width%3D'100%25'%20height%3D'100%25'%20filter%3D'url(%23g)'%2F%3E%3C%2Fsvg%3E");
+  --registration-mark: url("data:image/svg+xml,%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20width%3D'120'%20height%3D'120'%3E%3Cg%20fill%3D'none'%20stroke%3D'black'%20stroke-width%3D'1.25'%3E%3Cpath%20d%3D'M60%2052v16M52%2060h16'%2F%3E%3Ccircle%20cx%3D'60'%20cy%3D'60'%20r%3D'4.5'%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E");
+}
+
+.dark {
+  --grid-minor: rgb(255 255 255 / 0.045);
+  --grid-major: rgb(255 255 255 / 0.09);
+}
+
+/* Fixed page backdrop -- the sheet itself, pinned behind everything. Content
    scrolls over it, so it reads as depth rather than a panel that moves. */
 .site-backdrop {
   position: fixed;
   inset: 0;
   z-index: 0;
   pointer-events: none;
+}
+
+/* The sheet itself. Shared by the page backdrop, the pre-render veil and the
+   loading screen: when the loader lifts, the page underneath is the same
+   sheet with the same rules in the same places, so nothing re-draws. */
+.site-backdrop,
+.drafting-sheet {
   background-color: var(--color-surface-base);
-  /* Was a static hero-mesh.svg, which could not read CSS vars and so could not
-     follow the theme. Shipping one SVG per theme would have meant baking
-     Astro's BASE_URL into CSS, which does not resolve under base:
-     '/the-portfolio/'. These gradients theme themselves and drop a request. */
   background-image:
-    radial-gradient(55% 55% at 18% 22%, var(--tint-brand-20), transparent 70%),
-    radial-gradient(52% 52% at 82% 72%, var(--tint-brand-20), transparent 70%),
-    radial-gradient(40% 40% at 62% 12%, var(--tint-brand-12), transparent 70%);
+    var(--paper-grain),
+    linear-gradient(var(--grid-major) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-major) 1px, transparent 1px),
+    linear-gradient(var(--grid-minor) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-minor) 1px, transparent 1px);
+  background-size:
+    240px 240px,
+    var(--grid-major-step) var(--grid-major-step),
+    var(--grid-major-step) var(--grid-major-step),
+    var(--grid-step) var(--grid-step),
+    var(--grid-step) var(--grid-step);
 }
 
 /* Panels sit above the fixed backdrop and are transparent, so the backdrop
@@ -996,7 +1052,7 @@
   width: min(560px, 52%);
   z-index: 0;
   pointer-events: none;
-  opacity: 0.18;
+  opacity: 0.12;
   display: none;
   -webkit-mask-image: linear-gradient(to left, #000 40%, transparent 100%);
   mask-image: linear-gradient(to left, #000 40%, transparent 100%);
@@ -1004,7 +1060,7 @@
 @media (min-width: 1024px) {
   .about-code-backdrop { display: block; }
 }
-.dark .about-code-backdrop { opacity: 0.24; }
+.dark .about-code-backdrop { opacity: 0.16; }
 
 /* The logo doubles as the Home control, so it needs the same active and focus
    affordances the tabs have. */
@@ -1063,14 +1119,12 @@
   gap: 0.4rem;
   padding: 0.25rem 0.7rem;
   border-radius: 999px;
-  font-family: 'JetBrains Mono', monospace;
+  font-family: var(--font-mono);
   font-size: 0.62rem;
   color: var(--color-ink-dim);
-  background: var(--glass-bg);
-  border: 1px solid var(--glass-border);
-  -webkit-backdrop-filter: blur(10px) saturate(160%);
-  backdrop-filter: blur(10px) saturate(160%);
-  box-shadow: var(--glass-shadow);
+  background: var(--color-card-surface);
+  border: 1px solid var(--color-card-border);
+  box-shadow: var(--shadow-print-sm);
 }
 
 .scroll-hint-arrow {
@@ -1146,24 +1200,8 @@
   }
 }
 
-.filter-select {
-  color: var(--color-ink-dim);
-  background: var(--tint-white-03);
-  border: 1px solid var(--tint-white-08);
-  transition: color 0.2s ease, border-color 0.2s ease, background 0.2s ease;
-}
-.filter-select:hover,
-.filter-select:focus-visible {
-  color: var(--color-brand-text);
-  border-color: var(--tint-brand-30);
-}
-.filter-select[data-active] {
-  color: var(--color-brand-text);
-  border-color: var(--tint-brand-50);
-  background: var(--tint-brand-10);
-}
-/* The options list is painted by the OS, so it needs real colours rather than
-   the translucent tints the closed control uses. */
+/* The options list is painted by the OS, so it needs real colours set on
+   the options themselves. */
 .filter-select option {
   background: var(--color-card-surface);
   color: var(--color-ink);
@@ -1179,7 +1217,8 @@
 .view-toggle-btn[aria-pressed="true"] {
   background: var(--color-card-surface);
   color: var(--color-brand-text);
-  box-shadow: 0 1px 2px var(--shadow-black-40);
+  /* Outlined like the other sheets rather than lifted on a soft shadow. */
+  box-shadow: 0 0 0 1px var(--color-card-border);
 }
 
 /* ── Career pipeline ──
@@ -1232,13 +1271,14 @@
   background: var(--color-brand);
   border-color: var(--color-brand);
   color: var(--color-on-brand);
-  box-shadow: 0 0 0 5px var(--tint-brand-20), 0 4px 14px var(--tint-brand-40);
+  /* A flat ring printed around the node, not a glow under it. */
+  box-shadow: 0 0 0 5px var(--tint-brand-20);
 }
 .pipeline-node[data-state="running"][data-selected] {
   background: var(--color-success);
   border-color: var(--color-success);
   color: var(--color-surface-code);
-  box-shadow: 0 0 0 5px var(--tint-success-20), 0 4px 14px var(--tint-success-30);
+  box-shadow: 0 0 0 5px var(--tint-success-20);
 }
 
 /* The track up to and including the selected stage reads as the run so far. */
@@ -1251,10 +1291,10 @@
 }
 .pipeline-stage-btn:hover,
 .pipeline-stage-btn:focus-visible {
-  background: var(--tint-brand-05);
+  background: var(--sheet-brand-05);
 }
 .pipeline-stage-btn[aria-current="true"] {
-  background: var(--tint-brand-08);
+  background: var(--sheet-brand-08);
 }
 .pipeline-stage-btn:focus-visible {
   outline: 2px solid var(--color-brand);
@@ -1407,6 +1447,18 @@
   }
 }
 
+/* Scroll mode: the nav is an opaque sheet fixed over the top of the page,
+   so anything the browser scrolls into view for focus or a fragment must
+   stop below it. Without this, Shift+Tab parked five toolbar controls
+   entirely behind the nav (SC 2.4.11). --nav-h is measured at runtime.
+
+   This is the only offset: it covers the panels the nav pills scroll to as
+   well, so panels carry no scroll-margin of their own -- the two would add
+   up and land a panel a whole nav-height too low. */
+html[data-scroll-mode] {
+  scroll-padding-top: calc(var(--nav-h) + 0.5rem);
+}
+
 /* ── Mobile: one scrolling document, not tabs ──
    Fitting four panels into a phone viewport meant shrinking type and clipping
    content to win space that a phone simply does not have. On mobile every
@@ -1425,7 +1477,6 @@
     justify-content: flex-start;
     padding-top: var(--panel-nav-gap);
     padding-bottom: clamp(2rem, 6vh, 3.25rem);
-    scroll-margin-top: calc(var(--nav-h) + 0.5rem);
   }
 
   /* The first panel still clears the floating nav and keeps a full-viewport
@@ -1456,6 +1507,16 @@
     animation: none;
   }
 
+  /* The Projects scroll region carries a desktop scrollbar gutter (-mr-1 with
+     a 2px pad-back), which nets out 2px wider than its panel. Harmless while it
+     clips its own overflow; once it stops being a scroll container here, the
+     full-bleed project rail inherits those 2px and the whole page pans
+     sideways. No scrollbar, so no gutter. */
+  html[data-scroll-mode] .panel-scroll {
+    margin-right: 0;
+    padding-right: 0;
+  }
+
   html[data-scroll-mode] .about-pane {
     flex: none;
     /* The desktop pane centres itself in a capped box so the three views share
@@ -1483,7 +1544,7 @@
     align-items: center;
     gap: 0.4rem;
     margin-bottom: 0.75rem;
-    font-family: 'JetBrains Mono', monospace;
+    font-family: var(--font-mono);
     font-size: 0.7rem;
     text-transform: uppercase;
     letter-spacing: 0.08em;
@@ -1503,10 +1564,10 @@
 }
 
 /* ── Mobile: pinned hero backdrop ──
-   The hero's decorative layers (particle canvas, dot grid, floating snippets)
-   are absolute inside #home, so they scroll away with it. Pinning them to the
-   viewport makes the hero copy appear to travel over a stationary field rather
-   than the whole scene sliding up together.
+   The hero's registration marks are absolute inside #home, so they would
+   scroll away with it. Pinned to the viewport they stay registered to the
+   fixed drafting grid behind them, and the hero copy travels over a still
+   sheet rather than the whole scene sliding up together.
 
    They are pinned for the height of the hero only, then faded: a fixed layer
    left visible behind #about would sit under the rest of the page as noise.
@@ -1518,7 +1579,6 @@
     overflow: visible;
   }
 
-  html[data-scroll-mode] #home canvas,
   html[data-scroll-mode] #home > .dot-grid {
     position: fixed;
     inset: 0;
@@ -1542,7 +1602,6 @@
      whole page. */
   @supports not (animation-timeline: view()) {
     html[data-scroll-mode] #home { overflow: hidden; }
-    html[data-scroll-mode] #home canvas,
     html[data-scroll-mode] #home > .dot-grid { position: absolute; height: 100%; }
   }
 }
@@ -1551,7 +1610,6 @@
    the layers with the section. */
 @media (max-width: 640px) and (prefers-reduced-motion: reduce) {
   html[data-scroll-mode] #home { overflow: hidden; }
-  html[data-scroll-mode] #home canvas,
   html[data-scroll-mode] #home > .dot-grid {
     position: absolute;
     height: 100%;
@@ -1571,10 +1629,10 @@ html[data-tabs-ready] .tabpanel[hidden] {
    are toggled by the same `hidden` mechanism as the page tabs and gated the
    same way, so without JS all three stack into a readable document.
 
-   Distinct from the page tab bar on purpose: that one is mono/uppercase in a
-   floating glass pill at the top of the viewport, this one is a small inline
-   segmented control inside the panel. Two tablists that looked alike would
-   read as one broken control. */
+   Distinct from the page tab bar on purpose: that one is mono/uppercase on a
+   floating paper tab strip at the top of the viewport, this one is a small
+   inline segmented control inside the panel. Two tablists that looked alike
+   would read as one broken control. */
 html[data-subtabs-ready] .about-pane[hidden] {
   display: none;
 }
@@ -1715,7 +1773,7 @@ html[data-subtabs-ready] .about-pane[hidden] {
   align-items: center;
   gap: 0.35rem;
   margin-top: 0.4rem;
-  font-family: 'JetBrains Mono', monospace;
+  font-family: var(--font-mono);
   font-size: 0.62rem;
   color: var(--color-ink-faint);
   transition: opacity 0.25s ease;
@@ -1772,17 +1830,17 @@ html[data-subtabs-ready] .about-pane[hidden] {
   width: auto;
   z-index: 1;
   pointer-events: none;
-  /* Lower than the About backdrop's 0.18: that one sits behind a portrait and
+  /* Lower than the About backdrop's 0.12: that one sits behind a portrait and
      short paragraphs, this sits behind a 2.5rem headline and body copy that
      have to stay legible over it. */
-  opacity: 0.14;
+  opacity: 0.1;
   transform: rotate(-1.5deg);
   -webkit-mask-image: linear-gradient(to top, #000 55%, transparent 100%);
   mask-image: linear-gradient(to top, #000 55%, transparent 100%);
 }
 
 .dark .hero-terminal-compact {
-  opacity: 0.2;
+  opacity: 0.14;
 }
 
 .hero-terminal-compact-body {
@@ -1821,11 +1879,10 @@ html[data-subtabs-ready] .about-pane[hidden] {
   font-size: clamp(0.92rem, 0.75rem + 0.45vw, 1.08rem);
   color: var(--color-ink-dim);
   line-height: 1.7;
-  font-family: 'Space Grotesk', sans-serif;
   margin: 0;
 }
 
-/* The portrait drives its own rings and glow off --portrait-size, so that is
+/* The portrait drives its own rim and dashed ring off --portrait-size, so that is
    the variable to set -- shrinking or growing the wrapper alone leaves the
    decorations at their original size. */
 .about-pane [class*="portrait-size"] {
@@ -1852,7 +1909,7 @@ html[data-subtabs-ready] .about-pane[hidden] {
   font-size: clamp(1.25rem, 1rem + 0.8vw, 1.85rem);
   font-weight: 700;
   line-height: 1.1;
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: var(--font-display);
 }
 
 .stat-label {
@@ -1860,7 +1917,6 @@ html[data-subtabs-ready] .about-pane[hidden] {
   color: var(--color-ink-dim);
   margin-top: 3px;
   line-height: 1.25;
-  font-family: 'Space Grotesk', sans-serif;
 }
 
 /* Short viewports keep the old compact end of each range: the panel has no
@@ -1879,12 +1935,42 @@ html[data-subtabs-ready] .about-pane[hidden] {
   margin-bottom: clamp(0.6rem, 1.6vh, 1.1rem);
 }
 
+/* Skills category tabs: filled spot-ink pills, distinct from the page tab
+   strip and the About segmented control. Inactive labels take ink-dim; the
+   shadcn default (foreground at 60%) measured 4.37:1 on the Manual track. The
+   selected tab is a solid plate with the measured on-brand label. Unlayered,
+   so these outrank the shadcn state utilities in both themes. */
+.skills-tab {
+  color: var(--color-ink-dim);
+}
+.skills-tab:hover {
+  color: var(--color-ink);
+}
+.skills-tab[data-state="active"] {
+  color: var(--color-on-brand);
+  background: var(--color-brand-700);
+  border-color: transparent;
+}
+.skills-tab:focus-visible {
+  outline: 2px solid var(--color-ring);
+  outline-offset: 2px;
+}
+
+/* The panel under the Skills tabs is a keyboard stop of its own (Radix gives
+   it tabindex 0 so the badges can be reached), and shadcn's TabsContent turns
+   its outline off. Unlayered, so this wins over that utility. */
+.skills-panel:focus-visible {
+  outline: 2px solid var(--color-ring);
+  outline-offset: 4px;
+  border-radius: 1rem;
+}
+
 /* Shown only in mobile scroll mode, where the sub-tab bar is gone. */
 .about-pane-label {
   display: none;
 }
 
-/* Built like the page tab bar: a transparent track, with one .glass-pill
+/* Built like the page tab bar: a transparent track, with one .tab-pill
    sliding behind the labels. The pill carries both the active fill and the
    non-text contrast (SC 1.4.11) via its own brand border, so the triggers
    themselves need no background, border or underline of their own -- the
@@ -1902,8 +1988,8 @@ html[data-subtabs-ready] .about-pane[hidden] {
 }
 
 /* ── Cookie consent banner ──
-   Bottom-anchored glass card, the same material as the nav and sub-tabs. Sits
-   above the panels but below the nav pill, so it never covers navigation.
+   Bottom-anchored paper sheet, the same material as the nav. Sits above the
+   panels but below the nav, so it never covers navigation.
 
    Accept and Decline share a size and shape; only the fill differs. A banner
    that makes declining harder than accepting is not valid consent under GDPR,
@@ -1924,16 +2010,9 @@ html[data-subtabs-ready] .about-pane[hidden] {
   gap: 0.75rem 1rem;
   padding: 0.85rem 1rem;
   border-radius: 14px;
-  background: var(--glass-bg);
-  box-shadow: var(--glass-highlight), var(--glass-lowlight), var(--glass-shadow);
-  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
-  backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
-}
-
-@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
-  .cookie-banner {
-    background: color-mix(in srgb, var(--color-surface-base) 96%, transparent);
-  }
+  background: var(--color-card-surface);
+  border: 1px solid var(--color-card-border);
+  box-shadow: var(--shadow-print);
 }
 
 @media (prefers-reduced-motion: no-preference) {
@@ -1951,7 +2030,6 @@ html[data-subtabs-ready] .about-pane[hidden] {
   flex: 1 1 15rem;
   min-width: 0;
   margin: 0;
-  font-family: 'Space Grotesk', sans-serif;
   font-size: 0.76rem;
   line-height: 1.55;
   color: var(--color-ink-dim);
@@ -1969,14 +2047,14 @@ html[data-subtabs-ready] .about-pane[hidden] {
   min-width: 5rem;
   padding: 0.4rem 0.9rem;
   border-radius: 999px;
-  font-family: 'Space Grotesk', sans-serif;
   font-size: 0.78rem;
   font-weight: 500;
   cursor: pointer;
   color: var(--color-ink-muted);
   background: var(--tint-white-05);
   border: 1px solid var(--color-card-border);
-  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease,
+              transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .cookie-btn:hover {
@@ -1996,7 +2074,7 @@ html[data-subtabs-ready] .about-pane[hidden] {
 }
 
 .cookie-btn:focus-visible {
-  outline: 2px solid var(--color-brand-300);
+  outline: 2px solid var(--color-ring);
   outline-offset: 2px;
 }
 
@@ -2022,10 +2100,34 @@ html[data-scroll-mode] .cookie-banner {
   }
 }
 
+/* Footer text control ("Cookie settings"). Underlined like a link because it
+   reads like one, and at least 24px tall for SC 2.5.8 even at footer size. */
+.footer-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 24px;
+  padding: 0 0.25rem;
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  color: var(--color-ink-faint);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  background: none;
+  border: 0;
+  cursor: pointer;
+}
+.footer-link:hover {
+  color: var(--color-brand-text);
+}
+.footer-link:focus-visible {
+  outline: 2px solid var(--color-ring);
+  outline-offset: 2px;
+}
+
 /* ── Flow link ──
-   The forward step out of a section. Liquid glass like the nav and sub-tabs,
-   borderless, with the arrow easing right on hover to read as "onward" rather
-   than "submit". Sized past the 24x24 minimum for SC 2.5.8. */
+   The forward step out of a section. A paper sheet like the nav, lifting
+   toward the light on hover while the arrow eases right, so it reads as
+   "onward" rather than "submit". Sized past the 24x24 minimum for SC 2.5.8. */
 .flow-link {
   display: inline-flex;
   align-items: center;
@@ -2033,23 +2135,15 @@ html[data-scroll-mode] .cookie-banner {
   padding: 0.6rem 1.15rem;
   min-height: 2.5rem;
   border-radius: 999px;
-  font-family: 'Space Grotesk', sans-serif;
   font-size: 0.85rem;
   font-weight: 500;
   text-decoration: none;
   white-space: nowrap;
   color: var(--color-brand-text);
-  background: var(--glass-bg);
-  box-shadow: var(--glass-highlight), var(--glass-lowlight), var(--glass-shadow);
-  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
-  backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
-  transition: color 0.2s ease, background-color 0.2s ease, transform 0.2s ease;
-}
-
-@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
-  .flow-link {
-    background: color-mix(in srgb, var(--color-surface-base) 94%, transparent);
-  }
+  background: var(--color-card-surface);
+  border: 1px solid var(--color-card-border);
+  box-shadow: var(--shadow-print-sm);
+  transition: color 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
 }
 
 .flow-link svg {
@@ -2058,9 +2152,13 @@ html[data-scroll-mode] .cookie-banner {
   transition: transform 0.2s ease;
 }
 
-.flow-link:hover {
-  background: color-mix(in srgb, var(--color-brand) 16%, transparent);
+.flow-link:hover,
+.flow-link:focus-visible {
+  /* Mixed toward the sheet, not toward transparent: the link is opaque now. */
+  background: var(--sheet-brand-10);
   color: var(--color-brand-text);
+  transform: translate(-2px, -2px);
+  box-shadow: var(--shadow-print);
 }
 
 .flow-link:hover svg {
@@ -2068,7 +2166,7 @@ html[data-scroll-mode] .cookie-banner {
 }
 
 .flow-link:focus-visible {
-  outline: 2px solid var(--color-brand-300);
+  outline: 2px solid var(--color-ring);
   outline-offset: 2px;
 }
 
@@ -2216,10 +2314,21 @@ html[data-scroll-mode] .cookie-banner {
     scroll-behavior: auto !important;
   }
 
+  /* Entrance reveals start from opacity 0 or an offset, and their end state
+     must never depend on a script running: a reveal that misfires (the hook
+     reporting late, an observer that never fires, a hydration error) would
+     leave content invisible. An important author declaration outranks both
+     the inline start values and any running animation in the cascade, so
+     tagged reveals are visible and in place from the first frame. */
+  [data-reveal] {
+    opacity: 1 !important;
+    transform: none !important;
+    filter: none !important;
+  }
+
   /* Purely decorative infinite loops — removed rather than shortened. */
   .cursor-blink,
   .float-anim,
-  .scan-line,
   .spin-slow,
   .terminal-float,
   .pulse-ring {

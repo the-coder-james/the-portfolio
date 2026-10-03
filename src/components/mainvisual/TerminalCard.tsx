@@ -31,24 +31,32 @@ export function TerminalCard({ name, since, professional, stackLabels }: Termina
 
   // One declarative timeline replaces five hand-tuned animateEl calls with
   // manually-offset startDelays.
+  //
+  // These animate on mount, before the reduced-motion hook has reported, so
+  // a reduced-motion visitor used to see the whole entrance. The duration
+  // drops once the hook reports, and `data-reveal` lets the CSS pin the end
+  // state from the first frame.
+  const settle = { duration: 0 };
   const line = (i: number) => ({
-    initial: reduced ? false : { opacity: 0, x: -8 },
+    "data-reveal": "",
+    initial: { opacity: 0, x: -8 },
     animate: { opacity: 1, x: 0 },
-    transition: { delay: 0.7 + i * 0.1, type: "spring" as const, visualDuration: 0.35, bounce: 0.3 },
+    transition: reduced ? settle : { delay: 0.7 + i * 0.1, type: "spring" as const, visualDuration: 0.35, bounce: 0.3 },
   });
 
   return (
     <motion.div
+      data-reveal=""
       className={`hidden lg:block ${reduced ? "" : "terminal-float"}`}
-      initial={reduced ? false : { opacity: 0, y: 20, scale: 0.97 }}
+      initial={{ opacity: 0, y: 20, scale: 0.97 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
-      transition={{ type: "spring", visualDuration: 0.55, bounce: 0.2 }}
+      transition={reduced ? settle : { type: "spring", visualDuration: 0.55, bounce: 0.2 }}
     >
       <TerminalShell
         filename="developer.config.ts"
         style={{
-          border: "1px solid var(--tint-brand-20)",
-          boxShadow: "0 0 50px var(--tint-brand-10), 0 30px 60px var(--shadow-black-50)",
+          // The hero's one floating sheet, so it takes the deepest print shadow.
+          boxShadow: "var(--shadow-print-lg)",
         }}
         bodyClassName="px-6 py-6 font-mono"
         bodyStyle={{ fontSize: "0.82rem", lineHeight: 1.8 }}
@@ -56,9 +64,9 @@ export function TerminalCard({ name, since, professional, stackLabels }: Termina
           <>
             <div className="flex items-center gap-2">
               <span className="w-2 h-2 rounded-full bg-brand" aria-hidden="true" />
-              <span style={{ fontSize: "0.65rem", color: "var(--color-code-ink-dim)", fontFamily: "'JetBrains Mono'" }}>TypeScript</span>
+              <span style={{ fontSize: "0.65rem", color: "var(--color-code-ink-dim)", fontFamily: "var(--font-mono)" }}>TypeScript</span>
             </div>
-            <span style={{ fontSize: "0.65rem", color: "var(--color-code-ink-dim)", fontFamily: "'JetBrains Mono'" }}>UTF-8</span>
+            <span style={{ fontSize: "0.65rem", color: "var(--color-code-ink-dim)", fontFamily: "var(--font-mono)" }}>UTF-8</span>
           </>
         }
       >
@@ -83,20 +91,22 @@ export function TerminalCard({ name, since, professional, stackLabels }: Termina
           </div>
 
           <motion.div
+            data-reveal=""
             className="mt-4 flex items-center gap-2"
-            initial={reduced ? false : { opacity: 0, y: 8 }}
+            initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 1.4, type: "spring", visualDuration: 0.5, bounce: 0.2 }}
+            transition={reduced ? settle : { delay: 1.4, type: "spring", visualDuration: 0.5, bounce: 0.2 }}
           >
             <span style={{ color: "var(--color-code-success)" }}>❯</span>
             <span style={{ color: "var(--color-syn-ident)" }}>node</span>
             <span style={{ color: "var(--color-code-ink)" }}> developer.config.ts</span>
           </motion.div>
           <motion.div
+            data-reveal=""
             style={{ color: "var(--color-code-success)", marginLeft: "18px" }}
-            initial={reduced ? false : { opacity: 0, y: 8 }}
+            initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 1.52, type: "spring", visualDuration: 0.5, bounce: 0.2 }}
+            transition={reduced ? settle : { delay: 1.52, type: "spring", visualDuration: 0.5, bounce: 0.2 }}
           >
             ✓ Ready to build something awesome!
           </motion.div>

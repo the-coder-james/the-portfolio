@@ -4,24 +4,29 @@
  * LinkedIn, Slack and X show when the portfolio link is shared.
  *
  * Shot from the real page rather than drawn separately, so the preview cannot
- * drift from the design. Dark theme: it reads better as a thumbnail against
- * the light chrome of most feeds.
+ * drift from the design. Blueprint theme: the navy sheet reads better as a
+ * thumbnail against the light chrome of most feeds.
  *
- * Usage: npm run preview, then `node scripts/make-og-image.mjs`.
+ * Usage: npm run preview, then `node scripts/make-og-image.mjs`. If the
+ * preview is on another port (4321 taken by a dev server, say), point at it
+ * with OG_URL=http://localhost:4410/the-portfolio/.
  */
 import { chromium } from "playwright";
 
-const URL = "http://localhost:4321/the-portfolio/";
+const URL = process.env.OG_URL ?? "http://localhost:4321/the-portfolio/";
 const OUT = "public/og-image.png";
 
 const browser = await chromium.launch();
 const page = await browser.newPage({ viewport: { width: 1200, height: 630 }, deviceScaleFactor: 2 });
 
+// Boot straight into Blueprint the way a returning visitor would, through the
+// stored choice the pre-paint script reads, rather than re-classing the page
+// after it has rendered in Manual.
+await page.addInitScript(() => localStorage.setItem("theme", "dark"));
 await page.goto(URL, { waitUntil: "networkidle" });
 await page.waitForTimeout(2500);
 
 await page.evaluate(() => {
-  document.documentElement.classList.add("dark");
   // Chrome that belongs to the site, not to a preview card.
   document.querySelector("nav")?.remove();
   document.querySelector("footer")?.remove();

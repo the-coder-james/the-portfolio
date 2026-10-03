@@ -15,12 +15,16 @@ import { trackEvent } from "@/components/common/tsx/ConsentStore";
 const CONTACT_EMAIL =
   contactJson.find((c) => c.url.startsWith("mailto:"))?.url.replace("mailto:", "") ?? "";
 
+// Fields print as ink-line boxes (a 3:1 boundary). Focus has to stand out from
+// that resting line, so it takes the solid spot ink plus a 3px halo: a border
+// tint alone changed only the hue and nearly vanished on Blueprint, where the
+// line and the spot ink are both pale.
 const fieldClass =
-  "bg-[var(--tint-white-03)] border-[var(--tint-white-08)] text-[var(--color-ink-muted)] " +
+  "bg-[var(--tint-white-03)] border-[var(--color-card-border)] text-[var(--color-ink-muted)] " +
   "placeholder:text-[var(--color-ink-faint)] rounded-[10px] " +
-  "focus-visible:border-[var(--tint-brand-50)] focus-visible:bg-[var(--tint-brand-05)] " +
-  "focus-visible:ring-0 focus-visible:ring-offset-0 " +
-  "[font-family:'Space_Grotesk',sans-serif] text-[0.88rem]";
+  "focus-visible:border-[var(--color-brand)] focus-visible:bg-[var(--tint-brand-05)] " +
+  "focus-visible:ring-[3px] focus-visible:ring-[var(--tint-brand-25)] focus-visible:ring-offset-0 " +
+  "text-[0.88rem]";
 
 export function ContactForm() {
   const [form, setForm] = useState({ name: "", email: "", message: "" });
@@ -57,17 +61,19 @@ export function ContactForm() {
            panel previously appeared with no live region at all. */
         <motion.div
           role="status"
+          // Pinned to its end state in CSS under reduced motion.
+          data-reveal=""
           className="rounded-2xl p-12 text-center"
           initial={{ opacity: 0, scale: 0.85 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ type: "spring", visualDuration: 0.5, bounce: 0.05 }}
-          style={{ background: "var(--tint-brand-07)", border: "1px solid var(--tint-brand-25)", boxShadow: "0 0 40px var(--tint-brand-10)" }}
+          style={{ background: "var(--sheet-brand-07)", border: "1px solid var(--color-card-border)" }}
         >
           <div className="text-4xl mb-4" aria-hidden="true">🚀</div>
-          <h3 style={{ fontSize: "1.4rem", fontWeight: 700, color: "var(--color-ink)", fontFamily: "'Space Grotesk'", marginBottom: "8px" }}>
+          <h3 style={{ fontSize: "1.4rem", fontWeight: 700, color: "var(--color-ink)", marginBottom: "8px" }}>
             Your draft is ready
           </h3>
-          <p style={{ color: "var(--color-ink-dim)", fontFamily: "'Space Grotesk'", fontSize: "0.9rem" }}>
+          <p style={{ color: "var(--color-ink-dim)", fontSize: "0.9rem" }}>
             I've opened your mail app with the message filled in — press send there and
             I'll reply within 24 hours. Nothing left this page on its own.
           </p>
@@ -81,15 +87,13 @@ export function ContactForm() {
             <button
               type="button"
               onClick={() => setSubmitted(false)}
-              className="btn-soft inline-flex items-center gap-2 px-5 py-2.5 rounded-xl transition-all duration-200"
-              style={{ color: "var(--color-brand-text)", fontFamily: "'Space Grotesk', sans-serif", fontSize: "0.85rem", fontWeight: 500 }}
+              className="btn-sheet px-5 py-2.5 text-[0.85rem]"
             >
               Write another
             </button>
             <a
               href={`mailto:${CONTACT_EMAIL}`}
-              className="btn-soft inline-flex items-center gap-2 px-5 py-2.5 rounded-xl transition-all duration-200"
-              style={{ color: "var(--color-brand-text)", fontFamily: "'Space Grotesk', sans-serif", fontSize: "0.85rem", fontWeight: 500, textDecoration: "none" }}
+              className="btn-sheet px-5 py-2.5 text-[0.85rem]"
             >
               Email directly
             </a>
@@ -148,13 +152,9 @@ export function ContactForm() {
           <Button
             type="submit"
             size="lg"
-            className="btn-lift w-full text-on-brand rounded-xl border-0 gap-2"
-            style={{
-              background: "linear-gradient(135deg, var(--color-brand-900), var(--color-brand-700))",
-              boxShadow: "0 4px 20px var(--tint-brand-30)",
-              fontFamily: "'Space Grotesk', sans-serif",
-              fontWeight: 500,
-            }}
+            // The primary plate (.btn-ink, global.css). It is unlayered CSS,
+            // so it outranks the shadcn variant utilities on the same element.
+            className="btn-ink w-full gap-2"
           >
             <Send size={15} />
             Send Message

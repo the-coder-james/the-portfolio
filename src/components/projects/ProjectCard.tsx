@@ -1,9 +1,9 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, type CSSProperties } from "react";
 import { motion } from "motion/react";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { OptimizedImage } from "@/components/common/tsx/OptimizedImage";
 import { useRevealed } from "@/hooks/useRevealed";
-import { ExternalLink, ArrowUpRight } from "lucide-react";
+import { ExternalLink, ArrowUpRight, Info } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { TrafficLights } from "@/components/common/tsx/TerminalShell";
@@ -57,6 +57,14 @@ const ACCENTS = [
 const tint = (accent: string, pct: number) =>
   `color-mix(in srgb, ${accent} ${pct}%, transparent)`;
 
+/**
+ * Opaque variant: the accent printed onto the card sheet. For anything that
+ * sits over the screenshot, where a translucent tint needed a backdrop blur to
+ * stay legible and a printed sheet has no such thing.
+ */
+const sheetTint = (accent: string, pct: number) =>
+  `color-mix(in srgb, ${accent} ${pct}%, var(--color-card-surface))`;
+
 export function ProjectCard({ project, index, taglist, roles, providers, baseUrl, view = "grid" }: ProjectCardProps) {
   const isList = view === "list";
   const { ref, revealed } = useRevealed<HTMLDivElement>("-60px");
@@ -96,19 +104,25 @@ export function ProjectCard({ project, index, taglist, roles, providers, baseUrl
       onPointerUp={() => setPressed(false)}
       onPointerCancel={() => setPressed(false)}
       tabIndex={0}
-      initial={reduced ? false : { opacity: 0, y: 50, scale: 0.95 }}
+      /* `initial` never branches on reduced motion (see SectionHeading):
+         reduced motion keeps the targets and drops the duration, and
+         `data-reveal` lets the CSS guarantee the card ends up visible. */
+      data-reveal=""
+      initial={{ opacity: 0, y: 50, scale: 0.95 }}
       animate={revealed ? { opacity: 1, y: 0, scale: 1 } : undefined}
       /* The stagger is capped rather than unbounded: at index * 0.07 the 40th
          card started animating 2.8s after the grid revealed, so scrolling
          straight to the end of the list showed a row of half-faded cards and
          one still fully invisible. Nine steps is enough to read as a cascade
          in the rows actually on screen; past that the delay is flat. */
-      transition={{ delay: Math.min(index, 9) * 0.07, type: "spring", visualDuration: 0.7, bounce: 0.2 }}
+      transition={reduced ? { duration: 0 } : { delay: Math.min(index, 9) * 0.07, type: "spring", visualDuration: 0.7, bounce: 0.2 }}
       className={`rounded-xl overflow-hidden flex ${isList ? "flex-row items-stretch" : "flex-col"}`}
       style={{
         background: "var(--color-card-surface)",
-        border: `1px solid ${showDetail ? tint(accent, 55) : "var(--color-card-border)"}`,
-        boxShadow: showDetail ? `0 0 30px ${tint(accent, 12)}, 0 12px 32px var(--shadow-black-40)` : "none",
+        // The edge strengthens on hover, as on every other sheet. It used to
+        // swap to a 55% accent tint, which thinned it to ~2.3:1.
+        border: `1px solid ${showDetail ? "var(--color-card-border-strong)" : "var(--color-card-border)"}`,
+        boxShadow: showDetail ? "var(--shadow-print)" : "none",
         transition: "border-color 0.3s ease, box-shadow 0.3s ease",
       }}
     >
@@ -120,6 +134,9 @@ export function ProjectCard({ project, index, taglist, roles, providers, baseUrl
         style={{
           background: "var(--color-card-titlebar)",
           borderBottom: "1px solid var(--color-card-border)",
+          // The card's accent, printed as a rule across the top on hover.
+          boxShadow: showDetail ? `inset 0 2px 0 ${accent}` : "none",
+          transition: "box-shadow 0.3s ease",
         }}
       >
         <TrafficLights size="sm" />
@@ -153,17 +170,6 @@ export function ProjectCard({ project, index, taglist, roles, providers, baseUrl
           }}
         />
 
-        <div
-          className={`absolute left-0 right-0 pointer-events-none${reduced ? "" : " scan-line"}`}
-          aria-hidden="true"
-          style={{
-            height: "2px",
-            top: "-10%",
-            background: `linear-gradient(90deg, transparent, ${tint(accent, 25)}, transparent)`,
-            zIndex: 2,
-          }}
-        />
-
         {/* Floating detail. Hidden from assistive tech: everything in it is
             already in the card body below, which is always present. */}
         <div
@@ -180,11 +186,9 @@ export function ProjectCard({ project, index, taglist, roles, providers, baseUrl
           <div
             className="rounded-lg p-3 max-h-full overflow-hidden"
             style={{
-              background: "var(--glass-bg)",
+              background: "var(--color-card-surface)",
               border: `1px solid ${tint(accent, 35)}`,
-              boxShadow: `var(--glass-shadow)`,
-              WebkitBackdropFilter: "blur(14px) saturate(160%)",
-              backdropFilter: "blur(14px) saturate(160%)",
+              boxShadow: "var(--shadow-print-sm)",
               transform: showDetail || reduced ? "translateY(0)" : "translateY(10px)",
               transition: "transform 0.32s cubic-bezier(0.22, 1, 0.36, 1)",
             }}
@@ -194,7 +198,6 @@ export function ProjectCard({ project, index, taglist, roles, providers, baseUrl
                 fontSize: "0.76rem",
                 lineHeight: 1.55,
                 color: "var(--color-ink)",
-                fontFamily: "'Space Grotesk', sans-serif",
                 display: "-webkit-box",
                 WebkitBoxOrient: "vertical",
                 WebkitLineClamp: 5,
@@ -227,7 +230,7 @@ export function ProjectCard({ project, index, taglist, roles, providers, baseUrl
               key={t}
               variant="outline"
               className="font-mono rounded-md"
-              style={{ fontSize: "0.6rem", color: accent, background: tint(accent, 14), border: `1px solid ${tint(accent, 30)}`, backdropFilter: "blur(6px)" }}
+              style={{ fontSize: "0.6rem", color: accent, background: sheetTint(accent, 14), border: `1px solid ${tint(accent, 30)}` }}
             >
               {taglist[t]?.name || t}
             </Badge>
@@ -236,7 +239,7 @@ export function ProjectCard({ project, index, taglist, roles, providers, baseUrl
       </div>
 
       <div className={`flex flex-col flex-1 min-w-0 ${isList ? "px-4 py-2.5 gap-1.5" : "p-3 gap-1.5"}`}>
-        <h3 style={{ fontSize: "0.92rem", fontWeight: 700, color: "var(--color-ink)", fontFamily: "'Space Grotesk', sans-serif" }}>
+        <h3 style={{ fontSize: "0.92rem", fontWeight: 700, color: "var(--color-ink)" }}>
           {project.title}
         </h3>
 
@@ -246,7 +249,6 @@ export function ProjectCard({ project, index, taglist, roles, providers, baseUrl
               fontSize: "0.78rem",
               color: "var(--color-ink-dim)",
               lineHeight: 1.55,
-              fontFamily: "'Space Grotesk', sans-serif",
               display: "-webkit-box",
               WebkitBoxOrient: "vertical",
               WebkitLineClamp: 2,
@@ -282,32 +284,40 @@ export function ProjectCard({ project, index, taglist, roles, providers, baseUrl
           {typeof project.siteurl !== "string" || !project.siteurl ? (
             <Tooltip delayDuration={200}>
               <TooltipTrigger asChild>
-                <span
-                  className="ml-auto inline-flex items-center gap-2 px-3 py-2 rounded-lg cursor-default select-none"
+                {/* A button, so keyboard and touch users can reach the reason:
+                    Radix opens the tooltip on focus. It does nothing on its
+                    own and does not pretend to be a link -- a dashed ink stamp
+                    with no external-link icon, where "Live Site" is a solid
+                    sheet. */}
+                <button
+                  type="button"
+                  className="ml-auto inline-flex items-center gap-2 px-3 py-2 rounded-[10px] cursor-help"
                   style={{
                     fontSize: "0.8rem",
-                    fontFamily: "'Space Grotesk'",
-                    background: "var(--tint-white-02)",
-                    border: "1px solid var(--tint-white-05)",
+                    background: "transparent",
+                    border: "1px dashed var(--color-card-border)",
                     color: "var(--color-ink-faint)",
                   }}
                 >
-                  <ExternalLink size={14} />
-                  <span>Not Available</span>
-                </span>
+                  <Info size={14} aria-hidden="true" />
+                  <span>No public link</span>
+                </button>
               </TooltipTrigger>
               <TooltipContent
                 side="top"
                 align="end"
-                className="max-w-xs font-[Space_Grotesk] leading-relaxed"
+                className="max-w-xs leading-relaxed"
                 style={{
-                  background: "var(--color-surface-code)",
+                  // The arrow reads --tooltip-bg (ui/tooltip.tsx), so it is
+                  // the same colour as the body instead of the default ink.
+                  "--tooltip-bg": "var(--color-surface-code)",
+                  background: "var(--tooltip-bg)",
                   border: `1px solid ${tint(accent, 25)}`,
                   color: "var(--color-code-ink-dim)",
                   fontSize: "0.78rem",
                   padding: "8px 12px",
-                  boxShadow: `0 8px 24px var(--shadow-black-50), 0 0 20px ${tint(accent, 8)}`,
-                }}
+                  boxShadow: "var(--shadow-print-sm)",
+                } as CSSProperties}
               >
                 {project["siteurl-reason"] ?? "No live URL available."}
               </TooltipContent>
@@ -317,15 +327,11 @@ export function ProjectCard({ project, index, taglist, roles, providers, baseUrl
               href={project.siteurl}
               target="_blank"
               rel="noopener noreferrer"
-              className="ml-auto group inline-flex items-center gap-2 px-3 py-2 rounded-lg transition-all duration-300"
-              style={{
-                fontSize: "0.8rem",
-                fontFamily: "'Space Grotesk'",
-                background: hovered ? tint(accent, 13) : "var(--tint-white-04)",
-                border: `1px solid ${hovered ? tint(accent, 25) : "var(--tint-white-07)"}`,
-                color: hovered ? accent : "var(--color-ink-dim)",
-                textDecoration: "none",
-              }}
+              // The secondary button primitive; while the card is hovered its
+              // label picks up the card's accent (every accent clears 4.5:1 on
+              // the sheet).
+              className="btn-sheet ml-auto group px-3 py-2 text-[0.8rem]"
+              style={{ color: hovered ? accent : undefined }}
             >
               <ExternalLink size={14} />
               <span>Live Site</span>
