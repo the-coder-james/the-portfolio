@@ -81,13 +81,15 @@ export function SkillsTabs({ techstack, extraSkills }: SkillsTabsProps) {
         <TabsList
           aria-label="Skill category"
           className="h-auto p-1 mb-2.5 sm:mb-3.5 flex-wrap justify-start gap-1"
-          style={{ background: "var(--tint-white-03)", border: "1px solid var(--tint-white-07)", borderRadius: "12px" }}
+          style={{ background: "var(--color-card-surface)", border: "1px solid var(--color-card-border)", borderRadius: "12px" }}
         >
           {categories.map((cat) => (
             <TabsTrigger
               key={cat.id}
               value={cat.id}
-              className="gap-1.5 rounded-lg transition-all duration-200 data-[state=active]:shadow-none"
+              // .skills-tab (global.css) sets the inks: unlayered CSS outranks the
+              // shadcn state utilities, dark: variants included.
+              className="skills-tab gap-1.5 rounded-lg transition-colors duration-200 data-[state=active]:shadow-none"
               style={{ fontSize: "0.85rem" }}
             >
               <span aria-hidden="true">{cat.icon}</span>
@@ -96,13 +98,13 @@ export function SkillsTabs({ techstack, extraSkills }: SkillsTabsProps) {
           ))}
         </TabsList>
         {categories.map((cat) => (
-          <TabsContent key={cat.id} value={cat.id}>
+          <TabsContent key={cat.id} value={cat.id} className="skills-panel">
             {/* No category heading here: the active pill directly above already
                 names the category, icon and all. Repeating it cost a line of
                 vertical space to say nothing new. */}
             <div
               className="skills-badge-box rounded-2xl p-2.5 sm:p-4"
-              style={{ background: "var(--tint-white-02)", border: "1px solid var(--tint-white-06)" }}
+              style={{ background: "var(--color-card-surface)", border: "1px solid var(--color-card-border)" }}
             >
               <AnimatedGroup className="flex flex-wrap gap-2 sm:gap-3" preset="scale">
                 {cat.skills.map((skill) => <SkillBadge key={skill} skill={skill} />)}

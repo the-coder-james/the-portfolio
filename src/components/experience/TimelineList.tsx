@@ -150,7 +150,10 @@ export function TimelineList({ items }: { items: TimelineItem[] }) {
               background: "var(--color-card-surface)",
               border: `1px solid ${isPresent ? "var(--color-brand)" : "var(--color-card-border)"}`,
             }}
-            initial={reduced ? false : { opacity: 0, y: 10 }}
+            // Constant `initial` + zero duration under reduced motion (see
+            // SectionHeading); `data-reveal` pins the end state in CSS.
+            data-reveal=""
+            initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={reduced ? { opacity: 1 } : { opacity: 0, y: -6 }}
             transition={reduced ? { duration: 0 } : { duration: 0.22, ease: [0.22, 0.61, 0.36, 1] }}
@@ -208,13 +211,14 @@ export function TimelineList({ items }: { items: TimelineItem[] }) {
 
             <motion.div
               className="flex flex-wrap gap-1.5 shrink-0"
-              initial={reduced ? false : "hidden"}
+              initial="hidden"
               animate="shown"
-              variants={{ shown: { transition: { staggerChildren: 0.04 } } }}
+              variants={{ shown: { transition: { staggerChildren: reduced ? 0 : 0.04 } } }}
             >
               {item.tags.map((tag) => (
                 <motion.span
                   key={tag}
+                  data-reveal=""
                   variants={{ hidden: { opacity: 0, y: 6 }, shown: { opacity: 1, y: 0 } }}
                   transition={reduced ? { duration: 0 } : { duration: 0.2 }}
                 >

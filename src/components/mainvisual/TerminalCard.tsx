@@ -31,18 +31,26 @@ export function TerminalCard({ name, since, professional, stackLabels }: Termina
 
   // One declarative timeline replaces five hand-tuned animateEl calls with
   // manually-offset startDelays.
+  //
+  // These animate on mount, before the reduced-motion hook has reported, so
+  // a reduced-motion visitor used to see the whole entrance. The duration
+  // drops once the hook reports, and `data-reveal` lets the CSS pin the end
+  // state from the first frame.
+  const settle = { duration: 0 };
   const line = (i: number) => ({
-    initial: reduced ? false : { opacity: 0, x: -8 },
+    "data-reveal": "",
+    initial: { opacity: 0, x: -8 },
     animate: { opacity: 1, x: 0 },
-    transition: { delay: 0.7 + i * 0.1, type: "spring" as const, visualDuration: 0.35, bounce: 0.3 },
+    transition: reduced ? settle : { delay: 0.7 + i * 0.1, type: "spring" as const, visualDuration: 0.35, bounce: 0.3 },
   });
 
   return (
     <motion.div
+      data-reveal=""
       className={`hidden lg:block ${reduced ? "" : "terminal-float"}`}
-      initial={reduced ? false : { opacity: 0, y: 20, scale: 0.97 }}
+      initial={{ opacity: 0, y: 20, scale: 0.97 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
-      transition={{ type: "spring", visualDuration: 0.55, bounce: 0.2 }}
+      transition={reduced ? settle : { type: "spring", visualDuration: 0.55, bounce: 0.2 }}
     >
       <TerminalShell
         filename="developer.config.ts"
@@ -83,20 +91,22 @@ export function TerminalCard({ name, since, professional, stackLabels }: Termina
           </div>
 
           <motion.div
+            data-reveal=""
             className="mt-4 flex items-center gap-2"
-            initial={reduced ? false : { opacity: 0, y: 8 }}
+            initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 1.4, type: "spring", visualDuration: 0.5, bounce: 0.2 }}
+            transition={reduced ? settle : { delay: 1.4, type: "spring", visualDuration: 0.5, bounce: 0.2 }}
           >
             <span style={{ color: "var(--color-code-success)" }}>❯</span>
             <span style={{ color: "var(--color-syn-ident)" }}>node</span>
             <span style={{ color: "var(--color-code-ink)" }}> developer.config.ts</span>
           </motion.div>
           <motion.div
+            data-reveal=""
             style={{ color: "var(--color-code-success)", marginLeft: "18px" }}
-            initial={reduced ? false : { opacity: 0, y: 8 }}
+            initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 1.52, type: "spring", visualDuration: 0.5, bounce: 0.2 }}
+            transition={reduced ? settle : { delay: 1.52, type: "spring", visualDuration: 0.5, bounce: 0.2 }}
           >
             ✓ Ready to build something awesome!
           </motion.div>

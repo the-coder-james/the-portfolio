@@ -142,7 +142,7 @@ export function ProjectsGrid({
               }}
               placeholder="search projects..."
               aria-label="Search projects by title"
-              className="field-interactive projects-search w-full pl-9 pr-9 rounded-lg outline-none"
+              className="field-interactive projects-search w-full pl-9 pr-9 rounded-lg"
               style={{
                 color: "var(--color-ink-muted)",
                 fontFamily: "var(--font-mono)",
@@ -192,7 +192,7 @@ export function ProjectsGrid({
               role="group"
               aria-label="Layout"
               className="flex items-center rounded-lg p-0.5 shrink-0"
-              style={{ background: "var(--tint-white-04)", border: "1px solid var(--tint-white-08)" }}
+              style={{ background: "var(--color-card-surface)", border: "1px solid var(--color-card-border)" }}
             >
               {([
                 { id: "grid" as const, Icon: LayoutGrid, label: "Grid view" },
@@ -381,7 +381,7 @@ function FilterSelect({
       <select
         value={value ?? ""}
         onChange={(e) => onChange(e.target.value || null)}
-        className="filter-select font-mono appearance-none rounded-lg outline-none cursor-pointer min-w-0 w-full"
+        className="filter-select font-mono appearance-none rounded-lg cursor-pointer min-w-0 w-full"
         data-active={active ? "true" : undefined}
       >
         {/* The closed select shows the selected option's text, so the label has

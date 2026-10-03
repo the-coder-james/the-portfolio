@@ -46,6 +46,7 @@ const socials = contactJson
   {mainvisual.floaters.map((f) => (
     <div
       class="absolute hidden lg:block select-none pointer-events-none font-mono"
+      aria-hidden="true"
       style={`left: ${f.x}; top: ${f.y}; font-size: 0.7rem; color: var(--tint-brand-25); z-index: 1`}
     >
       {f.text}
@@ -58,12 +59,14 @@ const socials = contactJson
       <!-- Left column -->
       <div>
         <!-- Static: "Available for hire" badge -->
+        <!-- An opaque tint printed on the sheet, so the grid does not run
+             behind its small label; brand-text holds 4.5:1 there. -->
         <div
           class="inline-flex items-center gap-2 mb-6 px-3 py-1.5 rounded-full"
-          style="background: var(--tint-brand-10); border: 1px solid var(--tint-brand-25)"
+          style="background: var(--sheet-brand-10); border: 1px solid var(--color-brand)"
         >
-          <span class="w-1.5 h-1.5 rounded-full bg-brand-400 cursor-blink"></span>
-          <span class="font-mono" style="font-size: 0.7rem; color: var(--color-brand-400)">Available for hire</span>
+          <span class="w-1.5 h-1.5 rounded-full bg-brand cursor-blink" aria-hidden="true"></span>
+          <span class="font-mono" style="font-size: 0.75rem; color: var(--color-brand-text)">Available for hire</span>
         </div>
 
         <!-- Static: greeting line -->
@@ -93,10 +96,7 @@ const socials = contactJson
           {mainvisual.ctas.map((cta) => (
             <a
               href={cta.href}
-              class={`px-6 py-3 rounded-lg transition-all duration-200 ${cta.variant === "primary" ? "hero-btn-primary" : "hero-btn-outline text-ink"}`}
-              style={cta.variant === "primary"
-                ? "color: var(--color-on-brand); background: var(--color-brand-700); box-shadow: var(--shadow-print-sm); font-size: 0.9rem; font-weight: 500; text-decoration: none"
-                : "background: var(--color-card-surface); border: 1px solid var(--color-card-border); font-size: 0.9rem; font-weight: 500; text-decoration: none"}
+              class={`${cta.variant === "primary" ? "btn-ink" : "btn-sheet"} px-6 py-3 text-[0.9rem]`}
             >
               {cta.label}
             </a>
@@ -111,8 +111,7 @@ const socials = contactJson
               <a
                 href={s.href}
                 aria-label={s.label}
-                class="w-9 h-9 rounded-lg flex items-center justify-center transition-all duration-200 hero-social-link"
-                style="background: var(--color-card-surface); border: 1px solid var(--color-card-border); color: var(--color-ink-dim)"
+                class="btn-sheet-icon"
               >
                 {pathD && (
                   <svg viewBox="0 0 24 24" fill="currentColor" style="width: 16px; height: 16px" aria-hidden="true">
@@ -141,23 +140,6 @@ const socials = contactJson
   </div>
 </section>
 
-<style>
-  /* A flat spot-ink plate that lifts toward the light: the print shadow
-     lengthens as the button moves up and left. */
-  .hero-btn-primary:hover {
-    transform: translate(-2px, -2px);
-    box-shadow: var(--shadow-print) !important;
-  }
-  /* The secondary buttons are opaque sheets, so the drafting grid does not
-     run through them; their hover tints the sheet rather than turning it
-     translucent again. */
-  .hero-btn-outline:hover {
-    border-color: var(--tint-brand-60) !important;
-    background: color-mix(in srgb, var(--color-brand) 8%, var(--color-card-surface)) !important;
-  }
-  .hero-social-link:hover {
-    color: var(--color-brand-400) !important;
-    border-color: var(--tint-brand-40) !important;
-    background: color-mix(in srgb, var(--color-brand) 10%, var(--color-card-surface)) !important;
-  }
-</style>
+<!-- The CTAs and social links take the shared button primitives (.btn-ink,
+     .btn-sheet, .btn-sheet-icon in global.css) rather than inline styles with
+     !important hover overrides. -->

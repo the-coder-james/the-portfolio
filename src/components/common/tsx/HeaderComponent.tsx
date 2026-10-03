@@ -117,9 +117,21 @@ export function HeaderComponent() {
     const prev = root.style.scrollBehavior;
     root.style.scrollBehavior = "auto";
 
+    // Aligned in layout-viewport coordinates, against the same offset the CSS
+    // scroll-padding gives the browser. scrollIntoView aligns to the *visual*
+    // viewport instead, and on a phone that is still sliding while the URL
+    // bar animates away during load -- each correction chased a moving frame
+    // and the panel settled 6-55px low, by a different amount every load. The
+    // fixed nav lives in layout coordinates, so the panel has to as well.
     const place = () => {
-      if (id === DEFAULT_TAB) window.scrollTo(0, 0);
-      else document.getElementById(id)?.scrollIntoView({ behavior: "auto", block: "start" });
+      if (id === DEFAULT_TAB) {
+        window.scrollTo(0, 0);
+        return;
+      }
+      const el = document.getElementById(id);
+      if (!el) return;
+      const pad = parseFloat(getComputedStyle(root).scrollPaddingTop) || 0;
+      window.scrollTo(0, Math.max(0, window.scrollY + el.getBoundingClientRect().top - pad));
     };
 
     place();
@@ -146,9 +158,18 @@ export function HeaderComponent() {
   }, [scrollMode]);
 
   useEffect(() => {
-    if (!navRef.current) return;
+    const nav = navRef.current;
+    if (!nav) return;
+    // Read the media query directly: useReducedMotion reports false on the
+    // first render, which is exactly when this entrance runs, so gating on it
+    // would still slide the nav in for a visitor who asked for no motion. The
+    // nav cannot carry data-reveal -- its centring is a transform.
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      nav.style.opacity = "1";
+      return;
+    }
     animateEl(
-      navRef.current as Element,
+      nav as Element,
       { y: [-80, 0], opacity: [0, 1] },
       { type: "spring", visualDuration: 0.55, bounce: 0.2 }
     );
@@ -354,7 +375,10 @@ export function HeaderComponent() {
       <div className="sheet-surface rounded-full px-2.5 sm:px-4 py-2.5 sm:py-2 flex items-center justify-between gap-1 sm:gap-3 relative">
         <button
           onClick={() => selectTab(DEFAULT_TAB)}
-          aria-label="Home"
+          // The name starts with the visible "<james/>" (SC 2.5.3, label in
+          // name), then says where the button goes. The brackets are glyphs,
+          // not words, so they are left out.
+          aria-label="james, home"
           aria-current={active === DEFAULT_TAB ? "true" : undefined}
           className="logo-home flex items-center gap-2 group rounded-full shrink-0"
         >

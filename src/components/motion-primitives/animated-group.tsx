@@ -128,13 +128,16 @@ function AnimatedGroup({
 
   return (
     <MotionComponent
+      // Server-rendered at its start state; data-reveal lets the CSS show the
+      // group when no script runs or motion is reduced.
+      data-reveal=''
       initial='hidden'
       animate='visible'
       variants={containerVariants}
       className={className as any}
     >
       {React.Children.map(children, (child, index) => (
-        <MotionChild key={index} variants={itemVariants}>
+        <MotionChild key={index} variants={itemVariants} data-reveal=''>
           {child}
         </MotionChild>
       ))}

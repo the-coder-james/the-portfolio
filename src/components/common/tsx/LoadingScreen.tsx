@@ -176,15 +176,10 @@ export function LoadingScreen() {
       aria-live="polite"
       aria-busy="true"
       aria-label="Loading site"
-      className="fixed inset-0 flex items-center justify-center"
-      style={{
-        zIndex: 9999,
-        background: "var(--color-surface-base)",
-        // Drafting grid only -- the radial glow that sat over it is gone.
-        backgroundImage:
-          "linear-gradient(var(--tint-brand-04) 1px, transparent 1px), linear-gradient(90deg, var(--tint-brand-04) 1px, transparent 1px)",
-        backgroundSize: "40px 40px, 40px 40px",
-      }}
+      // The same drafting sheet as the page (.drafting-sheet in global.css),
+      // so when this lifts nothing underneath re-draws.
+      className="drafting-sheet fixed inset-0 flex items-center justify-center"
+      style={{ zIndex: 9999 }}
     >
       <div className="w-full max-w-md px-8">
         <div

@@ -119,11 +119,12 @@ const AnimationComponent: React.FC<{
 }> = React.memo(({ segment, variants, per, segmentWrapperClassName }) => {
   const content =
     per === 'line' ? (
-      <motion.span variants={variants} className='block'>
+      <motion.span data-reveal='' variants={variants} className='block'>
         {segment}
       </motion.span>
     ) : per === 'word' ? (
       <motion.span
+        data-reveal=''
         aria-hidden='true'
         variants={variants}
         className='inline-block whitespace-pre'
@@ -135,6 +136,7 @@ const AnimationComponent: React.FC<{
         {segment.split('').map((char, charIndex) => (
           <motion.span
             key={`char-${charIndex}`}
+            data-reveal=''
             aria-hidden='true'
             variants={variants}
             className='inline-block whitespace-pre'
@@ -268,6 +270,9 @@ export function TextEffect({
     <AnimatePresence mode='popLayout'>
       {trigger && (
         <MotionTag
+          // Its start state is server-rendered; data-reveal lets the CSS show
+          // it when no script runs or motion is reduced (global.css, layout).
+          data-reveal=''
           initial='hidden'
           animate='visible'
           exit='exit'

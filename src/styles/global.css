@@ -1,4 +1,8 @@
-@import "tailwindcss";
+/* Class detection is scoped to src/, where every component lives. Tailwind
+   otherwise scans the whole repo, and the tests, check scripts and CLAUDE.md
+   all name banned utilities (backdrop-filter, say) in order to forbid them --
+   which made Tailwind generate and ship exactly those classes. */
+@import "tailwindcss" source("..");
 @import "tw-animate-css";
 
 /* v3 used `darkMode: ["class"]`. In v4 that is declared in CSS. */
@@ -176,27 +180,27 @@
   /* Spot blue — Destiny blue as a flat printing ink */
   --t-brand-900: #142f73;             /* hover fill — on-brand 11.9:1 */
   --t-brand-700: #1a3f99;             /* fill — on-brand 9.1:1 */
-  --t-brand: #1d4fbf;                 /* 6.4:1 page, 6.9:1 sheet */
-  --t-brand-400: #2b5bc8;             /* 5.4:1 page, 5.9:1 sheet — AA text */
+  --t-brand: #1d4fbf;                 /* 6.4:1 page (4.8 on grid + grain), 6.9:1 sheet */
+  --t-brand-400: #2854b9;             /* 6.1:1 page (4.6 on grid + grain), 6.6:1 sheet — AA text */
   --t-brand-300: #7d9fe6;             /* decorative only */
 
   /* Spot inks */
-  --t-brand-text: #1a3f99;            /* 8.4:1 page, 9.1:1 sheet */
-  --t-crimson: #b0132e;               /* 6.2:1 page, 6.8:1 sheet */
-  --t-gold: #875800;                  /* 5.4:1 page, 5.9:1 sheet */
+  --t-brand-text: #1a3f99;            /* 8.4:1 page (6.4 on grid + grain), 9.1:1 sheet */
+  --t-crimson: #b0132e;               /* 6.2:1 page (4.8 on grid + grain), 6.8:1 sheet */
+  --t-gold: #7d5200;                  /* 6.0:1 page (4.6 on grid + grain), 6.5:1 sheet */
   --t-on-brand: #fbfaf6;              /* 9.1:1 on brand-700, 11.9:1 on brand-900 */
 
   /* Ink */
-  --t-ink: #15171c;                   /* 15.9:1 page, 17.2:1 sheet — headings */
-  --t-ink-muted: #262a31;             /* 12.7:1 page, 13.8:1 sheet — body */
-  --t-ink-dim: #474c55;               /* 7.6:1 page, 8.3:1 sheet — secondary */
-  --t-ink-faint: #5a606a;             /* 5.6:1 page, 6.1:1 sheet — AA; 4.9:1 footer */
+  --t-ink: #15171c;                   /* 15.9:1 page (12.1 on grid + grain), 17.2:1 sheet — headings */
+  --t-ink-muted: #262a31;             /* 12.7:1 page (9.7 on grid + grain), 13.8:1 sheet — body */
+  --t-ink-dim: #474c55;               /* 7.6:1 page (5.8 on grid + grain), 8.3:1 sheet — secondary */
+  --t-ink-faint: #50555e;             /* 6.6:1 page (5.1 on grid + grain), 7.2:1 sheet — AA; 5.8:1 footer */
 
   /* Status — sensor green */
-  --t-success: #1d6b3f;               /* 5.8:1 page, 6.2:1 sheet */
-  --t-success-strong: #14522f;        /* 8.2:1 page, 8.8:1 sheet */
+  --t-success: #1c683d;               /* 6.0:1 page (4.6 on grid + grain), 6.5:1 sheet */
+  --t-success-strong: #14522f;        /* 8.2:1 page (6.2 on grid + grain), 8.8:1 sheet */
   --t-success-soft: #2f8a55;          /* 3.8:1 page, 4.1:1 sheet — UI, SC 1.4.11 */
-  --t-danger: #b3261e;                /* 5.8:1 page, 6.3:1 sheet */
+  --t-danger: #ae251d;                /* 6.0:1 page (4.6 on grid + grain), 6.5:1 sheet */
 
   /* Cards — sheets laid on the stock, edged in line art */
   --t-card-surface: #fbfaf6;          /* sheet */
@@ -229,7 +233,7 @@
   --t-primary-foreground: #fbfaf6;
   --t-secondary: #e6e2d7;
   --t-secondary-foreground: #15171c;
-  --t-destructive: #b3261e;
+  --t-destructive: #ae251d;
   --t-destructive-foreground: #fbfaf6;
   --t-muted: #e6e2d7;
   --t-muted-foreground: #474c55;
@@ -273,27 +277,27 @@
   /* Spot blue, inverted: pale cyan linework. Fills are pale, so on-brand is navy. */
   --t-brand-900: #6fb4ef;             /* hover fill — on-brand 7.1:1 */
   --t-brand-700: #8cc8fb;             /* fill — on-brand 8.9:1 */
-  --t-brand: #9ed2ff;                 /* 8.9:1 page, 7.6:1 sheet */
-  --t-brand-400: #b9defc;             /* 10.1:1 page, 8.7:1 sheet — AA text */
+  --t-brand: #9ed2ff;                 /* 8.9:1 page (6.8 on grid + grain), 7.6:1 sheet */
+  --t-brand-400: #b9defc;             /* 10.1:1 page (7.8 on grid + grain), 8.7:1 sheet — AA text */
   --t-brand-300: #d3ebff;             /* decorative only */
 
   /* Spot inks */
-  --t-brand-text: #a9d8ff;            /* 9.5:1 page, 8.1:1 sheet */
-  --t-crimson: #ff8d9b;               /* 6.5:1 page, 5.5:1 sheet */
-  --t-gold: #ffd166;                  /* 9.9:1 page, 8.5:1 sheet */
+  --t-brand-text: #a9d8ff;            /* 9.5:1 page (7.3 on grid + grain), 8.1:1 sheet */
+  --t-crimson: #ff8d9b;               /* 6.5:1 page (5.0 on grid + grain), 5.5:1 sheet */
+  --t-gold: #ffd166;                  /* 9.9:1 page (7.6 on grid + grain), 8.5:1 sheet */
   --t-on-brand: #0b2340;              /* 8.9:1 on brand-700, 7.1:1 on brand-900 */
 
   /* Ink */
-  --t-ink: #eef4fb;                   /* 12.9:1 page, 11.0:1 sheet — headings */
-  --t-ink-muted: #dde8f4;             /* 11.5:1 page, 9.8:1 sheet — body */
-  --t-ink-dim: #b2c4da;               /* 8.0:1 page, 6.9:1 sheet — secondary */
-  --t-ink-faint: #9cb1ca;             /* 6.5:1 page, 5.6:1 sheet — AA; 7.2:1 footer */
+  --t-ink: #eef4fb;                   /* 12.9:1 page (9.9 on grid + grain), 11.0:1 sheet — headings */
+  --t-ink-muted: #dde8f4;             /* 11.5:1 page (8.8 on grid + grain), 9.8:1 sheet — body */
+  --t-ink-dim: #b2c4da;               /* 8.0:1 page (6.1 on grid + grain), 6.9:1 sheet — secondary */
+  --t-ink-faint: #9cb1ca;             /* 6.5:1 page (5.0 on grid + grain), 5.6:1 sheet — AA; 7.2:1 footer */
 
   /* Status — sensor green */
-  --t-success: #7ee2a8;               /* 9.1:1 page, 7.8:1 sheet */
-  --t-success-strong: #5fd391;        /* 7.6:1 page, 6.5:1 sheet */
+  --t-success: #7ee2a8;               /* 9.1:1 page (6.9 on grid + grain), 7.8:1 sheet */
+  --t-success-strong: #5fd391;        /* 7.6:1 page (5.8 on grid + grain), 6.5:1 sheet */
   --t-success-soft: #a6efc4;          /* 10.7:1 page, 9.2:1 sheet — UI, SC 1.4.11 */
-  --t-danger: #ff8d8d;                /* 6.4:1 page, 5.5:1 sheet */
+  --t-danger: #ff8d8d;                /* 6.4:1 page (4.9 on grid + grain), 5.5:1 sheet */
 
   /* Cards — panels a step lighter than the paper, edged in white line */
   --t-card-surface: #14365e;          /* sheet */
@@ -525,7 +529,7 @@
 .tab-pill {
   /* Mixed toward the sheet rather than toward transparent, so the fill reads
      the same on the nav sheet as it does straight on the page. */
-  background: color-mix(in srgb, var(--color-brand) 14%, var(--color-card-surface));
+  background: var(--sheet-brand-14);
   /* Full-strength brand, not a 30% mix. The pill is the only thing marking
      which tab is active, so its edge is a UI component boundary under
      SC 1.4.11 and needs 3:1 against what it sits on -- the mix measured
@@ -554,20 +558,55 @@
    in CSS means keyboard users get the same affordance as mouse users, which
    the JS versions never provided (they only listened for mouse events). */
 
-/* Text/search field */
-.field-interactive {
-  background: var(--tint-white-03);
-  border: 1px solid var(--tint-white-08);
-  transition: border-color 0.2s ease, background 0.2s ease;
+/* ── Sheet tints ──
+   The opaque counterpart of --tint-brand-*: the spot ink printed onto a
+   sheet rather than a film over whatever lies behind it. Anything that sits
+   on the drafting grid takes these, so the grid never runs through a
+   control. */
+:root {
+  --sheet-brand-05: color-mix(in srgb, var(--color-brand) 5%, var(--color-card-surface));
+  --sheet-brand-06: color-mix(in srgb, var(--color-brand) 6%, var(--color-card-surface));
+  --sheet-brand-07: color-mix(in srgb, var(--color-brand) 7%, var(--color-card-surface));
+  --sheet-brand-08: color-mix(in srgb, var(--color-brand) 8%, var(--color-card-surface));
+  --sheet-brand-10: color-mix(in srgb, var(--color-brand) 10%, var(--color-card-surface));
+  --sheet-brand-14: color-mix(in srgb, var(--color-brand) 14%, var(--color-card-surface));
+  --sheet-brand-15: color-mix(in srgb, var(--color-brand) 15%, var(--color-card-surface));
 }
-.field-interactive:hover {
-  border-color: var(--tint-brand-30);
+
+/* ── Fields ──
+   One recipe for every input (the contact form applies the same values
+   through its own classes): an ink-line box on an opaque sheet, and a focus
+   state that stands out from that resting line -- solid spot ink plus a 3px
+   halo. A tinted border alone measured 1.6-2.3:1 against the page, under the
+   3:1 a focus indicator needs. */
+.field-interactive,
+.filter-select {
+  background: var(--color-card-surface);
+  border: 1px solid var(--color-card-border);
+  transition: color 0.2s ease, border-color 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease;
+}
+.field-interactive:hover,
+.filter-select:hover {
+  border-color: var(--color-card-border-strong);
 }
 .field-interactive:focus-visible,
-.field-interactive:focus {
+.filter-select:focus-visible {
   outline: none;
-  border-color: var(--tint-brand-50);
-  background: var(--tint-brand-05);
+  border-color: var(--color-brand);
+  box-shadow: 0 0 0 3px var(--tint-brand-25);
+}
+/* Preflight's 50% currentColor placeholder measured 2.9:1. */
+.field-interactive::placeholder {
+  color: var(--color-ink-faint);
+  opacity: 1;
+}
+.filter-select {
+  color: var(--color-ink-dim);
+}
+.filter-select[data-active] {
+  color: var(--color-brand-text);
+  border-color: var(--color-brand);
+  background: var(--sheet-brand-10);
 }
 
 /* Icon button that tints on interaction */
@@ -584,31 +623,35 @@
    to assistive tech instead of living only in a JS variable. */
 .filter-chip {
   color: var(--color-ink-dim);
-  border: 1px solid var(--tint-white-08);
-  background: var(--tint-white-03);
-  transition: color 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+  border: 1px solid var(--color-card-border);
+  background: var(--color-card-surface);
+  transition: color 0.2s ease, border-color 0.2s ease, background-color 0.2s ease;
 }
 .filter-chip:hover,
 .filter-chip:focus-visible {
   color: var(--color-brand-text);
-  border-color: var(--tint-brand-30);
+  border-color: var(--color-card-border-strong);
+}
+.filter-chip:focus-visible {
+  outline: 2px solid var(--color-ring);
+  outline-offset: 2px;
 }
 .filter-chip[aria-pressed="true"] {
   color: var(--color-brand-text);
-  border-color: var(--tint-brand-50);
-  background: var(--tint-brand-15);
+  border-color: var(--color-brand);
+  background: var(--sheet-brand-15);
 }
 
-/* Skill badge */
+/* Skill badge — a spot-ink tint printed on the sheet. */
 .skill-badge-interactive {
-  background: var(--tint-brand-07);
-  border: 1px solid var(--tint-brand-16);
-  transition: background 0.2s ease, border-color 0.2s ease;
+  background: var(--sheet-brand-07);
+  border: 1px solid var(--tint-brand-25);
+  transition: background-color 0.2s ease, border-color 0.2s ease;
 }
 .skill-badge-interactive:hover,
 .skill-badge-interactive:focus-visible {
-  background: var(--tint-brand-16);
-  border-color: var(--tint-brand-42);
+  background: var(--sheet-brand-15);
+  border-color: var(--color-brand);
 }
 
 /* Nav link */
@@ -624,30 +667,63 @@
   color: var(--color-brand-text);
 }
 
-/* Primary submit button. The resting shadow lives here rather than inline on
-   the button: an inline box-shadow outranks the hover rule, which is why the
-   hover shadow used to never show. Lifting toward the light lengthens the
-   print shadow, so the two move together. */
-.btn-lift {
+/* ── Buttons ──
+   Three primitives cover every button-like control, so one role always
+   looks and moves the same way:
+     .btn-ink        the primary action, a flat spot-ink plate;
+     .btn-sheet      a secondary action, a sheet edged in line art;
+     .btn-sheet-icon the square icon version of .btn-sheet.
+   One radius for all three, the same as the fields. Hover and keyboard
+   focus share one lift toward the light, and :active presses the sheet flat
+   to the page. Link cards, the flow link and the cookie buttons keep their
+   own shapes but join the same motion below. */
+.btn-ink,
+.btn-sheet,
+.btn-sheet-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border-radius: 10px;
+  font-weight: 500;
+  text-decoration: none;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease,
+              border-color 0.2s ease, color 0.2s ease;
+}
+.btn-ink {
+  color: var(--color-on-brand);
+  background: var(--color-brand-700);
+  border: 1px solid var(--color-brand-700);
   box-shadow: var(--shadow-print-sm);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
-.btn-lift:hover,
-.btn-lift:focus-visible {
-  transform: translate(-2px, -2px);
-  box-shadow: var(--shadow-print);
+.btn-ink:hover {
+  background: var(--color-brand-900);
+  border-color: var(--color-brand-900);
 }
-
-/* "See more" button */
-.btn-soft {
-  background: var(--tint-brand-08);
-  border: 1px solid var(--tint-brand-25);
-  transition: background 0.2s ease, border-color 0.2s ease;
+.btn-sheet {
+  color: var(--color-ink);
+  background: var(--color-card-surface);
+  border: 1px solid var(--color-card-border);
 }
-.btn-soft:hover,
-.btn-soft:focus-visible {
-  background: var(--tint-brand-15);
-  border-color: var(--tint-brand-45);
+.btn-sheet-icon {
+  width: 2.25rem;
+  height: 2.25rem;
+  color: var(--color-ink-dim);
+  background: var(--color-card-surface);
+  border: 1px solid var(--color-card-border);
+}
+.btn-sheet:hover,
+.btn-sheet-icon:hover {
+  color: var(--color-brand-text);
+  background: var(--sheet-brand-08);
+  border-color: var(--color-card-border-strong);
+}
+.btn-ink:focus-visible,
+.btn-sheet:focus-visible,
+.btn-sheet-icon:focus-visible {
+  outline: 2px solid var(--color-ring);
+  outline-offset: 2px;
 }
 
 /* Contact link card. An opaque sheet like the others: a translucent fill let
@@ -655,14 +731,33 @@
 .contact-card {
   background: var(--color-card-surface);
   border: 1px solid var(--color-card-border);
-  transition: background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+  transition: background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
 }
 .contact-card:hover,
 .contact-card:focus-visible {
-  background: color-mix(in srgb, var(--color-brand) 6%, var(--color-card-surface));
+  background: var(--sheet-brand-06);
   border-color: var(--color-card-border-strong);
-  box-shadow: var(--shadow-print-sm);
-  transform: translateX(4px);
+}
+
+/* The shared motion. Hover and keyboard focus lift the same way, so keyboard
+   users get the affordance mouse users do; pressing flattens the sheet. The
+   :active rule comes last so it wins over hover at equal specificity. */
+.btn-ink:hover, .btn-ink:focus-visible,
+.btn-sheet:hover, .btn-sheet:focus-visible,
+.btn-sheet-icon:hover, .btn-sheet-icon:focus-visible,
+.contact-card:hover, .contact-card:focus-visible,
+.cookie-btn:hover, .cookie-btn:focus-visible {
+  transform: translate(-2px, -2px);
+  box-shadow: var(--shadow-print);
+}
+.btn-ink:active,
+.btn-sheet:active,
+.btn-sheet-icon:active,
+.contact-card:active,
+.cookie-btn:active,
+.flow-link:active {
+  transform: none;
+  box-shadow: none;
 }
 
 /* Rotating dashed ring on the portrait. Was el.style.animation. */
@@ -813,9 +908,11 @@
   /* Faint enough that body copy printed over a rule stays easy to read. */
   --grid-minor: color-mix(in srgb, var(--color-brand) 4.5%, transparent);
   --grid-major: color-mix(in srgb, var(--color-brand) 8.5%, transparent);
-  /* Fractal noise with its alpha capped at 9% inside the SVG, so the grain
-     reads the same over either paper and needs no blend mode. */
-  --paper-grain: url("data:image/svg+xml,%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20width%3D'240'%20height%3D'240'%3E%3Cfilter%20id%3D'g'%3E%3CfeTurbulence%20type%3D'fractalNoise'%20baseFrequency%3D'0.9'%20numOctaves%3D'3'%20stitchTiles%3D'stitch'%2F%3E%3CfeColorMatrix%20values%3D'0%200%200%200%200%200%200%200%200%200%200%200%200%200%200%200%200%200%200.09%200'%2F%3E%3C%2Ffilter%3E%3Crect%20width%3D'100%25'%20height%3D'100%25'%20filter%3D'url(%23g)'%2F%3E%3C%2Fsvg%3E");
+  /* Fractal noise with its alpha capped at 7% inside the SVG (peaking near
+     6.4%), so the grain reads the same over either paper and needs no blend
+     mode. Page text is measured against it: see the "on grid + grain" ratios
+     in the palette comments. */
+  --paper-grain: url("data:image/svg+xml,%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20width%3D'240'%20height%3D'240'%3E%3Cfilter%20id%3D'g'%3E%3CfeTurbulence%20type%3D'fractalNoise'%20baseFrequency%3D'0.9'%20numOctaves%3D'3'%20stitchTiles%3D'stitch'%2F%3E%3CfeColorMatrix%20values%3D'0%200%200%200%200%200%200%200%200%200%200%200%200%200%200%200%200%200%200.07%200'%2F%3E%3C%2Ffilter%3E%3Crect%20width%3D'100%25'%20height%3D'100%25'%20filter%3D'url(%23g)'%2F%3E%3C%2Fsvg%3E");
   --registration-mark: url("data:image/svg+xml,%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20width%3D'120'%20height%3D'120'%3E%3Cg%20fill%3D'none'%20stroke%3D'black'%20stroke-width%3D'1.25'%3E%3Cpath%20d%3D'M60%2052v16M52%2060h16'%2F%3E%3Ccircle%20cx%3D'60'%20cy%3D'60'%20r%3D'4.5'%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E");
 }
 
@@ -831,6 +928,13 @@
   inset: 0;
   z-index: 0;
   pointer-events: none;
+}
+
+/* The sheet itself. Shared by the page backdrop, the pre-render veil and the
+   loading screen: when the loader lifts, the page underneath is the same
+   sheet with the same rules in the same places, so nothing re-draws. */
+.site-backdrop,
+.drafting-sheet {
   background-color: var(--color-surface-base);
   background-image:
     var(--paper-grain),
@@ -1096,24 +1200,8 @@
   }
 }
 
-.filter-select {
-  color: var(--color-ink-dim);
-  background: var(--tint-white-03);
-  border: 1px solid var(--tint-white-08);
-  transition: color 0.2s ease, border-color 0.2s ease, background 0.2s ease;
-}
-.filter-select:hover,
-.filter-select:focus-visible {
-  color: var(--color-brand-text);
-  border-color: var(--tint-brand-30);
-}
-.filter-select[data-active] {
-  color: var(--color-brand-text);
-  border-color: var(--tint-brand-50);
-  background: var(--tint-brand-10);
-}
-/* The options list is painted by the OS, so it needs real colours rather than
-   the translucent tints the closed control uses. */
+/* The options list is painted by the OS, so it needs real colours set on
+   the options themselves. */
 .filter-select option {
   background: var(--color-card-surface);
   color: var(--color-ink);
@@ -1203,10 +1291,10 @@
 }
 .pipeline-stage-btn:hover,
 .pipeline-stage-btn:focus-visible {
-  background: var(--tint-brand-05);
+  background: var(--sheet-brand-05);
 }
 .pipeline-stage-btn[aria-current="true"] {
-  background: var(--tint-brand-08);
+  background: var(--sheet-brand-08);
 }
 .pipeline-stage-btn:focus-visible {
   outline: 2px solid var(--color-brand);
@@ -1359,6 +1447,18 @@
   }
 }
 
+/* Scroll mode: the nav is an opaque sheet fixed over the top of the page,
+   so anything the browser scrolls into view for focus or a fragment must
+   stop below it. Without this, Shift+Tab parked five toolbar controls
+   entirely behind the nav (SC 2.4.11). --nav-h is measured at runtime.
+
+   This is the only offset: it covers the panels the nav pills scroll to as
+   well, so panels carry no scroll-margin of their own -- the two would add
+   up and land a panel a whole nav-height too low. */
+html[data-scroll-mode] {
+  scroll-padding-top: calc(var(--nav-h) + 0.5rem);
+}
+
 /* ── Mobile: one scrolling document, not tabs ──
    Fitting four panels into a phone viewport meant shrinking type and clipping
    content to win space that a phone simply does not have. On mobile every
@@ -1377,7 +1477,6 @@
     justify-content: flex-start;
     padding-top: var(--panel-nav-gap);
     padding-bottom: clamp(2rem, 6vh, 3.25rem);
-    scroll-margin-top: calc(var(--nav-h) + 0.5rem);
   }
 
   /* The first panel still clears the floating nav and keeps a full-viewport
@@ -1406,6 +1505,16 @@
     -webkit-mask-image: none;
     mask-image: none;
     animation: none;
+  }
+
+  /* The Projects scroll region carries a desktop scrollbar gutter (-mr-1 with
+     a 2px pad-back), which nets out 2px wider than its panel. Harmless while it
+     clips its own overflow; once it stops being a scroll container here, the
+     full-bleed project rail inherits those 2px and the whole page pans
+     sideways. No scrollbar, so no gutter. */
+  html[data-scroll-mode] .panel-scroll {
+    margin-right: 0;
+    padding-right: 0;
   }
 
   html[data-scroll-mode] .about-pane {
@@ -1773,7 +1882,7 @@ html[data-subtabs-ready] .about-pane[hidden] {
   margin: 0;
 }
 
-/* The portrait drives its own rings and glow off --portrait-size, so that is
+/* The portrait drives its own rim and dashed ring off --portrait-size, so that is
    the variable to set -- shrinking or growing the wrapper alone leaves the
    decorations at their original size. */
 .about-pane [class*="portrait-size"] {
@@ -1824,6 +1933,36 @@ html[data-subtabs-ready] .about-pane[hidden] {
 
 .about-subtab-bar {
   margin-bottom: clamp(0.6rem, 1.6vh, 1.1rem);
+}
+
+/* Skills category tabs: filled spot-ink pills, distinct from the page tab
+   strip and the About segmented control. Inactive labels take ink-dim; the
+   shadcn default (foreground at 60%) measured 4.37:1 on the Manual track. The
+   selected tab is a solid plate with the measured on-brand label. Unlayered,
+   so these outrank the shadcn state utilities in both themes. */
+.skills-tab {
+  color: var(--color-ink-dim);
+}
+.skills-tab:hover {
+  color: var(--color-ink);
+}
+.skills-tab[data-state="active"] {
+  color: var(--color-on-brand);
+  background: var(--color-brand-700);
+  border-color: transparent;
+}
+.skills-tab:focus-visible {
+  outline: 2px solid var(--color-ring);
+  outline-offset: 2px;
+}
+
+/* The panel under the Skills tabs is a keyboard stop of its own (Radix gives
+   it tabindex 0 so the badges can be reached), and shadcn's TabsContent turns
+   its outline off. Unlayered, so this wins over that utility. */
+.skills-panel:focus-visible {
+  outline: 2px solid var(--color-ring);
+  outline-offset: 4px;
+  border-radius: 1rem;
 }
 
 /* Shown only in mobile scroll mode, where the sub-tab bar is gone. */
@@ -1914,7 +2053,8 @@ html[data-subtabs-ready] .about-pane[hidden] {
   color: var(--color-ink-muted);
   background: var(--tint-white-05);
   border: 1px solid var(--color-card-border);
-  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease,
+              transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .cookie-btn:hover {
@@ -1960,6 +2100,30 @@ html[data-scroll-mode] .cookie-banner {
   }
 }
 
+/* Footer text control ("Cookie settings"). Underlined like a link because it
+   reads like one, and at least 24px tall for SC 2.5.8 even at footer size. */
+.footer-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 24px;
+  padding: 0 0.25rem;
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  color: var(--color-ink-faint);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  background: none;
+  border: 0;
+  cursor: pointer;
+}
+.footer-link:hover {
+  color: var(--color-brand-text);
+}
+.footer-link:focus-visible {
+  outline: 2px solid var(--color-ring);
+  outline-offset: 2px;
+}
+
 /* ── Flow link ──
    The forward step out of a section. A paper sheet like the nav, lifting
    toward the light on hover while the arrow eases right, so it reads as
@@ -1988,9 +2152,10 @@ html[data-scroll-mode] .cookie-banner {
   transition: transform 0.2s ease;
 }
 
-.flow-link:hover {
+.flow-link:hover,
+.flow-link:focus-visible {
   /* Mixed toward the sheet, not toward transparent: the link is opaque now. */
-  background: color-mix(in srgb, var(--color-brand) 10%, var(--color-card-surface));
+  background: var(--sheet-brand-10);
   color: var(--color-brand-text);
   transform: translate(-2px, -2px);
   box-shadow: var(--shadow-print);
@@ -2147,6 +2312,18 @@ html[data-scroll-mode] .cookie-banner {
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
+  }
+
+  /* Entrance reveals start from opacity 0 or an offset, and their end state
+     must never depend on a script running: a reveal that misfires (the hook
+     reporting late, an observer that never fires, a hydration error) would
+     leave content invisible. An important author declaration outranks both
+     the inline start values and any running animation in the cascade, so
+     tagged reveals are visible and in place from the first frame. */
+  [data-reveal] {
+    opacity: 1 !important;
+    transform: none !important;
+    filter: none !important;
   }
 
   /* Purely decorative infinite loops — removed rather than shortened. */

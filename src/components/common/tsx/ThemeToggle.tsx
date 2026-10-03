@@ -2,6 +2,7 @@
 
 import { Moon, Sun } from "lucide-react";
 import { useTheme, toggleTheme } from "@/components/common/tsx/ThemeProvider";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 interface ThemeToggleProps {
   /** Render the wide labelled form used inside the mobile drawer. */
@@ -19,6 +20,9 @@ interface ThemeToggleProps {
  * tech announced "Switch to standby mode, pressed" -- a name describing the
  * press while the state described the current mode. Now it reads "Blueprint
  * mode, pressed" or "not pressed", and only the tooltip names the action.
+ *
+ * The action used to sit in title=, which keyboard and touch users never see.
+ * It is a real tooltip now: Radix opens it on keyboard focus as well as hover.
  */
 export function ThemeToggle({ withLabel = false, className = "" }: ThemeToggleProps) {
   const theme = useTheme();
@@ -47,15 +51,23 @@ export function ThemeToggle({ withLabel = false, className = "" }: ThemeTogglePr
   }
 
   return (
-    <button
-      type="button"
-      onClick={toggleTheme}
-      aria-label={name}
-      aria-pressed={dark}
-      title={action}
-      className={`icon-btn inline-flex w-9 h-9 items-center justify-center rounded-md transition-colors hover:bg-[var(--tint-white-06)] ${className}`}
-    >
-      {dark ? <Moon size={18} aria-hidden="true" /> : <Sun size={18} aria-hidden="true" />}
-    </button>
+    // Its own provider: the toggle lives in the header island, which has no
+    // other tooltips to share one with.
+    <TooltipProvider delayDuration={300}>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <button
+            type="button"
+            onClick={toggleTheme}
+            aria-label={name}
+            aria-pressed={dark}
+            className={`icon-btn inline-flex w-9 h-9 items-center justify-center rounded-md transition-colors hover:bg-[var(--tint-white-06)] ${className}`}
+          >
+            {dark ? <Moon size={18} aria-hidden="true" /> : <Sun size={18} aria-hidden="true" />}
+          </button>
+        </TooltipTrigger>
+        <TooltipContent side="bottom">{action}</TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
   );
 }

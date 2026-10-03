@@ -114,8 +114,9 @@ export function AboutTabs({ tabs }: { tabs: TabDef[] }) {
       {/* Built like the page tab bar: a transparent track with one tab pill
           sliding behind the labels, rather than a filled track with a styled
           active stop. after:hidden kills the line variant's own ::after bar --
-          2px of bg-foreground at bottom:-5px, which hangs below the control and
-          reads near-black in dark mode. The header suppresses it the same way. */}
+          2px of bg-foreground at bottom:-5px, which hangs below the control as
+          a stray ink rule in either theme. The header suppresses it the same
+          way. */}
       <TabsList
         variant="line"
         aria-label="About sections"
