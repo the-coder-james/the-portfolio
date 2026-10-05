@@ -28,6 +28,10 @@ Requires Node >= 18.20.8 (Astro 5). There is no linter. Tests: Vitest (`tests/st
 `dist-e2e/` on port 4410). Mark a known, unfixed defect as `test.fail` /
 `it.fails` with its ID, so fixing it flips the test; none are open now.
 
+Generated audits, reviews and reports (UI/UX, QA, security, privacy) go in
+`docs/reports-audits/` as `YYYY-mm-dd_[type]-report.md`. That directory is
+gitignored; never write a report to the repo root or commit one.
+
 ## Architecture
 
 **Astro + React + Tailwind v4** portfolio deployed to GitHub Pages at
