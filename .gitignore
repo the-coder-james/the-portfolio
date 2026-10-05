@@ -28,6 +28,9 @@ pnpm-debug.log*
 # agent scratch state
 .claude/agent-memory/
 
+# per-machine Claude Code settings (permissions, local paths)
+.claude/settings.local.json
+
 # test artefacts (QA suite)
 /dist-e2e/
 playwright-report/
