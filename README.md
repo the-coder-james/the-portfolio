@@ -1,48 +1,108 @@
-# 🔥 my portfolio — no cap, it's bussin
+# the-portfolio
 
-yo this is my personal portfolio and it's giving EVERYTHING. built different, hits different, straight up slay. 💅
+This is the personal portfolio of James, a full stack developer who works with PHP, React and Node.js.
 
-## 📁 the vibe check (project structure)
+**Live:** https://the-coder-james.github.io/the-portfolio/
 
-```text
-/
-├── public/
-│   └── favicon.svg
-├── src/
-│   ├── components/
-│   │   └── ui/
-│   │       └── button.tsx
-│   ├── lib/
-│   │   └── utils.ts
-│   ├── pages/
-│   │   └── index.astro
-│   └── styles/
-│       └── global.css
-├── astro.config.mjs
-├── components.json
-├── tailwind.config.mjs
-└── package.json
+The site is styled like a mobile-suit instruction manual and has two themes:
+- **Manual** (light, the default): off-white paper, ink line art and flat spot colours.
+- **Blueprint** (dark): its cyanotype twin.
+
+## Stack
+
+- [Astro](https://astro.build) 5, with static output and [React](https://react.dev) 19 islands
+- [Tailwind CSS](https://tailwindcss.com) v4, [shadcn/ui](https://ui.shadcn.com) and [Motion](https://motion.dev)
+- Barlow Condensed, IBM Plex Sans and IBM Plex Mono, self-hosted through [Fontsource](https://fontsource.org)
+- [Vitest](https://vitest.dev) and [Playwright](https://playwright.dev) for tests
+- GitHub Pages for hosting, deployed by GitHub Actions
+
+## Features
+
+- **Layout:**
+  - On desktop, the sections are tabs. Each tab has its own URL hash, so back and forward work.
+  - At 640px wide and below, the page becomes one scrolling document.
+- **Themes:** the theme is set before first paint and follows the OS preference until you pick one.
+- **Analytics:**
+  - Google Tag Manager loads only after the visitor accepts the cookie banner.
+  - Consent can be withdrawn at any time from **Cookie settings** in the footer.
+- **Accessibility:**
+  - Without JavaScript, the page still reads as one plain scrolling page.
+  - Reduced-motion settings are respected.
+  - Contrast ratios are measured and tested in both themes.
+
+## Getting started
+
+You need Node 20, the version pinned in `.nvmrc`.
+
+```bash
+nvm use
+yarn install
+yarn dev        # http://localhost:4321/the-portfolio/
 ```
 
-## 🛠️ tech stack (the drip)
+| Command | What it does |
+| :-- | :-- |
+| `yarn dev` | Start the dev server |
+| `yarn build` | Build the production site into `dist/` |
+| `yarn preview` | Serve the production build locally |
+| `yarn images` | Optimise the source images into `public/optimized/` |
+| `yarn og` | Regenerate the share image (`public/og-image.png`). Needs `yarn preview` running |
+| `yarn shadcn` | Add or update shadcn/ui components |
 
-- **Astro** — fast af, no cap
-- **React** — components go brrrr
-- **Tailwind CSS** — styling on god
-- **shadcn/ui** — UI so clean it's lowkey illegal
-- **TypeScript** — type-safe or we don't vibe
+## Tests
 
-## 🧞 commands (how to cook)
+```bash
+npx playwright install chromium   # once
+yarn test                         # about 5 minutes
+```
 
-| Command          | What it does                                     |
-| :--------------- | :----------------------------------------------- |
-| `yarn install`   | grab the fits (install deps)                     |
-| `yarn dev`       | start the rizz at `localhost:4321`               |
-| `yarn build`     | ship it to `./dist/` (we're so cooked 🍳)        |
-| `yarn preview`   | sneak peek before the drop                       |
-| `yarn shadcn`    | add more drip (shadcn components)                |
-| `yarn astro`     | astro CLI goes hard                              |
+`yarn test` runs these in order:
+- `astro check` for types;
+- Vitest checks on palette contrast and source rules;
+- unit tests for the consent and theme stores;
+- checks on the built output;
+- Playwright on a desktop and a phone viewport.
 
-## 👀 fr tho, wanna know more?
+Each step can also be run on its own:
 
-hit up the [Astro docs](https://docs.astro.build) or slide into the [Discord](https://astro.build/chat) — it's giving community fr fr 🫶
+| Command | Runs |
+| :-- | :-- |
+| `yarn check:types` | `astro check` only |
+| `yarn test:static` | The Vitest contrast and source-rule checks |
+| `yarn test:unit` | The unit tests for the consent and theme stores |
+| `yarn test:dist` | The build-output checks (builds first) |
+| `yarn test:e2e` | Playwright only (builds first) |
+
+## Content
+
+All text and data live in `src/assets/*.json`:
+
+| File | What it holds |
+| :-- | :-- |
+| `data.json` | The profile, the copy, the navigation and the SEO metadata |
+| `projectlist.json` | The project entries |
+| `experience.json` | The career timeline |
+| `contact.json` | The contact details |
+
+Edit those files to change the content. No component needs to change.
+
+## Deployment
+
+Every push to `main` runs `.github/workflows/static.yml`, which builds the site with `yarn build` and publishes it to GitHub Pages.
+
+Analytics are optional. They are on only when the `PUBLIC_GTM_ID` repository secret holds a Tag Manager container ID. Without it, the build ships no analytics code at all.
+
+## Project structure
+
+```text
+src/
+├── assets/        content (JSON)
+├── components/    Astro panel shells and React islands, grouped by section
+│   └── ui/        shadcn/ui primitives
+├── hooks/
+├── layout/        the page shell: theme script, fonts, analytics consent
+├── pages/         index.astro and 404.astro
+└── styles/        global.css: theme tokens for both palettes
+scripts/           image optimisation, share image, contrast and source checks
+tests/             static, unit, dist (Vitest) and e2e (Playwright)
+```
