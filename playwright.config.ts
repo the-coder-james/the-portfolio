@@ -31,7 +31,7 @@ export default defineConfig({
   projects: [
     { name: "desktop", use: { ...devices["Desktop Chrome"], viewport: { width: 1440, height: 900 } } },
     {
-      // Phone width puts the page in scroll mode (<= 640px).
+      // Phone width is the SP layout (<= 767px).
       name: "phone",
       use: { ...devices["Desktop Chrome"], viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true },
     },

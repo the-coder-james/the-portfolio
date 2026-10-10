@@ -8,6 +8,8 @@ interface SectionHeadingProps {
   headlineAccent?: string;
   sub?: string;
   className?: string;
+  /** Lets the section name itself after its heading (aria-labelledby). */
+  headingId?: string;
 }
 
 /**
@@ -27,6 +29,7 @@ export function SectionHeading({
   headlineAccent,
   sub,
   className,
+  headingId,
 }: SectionHeadingProps) {
   const { ref, revealed } = useRevealed<HTMLDivElement>("-80px");
   const reduced = useReducedMotion();
@@ -62,6 +65,7 @@ export function SectionHeading({
       )}
       {headline && (
         <motion.h2
+          id={headingId}
           style={{
             fontSize: "clamp(1.8rem, 4vw, 2.8rem)",
             fontWeight: 700,

@@ -23,10 +23,9 @@ const socials = contactJson
 
 <section
   id="home"
-  class="page-section tabpanel panel-viewport overflow-hidden"
+  class="page-section panel-viewport"
   style="background: transparent"
-  role="tabpanel"
-  aria-labelledby="tab-home"
+  aria-labelledby="home-title"
   tabindex="-1"
 >
   <!-- The drafting sheet is a fixed page-level layer (see .site-backdrop), so
@@ -34,8 +33,11 @@ const socials = contactJson
        used to sit over it; on paper it read as specks of dust, so the sheet is
        left still. -->
 
-  <!-- Registration marks on the major grid crossings -->
-  <div class="absolute inset-0 dot-grid" aria-hidden="true" style="z-index: 0"></div>
+  <!-- Registration marks on the major grid crossings. Pinned to the screen
+       with the sheet under them and faded out as the hero leaves, where the
+       browser can tie that to the scroll (see "Hero registration marks" in
+       global.css). -->
+  <div class="hero-marks dot-grid" aria-hidden="true"></div>
 
   <!-- Mobile: the config card as a backdrop behind the copy. A sibling of the
        other decorative layers on purpose -- inside the content column it would
@@ -43,11 +45,13 @@ const socials = contactJson
   <TerminalBackdrop client:idle name={name} stackLabels={user.stackLabels} />
 
   <!-- Static floating code snippets (lg+) -->
-  {mainvisual.floaters.map((f) => (
+  {/* Each drifts off at its own rate as the hero scrolls away (--drift), so
+      they read as lying at different depths over the sheet. */}
+  {mainvisual.floaters.map((f, i) => (
     <div
-      class="absolute hidden lg:block select-none pointer-events-none font-mono"
+      class="hero-floater absolute hidden lg:block select-none pointer-events-none font-mono"
       aria-hidden="true"
-      style={`left: ${f.x}; top: ${f.y}; font-size: 0.7rem; color: var(--tint-brand-25); z-index: 1`}
+      style={`left: ${f.x}; top: ${f.y}; font-size: 0.7rem; color: var(--tint-brand-25); z-index: 1; --drift: ${18 + ((i * 11) % 30)}vh`}
     >
       {f.text}
     </div>
@@ -57,12 +61,12 @@ const socials = contactJson
     <div class="hero-grid grid lg:grid-cols-2 gap-8 xl:gap-14 items-center justify-items-center lg:justify-items-stretch">
 
       <!-- Left column -->
-      <div>
+      <div class="hero-copy">
         <!-- Static: "Available for hire" badge -->
         <!-- An opaque tint printed on the sheet, so the grid does not run
              behind its small label; brand-text holds 4.5:1 there. -->
         <div
-          class="inline-flex items-center gap-2 mb-6 px-3 py-1.5 rounded-full"
+          class="hero-badge inline-flex items-center gap-2 mb-6 px-3 py-1.5 rounded-full"
           style="background: var(--sheet-brand-10); border: 1px solid var(--color-brand)"
         >
           <span class="w-1.5 h-1.5 rounded-full bg-brand cursor-blink" aria-hidden="true"></span>
@@ -70,13 +74,14 @@ const socials = contactJson
         </div>
 
         <!-- Static: greeting line -->
-        <p class="font-mono mb-2" style="font-size: 1rem; color: var(--color-brand-text)">
+        <p class="hero-greeting font-mono mb-2" style="font-size: 1rem; color: var(--color-brand-text)">
           {mainvisual.greeting}
         </p>
 
         <!-- Dynamic: glitch headline + typing effect -->
         <TypingHeadline
           client:load
+          headingId="home-title"
           name={name}
           sequences={user.roles}
           headlinePrefix={mainvisual.headlinePrefix}
@@ -85,14 +90,14 @@ const socials = contactJson
 
         <!-- Static: description -->
         <p
-          class="mb-8"
+          class="hero-description mb-8"
           style="font-size: 1rem; color: var(--color-ink-dim); line-height: 1.7; max-width: 480px"
         >
           {mainvisual.description}
         </p>
 
         <!-- Static: CTA buttons -->
-        <div class="flex flex-wrap gap-3 mb-10">
+        <div class="hero-ctas flex flex-wrap gap-3 mb-10">
           {mainvisual.ctas.map((cta) => (
             <a
               href={cta.href}
@@ -104,7 +109,7 @@ const socials = contactJson
         </div>
 
         <!-- Static: social links -->
-        <div class="flex items-center gap-3">
+        <div class="hero-socials flex items-center gap-3">
           {socials.map((s) => {
             const pathD = ICON_MAP[s.iconKey]
             return (
@@ -127,14 +132,18 @@ const socials = contactJson
         </div>
       </div>
 
-      <!-- Right column: Dynamic terminal card -->
-      <TerminalCard
-        client:load
-        name={name}
-        since={user.since}
-        professional={user.professional}
-        stackLabels={user.stackLabels}
-      />
+      <!-- Right column: Dynamic terminal card. The wrapper is what the scroll
+           choreography moves; the card's own float runs inside it. Hidden
+           below lg with the card, or the empty grid item would cost a row gap. -->
+      <div class="hero-visual hidden lg:block">
+        <TerminalCard
+          client:load
+          name={name}
+          since={user.since}
+          professional={user.professional}
+          stackLabels={user.stackLabels}
+        />
+      </div>
     </div>
 
   </div>

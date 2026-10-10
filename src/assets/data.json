@@ -240,21 +240,24 @@
         "icon": "☕"
       }
     ],
-    "tabs": [
+    "sections": [
       {
         "id": "profile",
         "label": "Profile",
-        "icon": "👤"
+        "icon": "👤",
+        "lede": "Who I am, and what I care about when I build."
       },
       {
         "id": "arsenal",
         "label": "Arsenal",
-        "icon": "⚙️"
+        "icon": "⚙️",
+        "lede": "The stacks and tools I reach for, and how I like to work."
       },
       {
         "id": "journey",
         "label": "Journey",
-        "icon": "📈"
+        "icon": "📈",
+        "lede": "From the first line of code to now, stage by stage."
       }
     ]
   },

@@ -4,10 +4,10 @@
 // E2E-09: a project card's edge strengthens on hover and focus (UI-04).
 import type { Page } from "@playwright/test";
 import { expect, test } from "./helpers/fixtures";
-import { SCOPE, STATES, open, settle, stateName } from "./helpers/page";
+import { STATES, open, scopeOf, settle, stateName, type State } from "./helpers/page";
 
-/** Elements with a 0 < alpha < 1 fill and no opaque sheet anywhere beneath them. */
-const filmsOnGrid = (page: Page) =>
+/** Elements in a state's section with a 0 < alpha < 1 fill and no opaque sheet anywhere beneath them. */
+const filmsOnGrid = (page: Page, state: State) =>
   page.evaluate((scope) => {
     const qa = window.__qa;
     const out: string[] = [];
@@ -21,7 +21,7 @@ const filmsOnGrid = (page: Page) =>
         if (qa.ground(el.parentElement!).onPage) out.push(`${qa.describe(el)} alpha=${a.toFixed(3)}`);
       }
     return out;
-  }, SCOPE);
+  }, scopeOf(state));
 
 for (const theme of ["light", "dark"] as const) {
   test.describe(`${theme === "light" ? "Manual" : "Blueprint"}`, () => {
@@ -29,16 +29,15 @@ for (const theme of ["light", "dark"] as const) {
 
     test.describe("E2E-07 surfaces are opaque sheets", () => {
       for (const state of STATES) {
-        test(stateName(state), async ({ page, isMobile }) => {
-          test.skip(isMobile && state.tab !== "home", "the phone runs one scroll document (the home case)");
+        test(stateName(state), async ({ page }) => {
           await open(page, state);
-          expect(await filmsOnGrid(page)).toEqual([]);
+          expect(await filmsOnGrid(page, state)).toEqual([]);
         });
       }
 
       test("contact success panel and its buttons", async ({ page, isMobile }) => {
         test.skip(isMobile, "desktop is enough for one more state");
-        await open(page, { tab: "contact" });
+        await open(page, { section: "contact" });
         await page.fill("#contact-name", "Ada");
         await page.fill("#contact-email", "ada@example.com");
         await page.fill("#contact-message", "Hello");
@@ -47,37 +46,47 @@ for (const theme of ["light", "dark"] as const) {
         await page.click("#contact button[type=submit]");
         await expect(page.getByRole("status").filter({ hasText: "Your draft is ready" })).toBeVisible();
         await settle(page);
-        expect(await filmsOnGrid(page)).toEqual([]);
+        expect(await filmsOnGrid(page, { section: "contact" })).toEqual([]);
       });
     });
 
     test.describe("project cards", () => {
       test.skip(({ isMobile }) => isMobile, "hover is a pointer affordance");
 
-      test("E2E-08 the tooltip arrow matches the tooltip body", async ({ page }) => {
-        await open(page, { tab: "projects" });
-        await page.locator("#projects [data-slot='tooltip-trigger']").first().hover();
-        const tooltip = page.locator("[data-slot='tooltip-content']").first();
-        await expect(tooltip).toBeVisible();
-        const c = await tooltip.evaluate((el) => ({
-          body: window.__qa.parse(getComputedStyle(el).backgroundColor),
-          arrow: window.__qa.parse(getComputedStyle(el.querySelector("svg")!).fill),
-        }));
-        for (const i of [0, 1, 2]) expect(Math.abs(c.body[i] - c.arrow[i]), `channel ${i}`).toBeLessThanOrEqual(2);
+      test("E2E-08 each tooltip's arrow matches its body: the description and the no-link reason", async ({ page }) => {
+        await open(page, { section: "projects" });
+        const arrowMatches = async (tooltip: ReturnType<typeof page.locator>) => {
+          await expect(tooltip).toBeVisible();
+          const c = await tooltip.evaluate((el) => ({
+            body: window.__qa.parse(getComputedStyle(el).backgroundColor),
+            arrow: window.__qa.parse(getComputedStyle(el.querySelector("svg")!).fill),
+          }));
+          for (const i of [0, 1, 2]) expect(Math.abs(c.body[i] - c.arrow[i]), `channel ${i}`).toBeLessThanOrEqual(2);
+        };
+        // Glided, not jumped: Radix keeps a hoverable tooltip open while the
+        // pointer may be heading for it, judged from the moves that follow.
+        const glide = async (target: ReturnType<typeof page.locator>) => {
+          const b = (await target.boundingBox())!;
+          await page.mouse.move(b.x + b.width / 2, b.y + b.height / 2, { steps: 12 });
+        };
+        await glide(page.locator("#projects .project-card h3").first());
+        await arrowMatches(page.locator(".project-tip:visible"));
+        await glide(page.locator("#projects button[data-slot='tooltip-trigger']").first());
+        await arrowMatches(page.locator("[data-slot='tooltip-content']:not(.project-tip):visible"));
       });
 
       test("E2E-09 a card's edge strengthens on hover and keyboard focus, with an accent rule", async ({ page }) => {
-        await open(page, { tab: "projects" });
+        await open(page, { section: "projects" });
         const edge = (i: number) =>
-          page.locator("#projects [data-reveal][tabindex='0']").nth(i).evaluate((el) => {
+          page.locator("#projects .project-card").nth(i).evaluate((el) => {
             const qa = window.__qa;
             const p = qa.page();
             return qa.ratio(qa.over(qa.parse(getComputedStyle(el).borderTopColor), p), p);
           });
         const accentRule = (i: number) =>
-          page.locator("#projects [data-reveal][tabindex='0']").nth(i).evaluate((el) => getComputedStyle(el.firstElementChild!).boxShadow);
+          page.locator("#projects .project-card").nth(i).evaluate((el) => getComputedStyle(el.firstElementChild!).boxShadow);
         for (let i = 0; i < 6; i++) {
-          const card = page.locator("#projects [data-reveal][tabindex='0']").nth(i);
+          const card = page.locator("#projects .project-card").nth(i);
           const rest = await edge(i);
           await card.hover();
           await expect.poll(() => edge(i)).toBeGreaterThan(rest);

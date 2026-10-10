@@ -5,7 +5,7 @@
 // E2E-06: placeholders, which 1.4.3 covers too.
 import type { Page } from "@playwright/test";
 import { expect, test } from "./helpers/fixtures";
-import { SCOPE, STATES, open, stateName } from "./helpers/page";
+import { STATES, open, revealAll, scopeOf, stateName, type State } from "./helpers/page";
 
 /**
  * Excluded here, asserted elsewhere: the hero's decorative code floaters are
@@ -14,7 +14,7 @@ import { SCOPE, STATES, open, stateName } from "./helpers/page";
  */
 const DECORATIVE = "#home .select-none.pointer-events-none";
 
-const lowContrastText = (page: Page) =>
+const lowContrastText = (page: Page, state: State) =>
   page.evaluate(
     ({ scope, exclude }) => {
       const qa = window.__qa;
@@ -39,7 +39,7 @@ const lowContrastText = (page: Page) =>
         }
       return { checked, failures: out };
     },
-    { scope: SCOPE, exclude: DECORATIVE },
+    { scope: scopeOf(state), exclude: DECORATIVE },
   );
 
 for (const theme of ["light", "dark"] as const) {
@@ -48,42 +48,18 @@ for (const theme of ["light", "dark"] as const) {
 
     test.describe("E2E-05 rendered text contrast", () => {
       for (const state of STATES) {
-        test(stateName(state), async ({ page, isMobile }) => {
-          test.skip(isMobile && state.tab !== "home", "the phone runs one scroll document (the home case)");
+        test(stateName(state), async ({ page }) => {
           await open(page, state);
-          const { checked, failures } = await lowContrastText(page);
+          await revealAll(page, state);
+          const { checked, failures } = await lowContrastText(page, state);
           expect(checked, "text nodes measured").toBeGreaterThan(5);
           expect(failures).toEqual([]);
         });
       }
 
-      test("Skills tabs: inactive labels >= 4.5:1, the selected tab distinct from its track (>= 3:1)", async ({ page }) => {
-        await open(page, { tab: "about", sub: "arsenal" });
-        const r = await page.evaluate(() => {
-          const qa = window.__qa;
-          const tabs = [...document.querySelectorAll("#about-arsenal [role='tab']")];
-          const track = qa.ground(tabs[0].parentElement!).color;
-          const inactive = tabs
-            .filter((t) => t.getAttribute("data-state") === "inactive")
-            .map((t) => qa.ratio(qa.over(qa.parse(getComputedStyle(t).color), track), track));
-          const active = tabs.find((t) => t.getAttribute("data-state") === "active")!;
-          const fill = qa.over(qa.parse(getComputedStyle(active).backgroundColor), track);
-          return {
-            inactiveMin: Math.min(...inactive),
-            activeLabel: qa.ratio(qa.over(qa.parse(getComputedStyle(active).color), fill), fill),
-            fillVsTrack: qa.ratio(fill, track),
-          };
-        });
-        expect(r.inactiveMin).toBeGreaterThanOrEqual(4.5);
-        expect(r.activeLabel).toBeGreaterThanOrEqual(4.5);
-        expect(r.fillVsTrack).toBeGreaterThanOrEqual(3);
-      });
-    });
-
-    test.describe("E2E-06 placeholder contrast", () => {
-      for (const [tab, selector] of [["projects", ".projects-search"], ["contact", "#contact input, #contact textarea"]] as const) {
-        test(`${tab}: placeholders >= 4.5:1`, async ({ page }) => {
-          await open(page, { tab });
+      for (const [section, selector] of [["projects", ".projects-search"], ["contact", "#contact input, #contact textarea"]] as const) {
+        test(`${section}: placeholders >= 4.5:1`, async ({ page }) => {
+          await open(page, { section });
           const ratios = await page.locator(selector).evaluateAll((els) =>
             els.map((el) => {
               const qa = window.__qa;

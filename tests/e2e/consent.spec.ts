@@ -14,7 +14,7 @@ const dataLayer = (page: Page) =>
   page.evaluate(() => (window as unknown as { dataLayer?: Record<string, unknown>[] }).dataLayer ?? null);
 
 async function submitContact(page: Page) {
-  await go(page, { tab: "contact" });
+  await go(page, { section: "contact" });
   await page.fill("#contact-name", "Ada Lovelace");
   await page.fill("#contact-email", "ada@example.com");
   await page.fill("#contact-message", "a private message body");

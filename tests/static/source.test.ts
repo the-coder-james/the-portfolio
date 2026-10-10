@@ -24,7 +24,7 @@ describe("ST-06 source invariants", () => {
     expect(inv.fontFamilyLiterals).toEqual([]);
   });
 
-  it("(b) no client:visible island (a hidden panel never intersects)", () => {
+  it("(b) no client:visible island (islands hydrate before the reader reaches them)", () => {
     expect(inv.clientVisible).toEqual([]);
   });
 
