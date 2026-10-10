@@ -11,9 +11,9 @@ test("UI-03: the hero's decorative code floaters are hidden from assistive tech"
   for (const text of ["const x = () => {}", "npm run dev", "<Component />"]) expect(tree).not.toContain(text);
 });
 
-test("A11Y-04: the logo button's accessible name contains its visible text", async ({ page }) => {
+test("A11Y-04: the logo link's accessible name contains its visible text", async ({ page }) => {
   await open(page);
-  await expect(page.locator("nav button.logo-home")).toHaveAccessibleName(/james/i);
+  await expect(page.locator("nav a.logo-home")).toHaveAccessibleName(/james/i);
 });
 
 test("UI-05: the theme toggle's action is shown to keyboard users, not only in a title", async ({ page }) => {
@@ -24,8 +24,8 @@ test("UI-05: the theme toggle's action is shown to keyboard users, not only in a
 });
 
 test("UI-02: a keyboard user can read why a project has no live link", async ({ page }) => {
-  await open(page, { tab: "projects" });
-  const trigger = page.locator("#projects [data-slot='tooltip-trigger']").first();
+  await open(page, { section: "projects" });
+  const trigger = page.locator("#projects button[data-slot='tooltip-trigger']").first();
   expect(await trigger.evaluate((el) => (el as HTMLElement).tabIndex)).toBeGreaterThanOrEqual(0);
   await page.keyboard.press("Tab");
   await trigger.focus();

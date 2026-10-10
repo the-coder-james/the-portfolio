@@ -57,13 +57,16 @@ const { title, noindex } = Astro.props;
         server-rendered loader, and reveals ship at their start values
         (opacity 0), so the page was blank. This applies only when scripts
         do not run; is:inline keeps Astro from hoisting it out of <noscript>.
-        Every panel is already visible then (the hiding is gated on
-        html[data-tabs-ready]), so the page reads as one plain scroll. */}
+        The nav's links are plain anchors and work without script, so its
+        entrance start value is undone too. Every section already grows with
+        its content, and Projects renders all its cards in a plain grid until
+        script turns it into a deck, so the page reads as one plain scroll. */}
     <noscript>
       <style is:inline>
         #preboot-veil,
         [role="status"][aria-label="Loading site"] { display: none !important; }
         [data-reveal] { opacity: 1 !important; transform: none !important; filter: none !important; }
+        nav[aria-label="Primary"] { opacity: 1 !important; }
       </style>
     </noscript>
     <style is:global>

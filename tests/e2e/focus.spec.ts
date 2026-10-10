@@ -8,21 +8,14 @@
 // without sleeps.
 import type { Page } from "@playwright/test";
 import { expect, test } from "./helpers/fixtures";
-import { STATES, open, stateName } from "./helpers/page";
+import { SECTION_STATES, open, stateName } from "./helpers/page";
 
 test.use({ contextOptions: { reducedMotion: "reduce" } });
-
-/**
- * Known open defect, kept out of the general audit and asserted on its own
- * below: CR-03, the Skills tab panel is a Tab stop with no indicator.
- */
-const KNOWN = "#about-arsenal [role='tabpanel']";
 
 interface Stop {
   name: string;
   focusVisible: boolean;
   indicator: string | null;
-  known: boolean;
 }
 
 /**
@@ -42,20 +35,28 @@ export const resetFocusStart = (page: Page) =>
 /** Wait two frames: transitions (even 0.01ms ones) start from the old value. */
 const twoFrames = () => new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
 
-/** Tab through the page and judge each stop's focus indicator. */
-async function auditFocus(page: Page, maxStops = 120): Promise<Stop[]> {
+/**
+ * Tab through one section and judge each stop's focus indicator. Home starts
+ * at the top of the document, so the skip link and the nav are walked with it;
+ * every other section starts at its own top. The walk ends where focus leaves
+ * the section.
+ */
+async function auditFocus(page: Page, section: string, maxStops = 120): Promise<Stop[]> {
   await page.mouse.move(1, 1);
   await page.evaluate(() => {
     (window as unknown as { __qaFocus: unknown[] }).__qaFocus = [];
   });
-  await resetFocusStart(page);
+  if (section === "home") await resetFocusStart(page);
+  else await page.evaluate((id) => document.getElementById(id)!.focus({ preventScroll: true }), section);
   for (let i = 0; i < maxStops; i++) {
     await page.keyboard.press("Tab");
     await page.evaluate(twoFrames);
-    const done = await page.evaluate(() => {
+    const done = await page.evaluate((id) => {
       const el = document.activeElement as HTMLElement | null;
       const store = (window as unknown as { __qaFocus: { el: Element; s: Record<string, string>; fv: boolean }[] }).__qaFocus;
       if (!el || el === document.body || store.some((r) => r.el === el)) return true;
+      const owner = el.closest("main > section");
+      if (id === "home" ? owner && owner.id !== "home" : owner?.id !== id) return true;
       const s = getComputedStyle(el);
       store.push({
         el,
@@ -63,10 +64,10 @@ async function auditFocus(page: Page, maxStops = 120): Promise<Stop[]> {
         s: { outlineStyle: s.outlineStyle, outlineWidth: s.outlineWidth, outlineColor: s.outlineColor, boxShadow: s.boxShadow, borderColor: s.borderTopColor, borderWidth: s.borderTopWidth },
       });
       return false;
-    });
+    }, section);
     if (done) break;
   }
-  return page.evaluate(async (known) => {
+  return page.evaluate(async () => {
     (document.activeElement as HTMLElement | null)?.blur();
     await new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
     const qa = window.__qa;
@@ -94,9 +95,9 @@ async function auditFocus(page: Page, maxStops = 120): Promise<Stop[]> {
       if (!indicator && f.borderColor !== rest.borderTopColor && parseFloat(f.borderWidth) >= 1 && vs(f.borderColor) >= 3) {
         indicator = `border ${vs(f.borderColor).toFixed(2)}:1`;
       }
-      return { name: qa.describe(el), focusVisible: fv, indicator, known: el.matches(known) };
+      return { name: qa.describe(el), focusVisible: fv, indicator };
     });
-  }, KNOWN);
+  });
 }
 
 test.describe("E2E-03 every keyboard stop shows a focus indicator (>= 3:1)", () => {
@@ -106,33 +107,27 @@ test.describe("E2E-03 every keyboard stop shows a focus indicator (>= 3:1)", () 
     test.describe(theme === "light" ? "Manual" : "Blueprint", () => {
       test.use({ seed: { theme, consent: "denied" } });
 
-      for (const state of STATES) {
+      // One walk per section: About's three sub-sections are all on the page,
+      // so its walk covers every one of them.
+      for (const state of SECTION_STATES) {
         test(stateName(state), async ({ page }) => {
           await open(page, state);
-          const stops = (await auditFocus(page)).filter((s) => !s.known);
-          expect(stops.length, "the walk reached the panel").toBeGreaterThan(5);
+          const stops = await auditFocus(page, state.section);
+          expect(stops.length, "the walk reached the section").toBeGreaterThan(1);
           expect(stops.filter((s) => !s.focusVisible || !s.indicator).map((s) => `${s.name} focus-visible=${s.focusVisible}`)).toEqual([]);
         });
       }
-
-      // CR-03: shadcn's TabsContent is a Tab stop (Radix tabIndex 0) and its
-      // `outline-none` removed every indicator; .skills-panel restores one.
-      test("CR-03: the Skills tab panel shows a focus indicator", async ({ page }) => {
-        await open(page, { tab: "about", sub: "arsenal" });
-        const panel = (await auditFocus(page)).find((s) => s.known);
-        expect(panel, "the Skills tab panel is a Tab stop").toBeTruthy();
-        expect(panel!.indicator).not.toBeNull();
-      });
     });
   }
 });
 
 test.describe("E2E-04 the fixed nav never hides the focused control", () => {
-  test.skip(({ isMobile }) => !isMobile, "the nav overlays content only in phone scroll mode");
+  // The nav floats over whichever section is under it, at every width.
 
   /** After each key press: is the focused element entirely behind the nav? */
   async function walk(page: Page, key: "Tab" | "Shift+Tab", max = 160) {
     const hidden: string[] = [];
+    const sections = new Set<string>();
     let visited = 0;
     await page.evaluate(() => document.querySelectorAll("[data-qa-seen]").forEach((e) => e.removeAttribute("data-qa-seen")));
     for (let i = 0; i < max; i++) {
@@ -147,25 +142,33 @@ test.describe("E2E-04 the fixed nav never hides the focused control", () => {
         const b = el.getBoundingClientRect();
         const n = nav.getBoundingClientRect();
         const covered = b.bottom <= n.bottom && b.left >= n.left - 2 && b.right <= n.right + 2;
-        return { inNav: false, hidden: covered, name: `${window.__qa.describe(el)} bottom=${Math.round(b.bottom)} nav=${Math.round(n.bottom)}` };
+        const section = el.closest("main > section")?.id ?? "";
+        return { inNav: false, hidden: covered, section, name: `${window.__qa.describe(el)} bottom=${Math.round(b.bottom)} nav=${Math.round(n.bottom)}` };
       });
       if (!r) break;
       if (!r.inNav) {
         visited++;
+        if (r.section) sections.add(r.section);
         if (r.hidden) hidden.push(r.name);
       }
     }
-    return { hidden, visited };
+    return { hidden, visited, sections: [...sections].sort() };
   }
 
   test("tabbing forward and backward through the whole document", async ({ page }) => {
-    await open(page, { tab: "home" });
+    await open(page, { section: "home" });
     await resetFocusStart(page);
+    // The walk must cross every section. A count of stops would not say so:
+    // the PC deck keeps one slide of cards in the document at a time, the
+    // phone's rail all forty.
+    const all = ["about", "contact", "home", "projects"];
     const forward = await walk(page, "Tab");
-    expect(forward.visited).toBeGreaterThan(40);
+    expect(forward.sections).toEqual(all);
+    expect(forward.visited).toBeGreaterThan(20);
     expect(forward.hidden).toEqual([]);
     const backward = await walk(page, "Shift+Tab");
-    expect(backward.visited).toBeGreaterThan(40);
+    expect(backward.sections).toEqual(all);
+    expect(backward.visited).toBeGreaterThan(20);
     expect(backward.hidden).toEqual([]);
   });
 });

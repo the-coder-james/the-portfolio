@@ -523,17 +523,17 @@
   box-shadow: var(--shadow-print-sm);
 }
 
-/* The moving pill behind the active tab. Sits under the labels (z-0 vs z-10)
-   and animates via left/width from the tab bar. Flat, with no shadow of its
-   own: the active tab reads as inked rather than raised. */
+/* The moving pill behind the current nav link or active sub-tab. Sits under
+   the labels (z-0 vs z-10) and animates via left/width. Flat, with no shadow
+   of its own: the active item reads as inked rather than raised. */
 .tab-pill {
   /* Mixed toward the sheet rather than toward transparent, so the fill reads
      the same on the nav sheet as it does straight on the page. */
   background: var(--sheet-brand-14);
   /* Full-strength brand, not a 30% mix. The pill is the only thing marking
-     which tab is active, so its edge is a UI component boundary under
+     which item is active, so its edge is a UI component boundary under
      SC 1.4.11 and needs 3:1 against what it sits on -- the mix measured
-     1.54:1 on light and 1.44:1 on dark. Shared by the page tab bar and the
+     1.54:1 on light and 1.44:1 on dark. Shared by the page nav and the
      About sub-tabs, so this fixes both. */
   border: 1px solid var(--color-brand);
 }
@@ -619,8 +619,7 @@
   color: var(--color-brand-text);
 }
 
-/* Filter chip — `aria-pressed` drives the active look, so state is exposed
-   to assistive tech instead of living only in a JS variable. */
+/* Filter chip -- an applied filter value, removed by clicking it. */
 .filter-chip {
   color: var(--color-ink-dim);
   border: 1px solid var(--color-card-border);
@@ -636,7 +635,7 @@
   outline: 2px solid var(--color-ring);
   outline-offset: 2px;
 }
-.filter-chip[aria-pressed="true"] {
+.filter-chip[data-applied] {
   color: var(--color-brand-text);
   border-color: var(--color-brand);
   background: var(--sheet-brand-15);
@@ -950,99 +949,238 @@
     var(--grid-step) var(--grid-step);
 }
 
-/* Panels sit above the fixed backdrop and are transparent, so the backdrop
-   shows through whichever one is active.
-
-   The seam gradients that used to live here blended the hard edge between
-   stacked, alternately-coloured sections. Only one panel is visible at a time
-   now, so there is no seam left to blend. */
+/* Sections sit above the fixed backdrop and are transparent, so the sheet
+   shows through every one of them as they scroll over it: the paper stays
+   put and only the content moves. */
 .page-section {
   position: relative;
   z-index: 1;
 }
 
-/* ── Panel viewport ──
-   A panel is exactly one screen tall. The page itself never scrolls: the
-   footer is pinned below the panel and both together fill the viewport, so
-   the only thing that can scroll is a panel's own content region.
+/* ── Section viewport ──
+   The page is one scrolling document of four sections. Each is at least one
+   screen tall, its content centred in it, and grows with its content when that
+   is taller -- About, which holds the most, always does. Nothing in a section
+   is clipped or scrolled inside a box of its own: the page is the only
+   vertical scroller. (The Projects deck is the one tall section that does not
+   grow with its cards; it is as many screens tall as it has slides.)
 
-   --nav-h is the floating pill plus its top offset; --footer-h the footer.
-   Both are reserved out of the panel's height. */
+   svh, not vh or dvh: the small viewport is the one with a phone's URL bar
+   showing, so a one-screen section fits whichever state the bar is in, and
+   its height never changes mid-scroll as the bar slides away.
+
+   --nav-h is the floating pill plus its top offset. The pill floats over
+   whichever section is under it, so every section pads its top by it. */
 :root {
   /* Measured at runtime by the header island and written back onto <html>,
-     so a change to either chrome cannot silently break the panel height.
+     so a change to either chrome cannot silently break a section's height.
      The literals here are the correct values for the current markup and only
      matter for the first paint and the no-JS case. */
   --nav-h: 66px;
-  --footer-h: 109px;
+  --footer-h: 61px;
+  --section-h: 100vh;
   --panel-pad-y: clamp(0.75rem, 2.2vh, 1.75rem);
   --panel-pad-x: clamp(1rem, 3vw, 2.5rem);
-  /* Clearance between the floating nav and the first thing in a panel. Kept
-     separate from --panel-pad-y so tightening a short screen does not push the
-     eyebrow up under the pill. */
+  /* Clearance between the floating nav and the first thing in a section.
+     Kept separate from --panel-pad-y so tightening a short screen does not
+     push the eyebrow up under the pill. */
   --panel-nav-gap: clamp(1.25rem, 3.5vh, 2.75rem);
 }
 
+@supports (height: 100svh) {
+  :root { --section-h: 100svh; }
+}
+
 .panel-viewport {
-  height: calc(100svh - var(--footer-h));
-  min-height: 0;
+  min-height: var(--section-h);
   display: flex;
   flex-direction: column;
   justify-content: center;
   padding: calc(var(--nav-h) + var(--panel-nav-gap)) var(--panel-pad-x) var(--panel-pad-y);
-  overflow: hidden;
+}
+
+/* Decoration that reaches past a section's side edges -- the hero's code
+   floaters, the About code sample -- is cut at the edge instead of widening
+   the page. Sideways only: clip in x leaves y visible, so nothing in a
+   section is ever cut off top or bottom. clip, not hidden, which would make
+   the section a scroll container and break the sticky Projects frame. */
+.page-section {
+  overflow-x: clip;
+}
+
+/* The last screen is Contact plus the footer. */
+#contact.panel-viewport {
+  min-height: calc(var(--section-h) - var(--footer-h));
 }
 
 .panel-inner {
-  /* A flex item's default min-height is auto, which lets content push it past
-     its parent -- the reason an overflow:auto descendant never scrolls. Both
-     this and the scroll region below must opt out explicitly. */
-  min-height: 0;
-  flex: 1 1 auto;
   gap: clamp(0.75rem, 2vh, 1.5rem);
 }
 
-.panel-scroll {
-  min-height: 0;
-  flex: 1 1 auto;
+/* ── Resting places ──
+   On a PC, scrolling settles on a one-screen section rather than wherever the
+   wheel stopped. Proximity, not mandatory: a reader who stops between two on
+   purpose is left where they are. About is no stop: it is read, not flipped
+   past, and a pull back to its top while reading would be the page fighting
+   the reader. Nor is the Projects deck: it steps one slide per gesture itself
+   (ProjectsGrid), and snap points would fight those steps. Phones scroll
+   freely. */
+@media (min-width: 768px) {
+  html { scroll-snap-type: y proximity; }
+  #home, #contact { scroll-snap-align: start; }
+  body > footer { scroll-snap-align: end; }
 }
 
-/* ── Panel entrance ──
-   Panels are swapped by the tab bar, not scrolled to, so the reveal hooks that
-   depend on IntersectionObserver never re-fire after the first view. This runs
-   on the panel itself each time it becomes the active one: the section lifts in
-   and its immediate children follow in a short stagger, so a tab switch reads
-   as an arrival rather than a hard cut.
+/* The nav floats over the top of whichever section is under it. Sections pad
+   themselves clear of it and align to the very top of the screen, so the page
+   takes no scroll-padding (that would land every section a nav-height low).
+   What the pill can still cover is a control the browser scrolls to by
+   itself: Shift+Tab back up the page parks the focused control at the top
+   edge, behind the pill (SC 2.4.11). A scroll margin on the controls keeps
+   them below it without moving the sections. */
+main :is(a[href], button, input, textarea, select, [tabindex]):not(.page-section, [role="tabpanel"]) {
+  scroll-margin-top: calc(var(--nav-h) + 0.5rem);
+}
 
-   The stagger is driven by nth-child delays rather than JS, so it costs nothing
-   at runtime and cannot desync from the CSS. */
+/* ── Section scroll choreography ──
+   Each section carries a view timeline (--section), and the About
+   sub-sections and Journey stages carry their own. Everything here scrubs
+   against those, so the motion *is* the scroll -- reversing reverses it.
+
+   Entrances run over the entry range (top edge in at the bottom of the
+   screen, until the section has fully arrived) and exits over the exit
+   range, so they hold for a section of any height: a tall About finishes
+   entering as its top reaches the top of the screen, and is at rest all the
+   way down. Keyframes have one explicit end each; the other end is the
+   element's own resting style, so anything measured at rest is never
+   mid-animation.
+
+   Each section moves in its own way:
+     Home      leaves only. The copy lags the scroll and recedes while the
+               config card tilts away faster and the code floaters drift off
+               at their own rates -- three depths over one still sheet.
+     About     the heading slides in from the margin; each sub-section's
+               title follows it in and its body rises as that sub-section
+               arrives; the Journey track fills in as the reader scrolls
+               down it; the code sample drifts behind Profile in parallax.
+     Projects  the frame is raised from flat as the section arrives, like a
+               drawing lifted off the desk; then the deck scales its slides
+               in and out (ProjectsGrid).
+     Contact   the heading drops into place and the two columns close in from
+               either side.
+
+   Keyframes use plain from/to, never timeline-range selectors
+   (`entry 0% {...}`): esbuild's CSS minifier warns on those.
+
+   Scroll-linked motion is motion, so all of it is gated on no-preference.
+   Browsers without scroll-driven animations get still sections; the reveals
+   inside them (useRevealed) still play as each one arrives. */
 @media (prefers-reduced-motion: no-preference) {
-  .tabpanel[data-entering] .panel-inner > * {
-    animation: panelRise 0.5s cubic-bezier(0.22, 1, 0.36, 1) backwards;
-  }
-  .tabpanel[data-entering] .panel-inner > *:nth-child(1) { animation-delay: 0.02s; }
-  .tabpanel[data-entering] .panel-inner > *:nth-child(2) { animation-delay: 0.10s; }
-  .tabpanel[data-entering] .panel-inner > *:nth-child(3) { animation-delay: 0.16s; }
+  @supports (animation-timeline: view()) {
+    .page-section {
+      view-timeline: --section block;
+    }
 
-  /* The hero builds its own section, so it has no .panel-inner. */
-  .tabpanel[data-entering]#home > .relative {
-    animation: panelRise 0.5s cubic-bezier(0.22, 1, 0.36, 1) backwards;
+    /* Home */
+    .hero-copy,
+    .hero-visual,
+    .hero-floater {
+      animation: linear both;
+      animation-timeline: --section;
+      animation-range: exit 0% exit 100%;
+    }
+    .hero-copy { animation-name: heroCopyOut; animation-range: exit 10% exit 100%; }
+    .hero-visual { animation-name: heroVisualOut; animation-range: exit 5% exit 100%; }
+    .hero-floater { animation-name: heroFloaterOut; }
+
+    @keyframes heroCopyOut {
+      to { opacity: 0; transform: translateY(24vh) scale(0.94); }
+    }
+    @keyframes heroVisualOut {
+      to { opacity: 0; transform: translateY(-14vh) rotate(-4deg) scale(0.92); }
+    }
+    @keyframes heroFloaterOut {
+      to { opacity: 0; transform: translateY(calc(-1 * var(--drift, 24vh))); }
+    }
+
+    /* About */
+    #about .section-head {
+      animation: fromMargin linear both;
+      animation-timeline: --section;
+      animation-range: entry 10% entry 60%;
+    }
+    .about-sub {
+      view-timeline: --sub block;
+    }
+    .about-sub-head {
+      animation: fromMargin linear both;
+      animation-timeline: --sub;
+      animation-range: entry 0% entry 40%;
+    }
+    .about-sub-body {
+      animation: riseIn linear both;
+      animation-timeline: --sub;
+      animation-range: entry 5% entry 50%;
+    }
+    .about-code-backdrop {
+      animation: codeDrift linear both;
+      animation-timeline: --sub;
+      animation-range: cover 0% cover 100%;
+    }
+
+    @keyframes fromMargin {
+      from { opacity: 0; transform: translateX(-7vw); }
+    }
+    @keyframes riseIn {
+      from { opacity: 0; transform: translateY(8vh); }
+    }
+    /* Centred on the backdrop's own resting transform, at the middle of the
+       pass, when Profile sits mid-screen. */
+    @keyframes codeDrift {
+      from { transform: translateY(calc(-50% + 16vh)) rotate(-5deg); }
+      to   { transform: translateY(calc(-50% - 16vh)) rotate(1deg); }
+    }
+
+    /* Projects */
+    #projects .section-stage {
+      animation: stageRaise linear both;
+      animation-timeline: --section;
+      animation-range: entry 0% entry 90%;
+      transform-origin: 50% 100%;
+    }
+    @keyframes stageRaise {
+      from { opacity: 0; transform: perspective(1400px) rotateX(18deg) translateY(10vh); }
+    }
+
+    /* Contact */
+    #contact .section-head {
+      animation: dropIn linear both;
+      animation-timeline: --section;
+      animation-range: entry 10% entry 80%;
+    }
+    #contact .contact-col-info,
+    #contact .contact-col-form {
+      animation: linear both;
+      animation-timeline: --section;
+      animation-range: entry 20% entry 90%;
+    }
+    #contact .contact-col-info { animation-name: fromLeft; }
+    #contact .contact-col-form { animation-name: fromRight; }
+
+    @keyframes dropIn {
+      from { opacity: 0; transform: translateY(-4vh) scale(0.96); }
+    }
+    @keyframes fromLeft {
+      from { opacity: 0; transform: translateX(-8vw); }
+    }
+    @keyframes fromRight {
+      from { opacity: 0; transform: translateX(8vw); }
+    }
   }
 }
 
-@keyframes panelRise {
-  from { opacity: 0; transform: translateY(16px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-
-/* ── Timeline (split view) ──
-   A rail of years on the left, the selected entry's detail on the right. The
-   entries here run 19-30 words, and a horizontal timeline stops working once
-   an entry needs more than roughly fifteen -- the columns get too narrow and
-   every description wraps into a thin ragged strip. Master-detail gives the
-   selected entry the full width instead. */
 /* The About code block as backdrop: a decorative sample rather than something
-   read line by line, so it sits behind the content, offset and dimmed. Hidden
+   read line by line, so it sits behind Profile, offset and dimmed. Hidden
    below lg, where there is no room to spend on decoration. */
 .about-code-backdrop {
   position: absolute;
@@ -1102,109 +1240,314 @@
   .next-section-arrow { transition: none; }
 }
 
-/* ── Scroll affordance ──
-   A region that scrolls but does not look scrollable reads as a frozen page,
-   and the page itself never scrolls here. The existing mask fades the last rows
-   out; this adds an explicit cue beneath it so "there is more" is stated rather
-   than implied. Both retire once the reader reaches the end. */
-.scroll-hint {
-  position: absolute;
-  left: 50%;
-  bottom: calc(var(--panel-pad-y) + 0.35rem);
-  transform: translateX(-50%);
-  z-index: 4;
-  pointer-events: none;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.4rem;
-  padding: 0.25rem 0.7rem;
-  border-radius: 999px;
-  font-family: var(--font-mono);
-  font-size: 0.62rem;
-  color: var(--color-ink-dim);
-  background: var(--color-card-surface);
-  border: 1px solid var(--color-card-border);
-  box-shadow: var(--shadow-print-sm);
-}
-
-.scroll-hint-arrow {
-  display: inline-block;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .scroll-hint-arrow { animation: scrollHintBob 1.6s ease-in-out infinite; }
-}
-
-@keyframes scrollHintBob {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(2px); }
-}
-
-/* Hidden once the region is scrolled to the end, so it never lies. */
-@supports (animation-timeline: scroll()) {
-  .scroll-hint {
-    animation: scrollHintFade linear both;
-    /* Named timeline: the hint is a sibling of the scroll region now, so
-       scroll(nearest) would find the page instead. */
-    animation-timeline: --panel-scroll-tl;
-    animation-range: 0 90px;
-  }
-  .panel-scroll { scroll-timeline: --panel-scroll-tl block; }
-  .tabpanel:has(> .panel-inner .panel-scroll) { timeline-scope: --panel-scroll-tl; }
-  @keyframes scrollHintFade {
-    to { opacity: 0; }
-  }
-}
-
 /* The card's media box. Declared here rather than inline so the short-viewport
    rules below can actually reach it -- an inline style would outrank them. */
 .project-media { aspect-ratio: 16 / 9; }
 
+/* ── Project description popup ──
+   A card's full description, with its role and via line, in a tooltip over
+   the card: hover or focus on a PC, tap-and-hold on a touch screen. Printed
+   like every floating sheet here -- opaque, edged in the card's accent, on a
+   hard print shadow -- and set wide enough for a paragraph rather than a
+   label. Unlayered, so it outranks the tooltip primitive's utilities. */
+.project-tip {
+  z-index: 65;
+  max-width: min(26rem, calc(100vw - 2rem));
+  padding: 0.8rem 0.95rem;
+  border-radius: 0.75rem;
+  color: var(--color-ink);
+  font-size: 0.8rem;
+  text-align: left;
+  text-wrap: pretty;
+}
+.project-tip-title {
+  margin: 0 0 0.3rem;
+  font-family: var(--font-display);
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--color-ink);
+}
+.project-tip-desc {
+  margin: 0;
+  line-height: 1.6;
+  color: var(--color-ink-dim);
+}
+.project-tip-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 0.9rem;
+  margin: 0.6rem 0 0;
+  padding-top: 0.5rem;
+  border-top: 1px solid var(--color-card-border);
+  font-size: 0.66rem;
+  color: var(--color-ink-dim);
+}
+
+/* "Tap and hold to see description": only where there is no hover to find
+   the popup by. A resting finger would otherwise select the card's text or
+   raise the phone's own menu for the screenshot, so both are turned off on
+   the card there. */
+.project-hold-hint {
+  display: none;
+}
+@media (hover: none) {
+  .project-hold-hint {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    /* The hint wraps; the link beside it keeps its one line. */
+    flex: 1 1 auto;
+    min-width: 0;
+    font-family: var(--font-mono);
+    font-size: 0.62rem;
+    line-height: 1.3;
+    color: var(--color-ink-faint);
+  }
+  .project-card {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    user-select: none;
+  }
+}
+
 /* ── Project filters and view toggle ── */
 
-/* Search and filters share one row on desktop and wrap on a phone. Sized in
-   CSS rather than inline so the mobile rules below can reach them. */
+/* Search and filters share one row on PC and wrap on a phone. Sized in CSS
+   rather than inline so the phone rules below can reach them. */
 .projects-search {
   padding-block: 0.5rem;
   font-size: 0.8rem;
 }
 
+/* The filter box: a button dressed as the closed select it replaces, holding
+   "key: value", a "+n" when more than one value is chosen, and a caret. Its
+   field look (sheet, ink edge, focus halo) comes from the .filter-select rules
+   under "Fields". */
 .filter-select {
-  padding: 0.35rem 1.4rem 0.35rem 0.6rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  min-width: 0;
+  max-width: 14rem;
+  padding: 0.35rem 0.5rem 0.35rem 0.6rem;
+  border-radius: 0.5rem;
   font-size: 0.72rem;
+  line-height: 1.3;
+  white-space: nowrap;
+  cursor: pointer;
+}
+.filter-select-key {
+  flex-shrink: 0;
+}
+/* The value gives way first, so the key and the count always survive. */
+.filter-select-value {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.filter-select-more {
+  flex-shrink: 0;
+  padding: 0 0.3rem;
+  border-radius: 999px;
+  font-size: 0.62rem;
+  line-height: 1.45;
+  color: var(--color-on-brand);
+  background: var(--color-brand-700);
+}
+.filter-select-caret {
+  flex-shrink: 0;
+  margin-left: auto;
+  transition: transform 0.2s ease;
+}
+.filter-select[aria-expanded="true"] .filter-select-caret {
+  transform: rotate(180deg);
+}
+.filter-select[aria-expanded="true"] {
+  border-color: var(--color-brand);
 }
 
-@media (max-width: 640px) {
-  /* The search bar is the least-used control in this row -- the three selects
+/* The open list: a sheet lifted off the page on a hard print shadow, like
+   every other floating surface. It lives in a portal, so it sizes itself to
+   the screen through Radix's measured space rather than to any section. */
+.filter-popover {
+  z-index: 70;
+  width: max(var(--radix-popover-trigger-width), 13.5rem);
+  max-width: calc(100vw - 1.5rem);
+  max-height: min(20rem, var(--radix-popover-content-available-height));
+  display: flex;
+  flex-direction: column;
+  padding: 0.35rem;
+  border-radius: 0.75rem;
+  background: var(--color-card-surface);
+  border: 1px solid var(--color-card-border-strong);
+  box-shadow: var(--shadow-print);
+  color: var(--color-ink);
+  transform-origin: var(--radix-popover-content-transform-origin);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .filter-popover[data-state="open"] {
+    animation: filterPopIn 0.16s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+}
+@keyframes filterPopIn {
+  from { opacity: 0; transform: translateY(-4px) scale(0.98); }
+}
+
+.filter-popover-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 0.2rem 0.4rem 0.35rem;
+  margin-bottom: 0.25rem;
+  border-bottom: 1px solid var(--color-card-border);
+  font-size: 0.66rem;
+  color: var(--color-ink-dim);
+}
+
+/* At least 24px tall for SC 2.5.8, even at this size. */
+.filter-popover-clear {
+  min-height: 24px;
+  padding: 0 0.35rem;
+  border-radius: 0.375rem;
+  font-size: 0.66rem;
+  color: var(--color-brand-text);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.filter-popover-clear:disabled {
+  color: var(--color-ink-faint);
+  text-decoration: none;
+  cursor: default;
+}
+.filter-popover-clear:focus-visible {
+  outline: 2px solid var(--color-ring);
+  outline-offset: 1px;
+}
+
+/* position: relative, so an option's offsetTop is measured against the list
+   when the active one is kept in view. */
+.filter-listbox {
+  position: relative;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  margin: 0;
+  padding: 0.1rem;
+  list-style: none;
+  border-radius: 0.5rem;
+}
+.filter-listbox:focus-visible {
+  outline: 2px solid var(--color-ring);
+  outline-offset: 1px;
+}
+
+.filter-option {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  min-height: 2rem;
+  padding: 0.3rem 0.45rem;
+  border-radius: 0.45rem;
+  font-size: 0.74rem;
+  color: var(--color-ink-muted);
+  cursor: pointer;
+  user-select: none;
+}
+/* The active option is where the keys act: a printed tint, plus a spot-ink
+   bar at its left edge so it reads in greyscale and in forced colours. */
+.filter-option[data-active] {
+  background: var(--sheet-brand-08);
+  box-shadow: inset 2px 0 0 var(--color-brand);
+}
+.filter-option[data-empty] {
+  color: var(--color-ink-faint);
+}
+
+/* The checkbox: an ink-line box, filled with the spot ink when chosen. */
+.filter-check {
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  width: 1rem;
+  height: 1rem;
+  border-radius: 0.25rem;
+  border: 1.5px solid var(--color-card-border-strong);
+  background: var(--color-card-surface);
+  color: transparent;
+  transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+.filter-option[aria-selected="true"] .filter-check {
+  background: var(--color-brand-700);
+  border-color: var(--color-brand-700);
+  color: var(--color-on-brand);
+}
+.filter-option[aria-selected="true"] .filter-option-name {
+  color: var(--color-ink);
+  font-weight: 600;
+}
+
+.filter-option-name {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.filter-option-count {
+  flex-shrink: 0;
+  font-size: 0.66rem;
+  color: var(--color-ink-dim);
+}
+
+/* Search, the three boxes and the view toggle: one row on PC. */
+.projects-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+}
+.projects-search-wrap {
+  flex: 1 1 12rem;
+  min-width: 0;
+}
+.projects-filter-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.projects-view-toggle {
+  flex-shrink: 0;
+}
+
+@media (min-width: 768px) {
+  .projects-toolbar { flex-wrap: nowrap; }
+}
+
+/* A phone puts the toggle beside the search and gives the three boxes the
+   whole second row, shared equally, each giving up its value text before the
+   key. */
+@media (max-width: 767px) {
+  .projects-filter-row {
+    order: 3;
+    flex: 1 0 100%;
+  }
+  /* The search bar is the least-used control in this row -- the three boxes
      cover the actual browsing -- so it gives up the height and takes a smaller
-     face, leaving room for the filters to show their labels in full. */
+     face, leaving room for the boxes. */
   .projects-search {
     padding-block: 0.35rem;
     font-size: 0.72rem;
   }
 
-  /* A select with no width sizes to its widest *option*, not to what it is
-     showing -- "role" ran to 246px on the strength of one long role name while
-     "via" sat at 135px. Capped so the three read as one set and each still has
-     room for its label plus a value; the open list is unconstrained. */
-  .filter-field {
-    flex: 1 1 auto;
-    min-width: 0;
-    max-width: calc(50% - 0.25rem);
-  }
-
-  .filter-select {
-    padding: 0.3rem 1.25rem 0.3rem 0.5rem;
+  .projects-filter-row .filter-select {
+    flex: 1 1 0;
+    max-width: none;
+    padding: 0.3rem 0.4rem 0.3rem 0.5rem;
     font-size: 0.68rem;
-    text-overflow: ellipsis;
   }
-}
-
-/* The options list is painted by the OS, so it needs real colours set on
-   the options themselves. */
-.filter-select option {
-  background: var(--color-card-surface);
-  color: var(--color-ink);
 }
 
 .view-toggle-btn {
@@ -1221,472 +1564,383 @@
   box-shadow: 0 0 0 1px var(--color-card-border);
 }
 
-/* ── Career pipeline ──
-   The timeline drawn as a CI/CD run: connected stage nodes, everything before
-   the present marked passed, the present one still running. */
-.pipeline {
-  scrollbar-width: thin;
-  overscroll-behavior-x: contain;
+/* ── Journey ──
+   The career as a CI/CD run read top to bottom: the year and a node on one
+   track, each stage's card hung off it. Every stage before the present is
+   "passed" (a filled node), the present one is still "running". The marker
+   column narrows to the node alone on a phone, where the year moves into the
+   card. */
+.journey {
+  --marker-w: 7.25rem;
+  --node: 2.25rem;
+  --stage-gap: clamp(1rem, 2.6vh, 1.75rem);
+  /* A card wider than its prose measure only adds empty sheet. */
+  max-width: 66rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--stage-gap);
 }
-.pipeline::-webkit-scrollbar { height: 4px; }
-.pipeline::-webkit-scrollbar-thumb { background: var(--tint-brand-30); border-radius: 4px; }
-.pipeline::-webkit-scrollbar-track { background: transparent; }
 
-/* The run's track. Trimmed to half-width on the first and last stages so the
-   line starts and ends at a node rather than running off into space -- the
-   usual giveaway of a hand-built pipeline. */
-.pipeline-track {
+.journey-stage {
+  position: relative;
+  display: grid;
+  grid-template-columns: var(--marker-w) minmax(0, 1fr);
+  gap: clamp(0.85rem, 2vw, 1.5rem);
+  align-items: start;
+}
+
+/* The track: from this stage's node down to the next one's, a faint rule
+   under a spot-ink fill (::after) that the scroll draws in -- see "Journey
+   track" in the choreography. Without that, the fill is simply there. */
+.journey-stage::before,
+.journey-stage::after {
+  content: "";
+  position: absolute;
+  left: calc(var(--marker-w) - var(--node) / 2);
+  top: calc(0.5rem + var(--node) / 2);
+  height: calc(100% + var(--stage-gap));
+  width: 2px;
+  margin-left: -1px;
+  pointer-events: none;
+}
+.journey-stage::before {
   background: var(--tint-brand-30);
 }
-.pipeline-track[data-first] { left: 50%; }
-.pipeline-track[data-last] { right: 50%; }
-
-.pipeline-node {
-  background: var(--color-card-surface);
-  border: 2px solid var(--color-card-border);
-  color: var(--color-ink-dim);
-  transition: border-color 0.22s ease, color 0.22s ease,
-              background 0.22s ease, box-shadow 0.22s ease,
-              transform 0.22s cubic-bezier(0.22, 1, 0.36, 1);
+.journey-stage::after {
+  background: var(--color-brand);
+  transform-origin: top;
+}
+/* The run so far ends at the running stage. */
+.journey-stage[data-last]::before,
+.journey-stage[data-last]::after {
+  display: none;
 }
 
-/* Unselected stages are outlined -- the run's history, present but quiet. */
-.pipeline-node[data-state="passed"] {
-  border-color: var(--tint-brand-50);
+.journey-marker {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.65rem;
+  padding-top: 0.5rem;
+}
+
+.journey-year {
+  font-size: 1rem;
+  font-weight: 700;
   color: var(--color-brand-text);
 }
-.pipeline-node[data-state="running"] {
-  border-color: var(--tint-success-60);
-  color: var(--color-success);
-}
 
-/* The selected stage inverts to a filled node. An outline-vs-fill difference
-   survives at a glance and in greyscale, which a ring at 15% opacity sitting
-   among five already-outlined nodes did not -- it read as "all six are
-   highlighted". Scale and a halo reinforce it without carrying the meaning. */
-.pipeline-node[data-selected] {
-  transform: scale(1.18);
-}
-.pipeline-node[data-state="passed"][data-selected] {
+.journey-node {
+  position: relative;
+  z-index: 1;
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  width: var(--node);
+  height: var(--node);
+  border-radius: 999px;
+  border: 2px solid var(--color-brand);
   background: var(--color-brand);
-  border-color: var(--color-brand);
   color: var(--color-on-brand);
-  /* A flat ring printed around the node, not a glow under it. */
-  box-shadow: 0 0 0 5px var(--tint-brand-20);
 }
-.pipeline-node[data-state="running"][data-selected] {
-  background: var(--color-success);
+.journey-node[data-state="running"] {
   border-color: var(--color-success);
-  color: var(--color-surface-code);
+  background: var(--color-card-surface);
+  color: var(--color-success);
+  /* A flat ring printed around the node, not a glow under it. */
   box-shadow: 0 0 0 5px var(--tint-success-20);
 }
 
-/* The track up to and including the selected stage reads as the run so far. */
-.pipeline-stage[data-done] .pipeline-track {
-  background: var(--color-brand);
+.journey-card {
+  border-radius: 1rem;
+  padding: clamp(1rem, 1.6vw, 1.5rem);
+  background: var(--color-card-surface);
+  border: 1px solid var(--color-card-border);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.journey-card:hover {
+  border-color: var(--color-card-border-strong);
+  box-shadow: var(--shadow-print);
+}
+.journey-card[data-state="running"] {
+  border-color: var(--color-brand);
+  box-shadow: var(--shadow-print-sm);
 }
 
-.pipeline-stage-btn {
-  transition: background 0.2s ease;
+.journey-title {
+  font-size: clamp(1.2rem, 1rem + 0.6vw, 1.55rem);
+  font-weight: 700;
+  line-height: 1.2;
+  color: var(--color-ink);
 }
-.pipeline-stage-btn:hover,
-.pipeline-stage-btn:focus-visible {
-  background: var(--sheet-brand-05);
+.journey-company {
+  margin: 0.15rem 0 0.75rem;
+  font-size: 0.92rem;
+  color: var(--color-brand-text);
 }
-.pipeline-stage-btn[aria-current="true"] {
-  background: var(--sheet-brand-08);
-}
-.pipeline-stage-btn:focus-visible {
-  outline: 2px solid var(--color-brand);
-  outline-offset: 2px;
-}
-
-/* The detail card owns its overflow so a long entry scrolls inside the panel
-   rather than pushing the layout past one viewport. */
-.timeline-detail-card {
-  overflow-y: auto;
-  scrollbar-width: thin;
+.journey-desc {
+  margin: 0 0 1rem;
+  max-width: 68ch;
+  font-size: clamp(0.95rem, 0.88rem + 0.25vw, 1.08rem);
+  line-height: 1.7;
+  color: var(--color-ink-dim);
 }
 
-/* Content taller than the space left over scrolls here rather than growing
-   the document.
-
-   Because the page itself never scrolls, a region that scrolls but does not
-   look scrollable reads as a frozen site, and whatever sits below the fold is
-   silently lost. The mask fades the last rows out so the cut reads as "there
-   is more"; `animation-timeline: scroll()` drops it once the reader reaches
-   the end, and browsers without scroll-driven animations just keep the fade,
-   which is the safe direction to fail in. */
-.panel-scroll {
-  overflow-y: auto;
-  overflow-x: hidden;
-  scrollbar-width: thin;
-  padding-right: 2px;
-  overscroll-behavior: contain;
-  --scroll-fade: 2.25rem;
-  -webkit-mask-image: linear-gradient(to bottom, #000 calc(100% - var(--scroll-fade)), transparent);
-  mask-image: linear-gradient(to bottom, #000 calc(100% - var(--scroll-fade)), transparent);
+/* The year is printed on the track at PC widths, so in the card it is for
+   assistive tech only; a phone's track has no room for it, so there it shows. */
+.journey-card-year {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
 }
 
-/* Run the scrolling content out through the panel's bottom padding instead of
-   stopping short of it.
-
-   The panel reserves padding below the scroll region, so the last visible row
-   was cut by the region's own edge and then followed by a band of empty panel
-   before the footer -- the cut read as the end of the grid rather than as more
-   content continuing past it. Pulling the region into that padding puts the cut
-   at the panel's real bottom edge, where the fade and the hint sit, so the last
-   row is visibly mid-card. The padding is given back inside the region so the
-   final row still clears the footer when scrolled to the end. */
-.panel-scroll {
-  margin-bottom: calc(-1 * var(--panel-pad-y));
-}
-
-/* The last row needs clearance from the panel edge when scrolled to the end,
-   but padding on the scroll region itself becomes scrollable empty space --
-   a whole blank screen after the final card. Put it on the content instead,
-   where it is part of the last row rather than a region below it. */
-.panel-scroll > * {
-  padding-bottom: var(--panel-pad-y);
-}
-
-/* Retire the fade once the reader reaches the end, where there is nothing
-   left to hint at. Browsers without scroll-driven animations keep the fade
-   permanently, which is the safe direction to fail in. */
-@property --scroll-fade {
-  syntax: "<length>";
-  inherits: false;
-  initial-value: 2.25rem;
-}
-
-@supports (animation-timeline: scroll()) {
-  .panel-scroll {
-    animation: panelScrollFade linear both;
-    animation-timeline: scroll(self block);
-    animation-range: calc(100% - 2.25rem) 100%;
+@media (max-width: 767px) {
+  .journey {
+    --marker-w: var(--node);
   }
-  @keyframes panelScrollFade {
-    to { --scroll-fade: 0rem; }
-  }
-}
-
-/* Short viewports: give the content back the space the heading was using. */
-@media (max-height: 700px) {
-  :root { --panel-pad-y: 0.5rem; }
-}
-
-/* Short desktop viewports. Panels fit comfortably at 900px tall and up; below
-   that they run over by 40-120px. Rather than shrink every screen to suit the
-   shortest, scale the panel down here -- a single font-size step on the panel
-   takes every em-based size with it, which is far more effective than chasing
-   individual paddings. */
-@media (min-width: 641px) and (max-height: 900px) {
-  :root { --panel-pad-y: 0.6rem; --panel-nav-gap: 1.5rem; }
-  .panel-inner { gap: 0.6rem; }
-  .tabpanel:not(#home) .panel-inner { font-size: 0.94em; }
-  .tabpanel:not(#home) h2 { font-size: clamp(1.4rem, 3vw, 2rem) !important; }
-}
-
-@media (min-width: 641px) and (max-height: 800px) {
-  .tabpanel:not(#home) .panel-inner { font-size: 0.88em; }
-  :root { --panel-pad-y: 0.45rem; --panel-nav-gap: 1.15rem; }
-  .panel-inner { gap: 0.45rem; }
-}
-
-/* A few things are sized in px or by aspect ratio, so a font-size step does not
-   reach them. These are the ones that actually decide whether a panel fits. */
-@media (min-width: 641px) and (max-height: 860px) {
-  /* Project thumbnails: the media box is the bulk of a card's height. */
-
-  /* Skills: the mindset cards and the marquee strip. */
-  #skills .window-card > div:last-child { padding: 0.55rem 0.75rem; }
-  #skills .edge-fade-x { padding-block: 0.25rem; }
-
-  /* Contact: the form is the task. The contact.sh card above it is decorative
-     chrome restating the location and response time, so it yields first. */
-  #contact form { padding: 0.9rem !important; }
-  #contact form > * + * { margin-top: 0.5rem !important; }
-  #contact textarea { min-height: 4.5rem; }
-  #contact .grid > *:first-child > div:first-child { display: none; }
-
-}
-
-/* Under 780px tall the last two panels still run over. The pieces that yield
-   are the ones that repeat information already on the panel: Skills' marquee
-   strip lists the same technologies as the category card above it, and the
-   fourth project card is one row's worth of extra. */
-@media (min-width: 641px) and (max-height: 780px) {
-  #skills astro-island:has(.edge-fade-x) { display: none; }
-  #projects [tabindex="0"] > div:last-child { padding: 0.55rem 0.7rem; gap: 0.3rem; }
-}
-
-/* Shortest laptops: the row itself is the last thing to give. Three cards fit
-   where four do not, and "Show more" still reaches the rest. */
-@media (min-width: 641px) and (max-height: 740px) {
-  #projects .grid { gap: 0.5rem; }
-}
-
-/* 700px-tall laptops: two cards is the honest fit. Shrinking further would
-   make the thumbnails useless, and "Show more" still reaches the rest. */
-@media (min-width: 641px) and (max-height: 710px) {
-  #skills .panel-inner { font-size: 0.85em; }
-  :root { --panel-pad-y: 0.35rem; --panel-nav-gap: 1rem; }
-  .panel-inner { gap: 0.35rem; }
-}
-
-/* Phones: the panel gutters and the gap under the heading are the cheapest
-   vertical space to reclaim, and every panel pays them. */
-@media (max-width: 640px) {
-  :root {
-    --panel-pad-y: 0.5rem;
-    --panel-pad-x: 0.875rem;
-    --panel-nav-gap: 0.9rem;
-  }
-  .panel-inner {
-    gap: 0.6rem;
-  }
-}
-
-/* Scroll mode: the nav is an opaque sheet fixed over the top of the page,
-   so anything the browser scrolls into view for focus or a fragment must
-   stop below it. Without this, Shift+Tab parked five toolbar controls
-   entirely behind the nav (SC 2.4.11). --nav-h is measured at runtime.
-
-   This is the only offset: it covers the panels the nav pills scroll to as
-   well, so panels carry no scroll-margin of their own -- the two would add
-   up and land a panel a whole nav-height too low. */
-html[data-scroll-mode] {
-  scroll-padding-top: calc(var(--nav-h) + 0.5rem);
-}
-
-/* ── Mobile: one scrolling document, not tabs ──
-   Fitting four panels into a phone viewport meant shrinking type and clipping
-   content to win space that a phone simply does not have. On mobile every
-   panel is in flow instead and the page scrolls, which is the native gesture
-   there; the header pills become scroll-to-anchor links (see HeaderComponent).
-
-   The panel height/overflow rules are the whole tab layout, so they are undone
-   deliberately rather than patched: a panel sizes to its content, and nothing
-   inside it is a scroll container of its own -- nested scroll regions inside a
-   scrolling page are the thing that makes a phone page feel broken. */
-@media (max-width: 640px) {
-  html[data-scroll-mode] .panel-viewport {
-    height: auto;
-    min-height: auto;
-    overflow: visible;
-    justify-content: flex-start;
-    padding-top: var(--panel-nav-gap);
-    padding-bottom: clamp(2rem, 6vh, 3.25rem);
-  }
-
-  /* The first panel still clears the floating nav and keeps a full-viewport
-     minimum, so the hero reads as a landing screen and the pinned backdrop has
-     a screen to cover.
-
-     Centred, not top-aligned. It was top-aligned because the terminal card was
-     hidden below lg and centring a half-empty grid left a blank band under the
-     copy -- but the card is a backdrop now and the grid is just the copy, so
-     top-aligning only pushed 138-287px of slack to the bottom. */
-  html[data-scroll-mode] #home.panel-viewport {
-    padding-top: calc(var(--nav-h) + var(--panel-nav-gap));
-    min-height: 100svh;
-    justify-content: center;
-  }
-
-  /* Every scroll region flattens: the page is the scroller now. The mask and
-     the scroll-driven fade go with them, or a region that no longer scrolls
-     would keep a permanent fade over its last rows. */
-  html[data-scroll-mode] .panel-inner,
-  html[data-scroll-mode] .panel-scroll,
-  html[data-scroll-mode] .about-pane {
-    overflow: visible;
-    max-height: none;
-    height: auto;
-    -webkit-mask-image: none;
-    mask-image: none;
-    animation: none;
-  }
-
-  /* The Projects scroll region carries a desktop scrollbar gutter (-mr-1 with
-     a 2px pad-back), which nets out 2px wider than its panel. Harmless while it
-     clips its own overflow; once it stops being a scroll container here, the
-     full-bleed project rail inherits those 2px and the whole page pans
-     sideways. No scrollbar, so no gutter. */
-  html[data-scroll-mode] .panel-scroll {
-    margin-right: 0;
-    padding-right: 0;
-  }
-
-  html[data-scroll-mode] .about-pane {
-    flex: none;
-    /* The desktop pane centres itself in a capped box so the three views share
-       a top edge. Stacked on one scrolling page there is nothing to line up
-       with, and the centring just opened a large blank band above each pane. */
-    justify-content: flex-start;
-    align-items: stretch;
-  }
-
-  /* Same reason: the panel no longer needs to fill a viewport it is not
-     confined to. */
-  html[data-scroll-mode] .about-panes,
-  html[data-scroll-mode] .panel-viewport {
-    justify-content: flex-start;
-  }
-
-  /* The scroll hint points at a region that no longer scrolls. */
-  html[data-scroll-mode] .scroll-hint {
+  .journey-year {
     display: none;
   }
-
-  /* Each About pane names itself now that the sub-tab bar is gone. */
-  html[data-scroll-mode] .about-pane-label {
-    display: flex;
-    align-items: center;
-    gap: 0.4rem;
-    margin-bottom: 0.75rem;
-    font-family: var(--font-mono);
-    font-size: 0.7rem;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
+  .journey-card-year {
+    position: static;
+    width: auto;
+    height: auto;
+    overflow: visible;
+    clip-path: none;
+    font-size: 0.85rem;
+    font-weight: 700;
     color: var(--color-brand-text);
   }
+}
 
-  /* Panes are stacked on one page now, so they need air between them. */
-  html[data-scroll-mode] .about-panes {
-    gap: clamp(1.75rem, 5vh, 2.75rem);
-  }
-
-  /* The entrance animation fires on tab switch, which no longer happens. */
-  html[data-scroll-mode] .tabpanel[data-entering] .panel-inner > *,
-  html[data-scroll-mode] .tabpanel[data-entering]#home > .relative {
-    animation: none;
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: view()) {
+    /* Journey track: each segment draws in as its stage crosses the screen. */
+    .journey-stage {
+      view-timeline: --stage block;
+    }
+    .journey-stage::after {
+      animation: trackFill linear both;
+      animation-timeline: --stage;
+      animation-range: entry 60% exit 20%;
+    }
+    @keyframes trackFill {
+      from { transform: scaleY(0); }
+    }
   }
 }
 
-/* ── Mobile: pinned hero backdrop ──
-   The hero's registration marks are absolute inside #home, so they would
-   scroll away with it. Pinned to the viewport they stay registered to the
-   fixed drafting grid behind them, and the hero copy travels over a still
-   sheet rather than the whole scene sliding up together.
-
-   They are pinned for the height of the hero only, then faded: a fixed layer
-   left visible behind #about would sit under the rest of the page as noise.
-   The section keeps overflow:hidden off so a fixed child is not clipped, and
-   the layers are pointer-events:none already, so nothing below them loses
-   input. */
-@media (max-width: 640px) {
-  html[data-scroll-mode] #home {
-    overflow: visible;
+/* ── Phones (SP: 767px and below) ──
+   Tighter gutters and a smaller gap under the nav: every section pays them,
+   and a phone has the least width and height to give. */
+@media (max-width: 767px) {
+  :root {
+    --panel-pad-y: 1.25rem;
+    --panel-pad-x: 0.875rem;
+    --panel-nav-gap: 0.75rem;
+  }
+  .panel-inner {
+    gap: 0.75rem;
   }
 
-  html[data-scroll-mode] #home > .dot-grid {
-    position: fixed;
-    inset: 0;
-    width: 100%;
-    height: 100svh;
-    z-index: 0;
-    /* Fade out across the first viewport, so the field is gone by the time
-       the next section arrives. */
-    animation: heroBackdropFade linear both;
-    animation-timeline: view();
-    animation-range: exit 0% exit 100%;
+  /* Projects: the count beside the heading restates the status line under
+     the search, and on a phone it wrapped to two lines beside the flow link. */
+  .projects-meta {
+    justify-content: flex-start;
   }
-
-  @keyframes heroBackdropFade {
-    from { opacity: 1; }
-    to   { opacity: 0; }
-  }
-
-  /* Without scroll-driven animations the layers cannot fade on scroll, so they
-     are clipped to the hero the old way instead of being left pinned over the
-     whole page. */
-  @supports not (animation-timeline: view()) {
-    html[data-scroll-mode] #home { overflow: hidden; }
-    html[data-scroll-mode] #home > .dot-grid { position: absolute; height: 100%; }
+  .projects-meta > span {
+    display: none;
   }
 }
 
-/* A pinned, fading backdrop is motion tied to scrolling. Reduced motion keeps
-   the layers with the section. */
-@media (max-width: 640px) and (prefers-reduced-motion: reduce) {
-  html[data-scroll-mode] #home { overflow: hidden; }
-  html[data-scroll-mode] #home > .dot-grid {
-    position: absolute;
-    height: 100%;
-    animation: none;
+/* ── Hero registration marks ──
+   The marks print on the major crossings of the drafting grid. The grid is a
+   fixed layer, so marks that scrolled with the hero slid off their crossings
+   the moment the page moved. Where the browser can tie it to the scroll they
+   are pinned to the screen with the grid and faded out as the hero leaves, so
+   they never sit behind the rest of the page; elsewhere, and under reduced
+   motion, they stay inside the hero and leave with it. The section's clip
+   does not reach a fixed child, and the layer takes no pointer input. */
+.hero-marks {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: view()) {
+    .hero-marks {
+      position: fixed;
+      animation: heroMarksFade linear both;
+      animation-timeline: --section;
+      animation-range: exit 0% exit 80%;
+    }
+    @keyframes heroMarksFade {
+      to { opacity: 0; }
+    }
   }
 }
 
-/* Panels are toggled by the `hidden` attribute from the tab bar. Until the tab
-   bar has hydrated and marked the document, every panel stays visible, so the
-   page still reads as a plain scrollable document without JS. */
-html[data-tabs-ready] .tabpanel[hidden] {
-  display: none;
+/* ── About sub-sections ──
+   About, Skills and Experience are one section in three numbered steps --
+   Profile, Arsenal, Journey -- read one after another, like the steps of an
+   instruction manual. Each opens with a step label, a display-face title and a
+   one-line lede over a printed rule, then its body. The section runs as long
+   as the three need. */
+.about-subs {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(3.5rem, 9vh, 6.5rem);
+  margin-top: clamp(1.75rem, 5vh, 3.5rem);
 }
 
-/* ── About sub-tabs ──
-   About, Skills and Experience are one panel split three ways. The sub-panels
-   are toggled by the same `hidden` mechanism as the page tabs and gated the
-   same way, so without JS all three stack into a readable document.
-
-   Distinct from the page tab bar on purpose: that one is mono/uppercase on a
-   floating paper tab strip at the top of the viewport, this one is a small
-   inline segmented control inside the panel. Two tablists that looked alike
-   would read as one broken control. */
-html[data-subtabs-ready] .about-pane[hidden] {
-  display: none;
+.about-sub {
+  position: relative;
+  /* Clear of the floating nav when scrolled to (go() in the tests, a link). */
+  scroll-margin-top: calc(var(--nav-h) + 1rem);
 }
 
-/* The panes carry max-widths from when each was a full-viewport panel of its
-   own -- Profile at 5xl, Arsenal and Journey at 4xl -- so their content stopped
-   ~250-380px short of the headline above them. Inside one shared panel the
-   headline's own max-w-7xl is already the measure; anything narrower just reads
-   as a misalignment. TimelineList sets its 4xl internally and renders inside an
-   <astro-island> (display: contents), so it is unset here rather than in the
-   markup. */
-.about-pane [class*="max-w-4xl"] {
-  max-width: none;
+.about-sub-head {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  gap: 0.35rem;
+  margin-bottom: clamp(1.5rem, 3.5vh, 2.5rem);
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--color-card-border);
 }
 
-/* Profile is the exception to the full-width rule. Arsenal and Journey are
-   grids and rails that genuinely use the extra room, but Profile is a portrait
-   plus two paragraphs: at 1280px the 4-column portrait drifted far from the
-   copy and the bio ran to ~95 characters a line, well past a comfortable
-   measure. The block still starts at the headline's left edge; only the prose
-   is held to a readable width. */
-.about-profile-grid > div:last-child {
-  /* 68ch, not 62. The cap is in ch, so it shrank in pixels when the bio type
-     grew -- the copy wrapped earlier than before and left slack to its right.
-     68ch keeps the measure inside the readable range at the larger size. */
+.about-sub-step {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: 0.74rem;
+  letter-spacing: 0.14em;
+  color: var(--color-brand-text);
+}
+
+.about-sub-title {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin: 0;
+  font-size: clamp(1.75rem, 1.2rem + 1.8vw, 2.6rem);
+  font-weight: 700;
+  line-height: 1.1;
+  text-transform: uppercase;
+  letter-spacing: 0.01em;
+  color: var(--color-ink);
+}
+.about-sub-title > span {
+  font-size: 0.75em;
+}
+
+.about-sub-lede {
+  margin: 0;
+  max-width: 60ch;
+  font-size: clamp(0.98rem, 0.88rem + 0.35vw, 1.15rem);
+  color: var(--color-ink-dim);
+}
+
+.about-sub-body {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(1rem, 2.5vh, 1.5rem);
+}
+
+/* Profile: the portrait beside the copy on a wide screen, above it on a
+   narrow one. The prose is held to a readable measure. */
+.about-profile-grid {
+  display: grid;
+  gap: clamp(1.75rem, 4vw, 4rem);
+  align-items: center;
+}
+@media (min-width: 1024px) {
+  .about-profile-grid {
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+  }
+}
+.about-profile-portrait {
+  display: flex;
+  justify-content: center;
+  min-width: 0;
+}
+.about-profile-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 1.15rem;
+  min-width: 0;
   max-width: 68ch;
 }
 
 /* ── Contact ──
-   The heading carried a flat mb-16 (64px). On desktop that is deliberate air
-   under a short heading; on a phone, where the section sizes to its content in
-   scroll mode, it was 64px of the ~60px the section ran over its viewport. */
+   The heading carried a flat mb-16 (64px). On PC that is deliberate air under a
+   short heading; a phone has to fit the heading, the links and the whole form
+   on one screen and cannot spend it. */
 .contact-heading {
   margin-bottom: clamp(1rem, 4vh, 4rem);
 }
 
 /* The message box is the tallest single thing in the form. 144px is right when
-   the panel has room; on a phone, where the section sizes to its content, it was
-   a third of the overflow. Four lines still takes a real message and the box
+   the section has room; four lines still takes a real message, and the box
    grows as you type. */
 .contact-textarea {
   min-height: clamp(84px, 14vh, 144px);
 }
 
-/* The sub-line under the contact headline is a full sentence of framing. It is
-   the first thing to go when the section has to fit a phone: the heading above
-   it already says what the section is. */
-@media (max-width: 640px) {
+/* The contact links: a stack on PC, beside the form. */
+.contact-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+/* Below lg the form takes the full width, so the links sit above it in one
+   row instead of a stack -- the stack cost ~130px of a screen that also has
+   to hold the whole form. */
+@media (max-width: 1023px) {
+  .contact-cards {
+    flex-direction: row;
+  }
+  .contact-cards > * {
+    flex: 1 1 0;
+    min-width: 0;
+  }
+  .contact-cards .contact-card {
+    height: 100%;
+  }
+}
+
+/* The heading and the grid centre as one group in the screen, rather than
+   the heading pinned at the top over a grid that ends half way down. The
+   inner frame sizes to its content and only shrinks -- turning its region
+   into a scroller -- when the screen is too short for it. */
+#contact .panel-inner {
+  flex: 0 1 auto;
+}
+
+@media (max-width: 767px) {
+  /* The sub-line under the contact headline is a full sentence of framing. It
+     is the first thing to go when the section has to fit a phone: the heading
+     above it already says what the section is. */
   .contact-heading p:last-child {
     display: none;
   }
 
-  /* The last few dozen pixels on the narrowest phones, taken from spacing
-     rather than from any field or label. */
+  .contact-heading {
+    margin-bottom: 0.75rem;
+  }
+
+  /* The last few dozen pixels, taken from spacing rather than from any field
+     or label. */
   .contact-grid {
     gap: 0.6rem;
   }
@@ -1695,9 +1949,174 @@ html[data-subtabs-ready] .about-pane[hidden] {
     gap: 0.5rem;
   }
 
-  .contact-heading {
-    margin-bottom: 0.75rem;
+  /* Name and icon only; the address is what the link opens, and its text
+     would not fit a share of a phone row. */
+  .contact-cards .contact-card {
+    flex-direction: column;
+    justify-content: center;
+    gap: 0.3rem;
+    padding: 0.55rem 0.4rem;
+    text-align: center;
   }
+  .contact-card-url {
+    display: none;
+  }
+}
+
+/* ── Projects deck (PC) ──
+   On PC the works are a deck of slides moved by the page's own vertical
+   scroll. The section is one screen tall per slide (--slides, set by
+   ProjectsGrid); the frame -- heading, controls, the slide and its pager --
+   sticks to the screen while the page scrolls through that height, and each
+   screen of scroll names the next slide. A wheel or swipe gesture moves
+   exactly one slide (ProjectsGrid). The cards themselves shrink out and grow
+   in on a timer, not with the scroll.
+
+   Until ProjectsGrid sets data-deck (without JS, on phones) the section is an
+   ordinary block that grows with its cards. */
+.projects-section {
+  position: relative;
+}
+
+#projects[data-deck] {
+  height: calc(var(--slides, 1) * var(--section-h));
+}
+
+#projects[data-deck] .projects-frame {
+  position: sticky;
+  top: 0;
+  height: var(--section-h);
+  min-height: 0;
+}
+
+#projects[data-deck] .projects-frame-inner {
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+/* Short PC screens: the frame gives its spacing and a step of heading size
+   to the stage, so a slide keeps both rows. */
+@media (min-width: 768px) and (max-height: 820px) {
+  #projects .projects-head { margin-bottom: 0.5rem; }
+  #projects .projects-head h2 { font-size: clamp(1.5rem, 3vw, 2.1rem) !important; }
+  #projects .projects-head p { margin-bottom: 0.25rem; }
+  #projects .projects-controls,
+  #projects .projects-status { margin-bottom: 0.5rem; }
+  #projects .projects-pager { margin-top: 0.4rem; }
+}
+
+/* The stage takes what the frame has left; slides lie on top of each other
+   in it, the arriving one over the leaving one. */
+.projects-stage {
+  position: relative;
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+.projects-slide {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: repeat(var(--cols, 3), minmax(0, 1fr));
+  /* Rows are as tall as their cards, never taller than an even share of the
+     stage: ProjectsGrid picks the row count so a card can fit, and the
+     screenshot gives up the rest (below). */
+  grid-template-rows: repeat(var(--rows, 2), minmax(0, max-content));
+  align-content: center;
+  gap: 0.75rem;
+}
+.projects-slide[data-leaving] {
+  z-index: 0;
+}
+
+.projects-slide-item {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.projects-slide-item > .project-card {
+  flex: 0 1 auto;
+  min-height: 0;
+  max-height: 100%;
+}
+
+/* In a grid slide the screenshot is the part that yields height, so a row of
+   cards always fits the stage; the text and the link under it never do. */
+.projects-stage[data-view="grid"] .project-media {
+  flex: 0 1 auto;
+  min-height: 0;
+}
+
+/* The pager: a dot per slide (a 24px target around a small printed dot),
+   the slide count, and a cue to keep scrolling while there is more. */
+.projects-pager {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.9rem;
+  margin-top: 0.75rem;
+}
+.projects-pager ol {
+  display: flex;
+  align-items: center;
+  gap: 0.15rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.projects-pager-dot {
+  display: grid;
+  place-items: center;
+  min-width: 24px;
+  height: 24px;
+  padding: 0;
+  border-radius: 999px;
+  background: none;
+  border: 0;
+  cursor: pointer;
+}
+.projects-pager-dot::before {
+  content: "";
+  width: 0.6rem;
+  height: 0.6rem;
+  border-radius: 999px;
+  border: 1.5px solid var(--color-brand);
+  background: var(--color-card-surface);
+  transition: width 0.25s ease, background-color 0.2s ease;
+}
+.projects-pager-dot:hover::before {
+  background: var(--sheet-brand-15);
+}
+.projects-pager-dot[aria-current="true"]::before {
+  width: 1.6rem;
+  background: var(--color-brand);
+}
+.projects-pager-dot:focus-visible {
+  outline: 2px solid var(--color-ring);
+  outline-offset: 1px;
+}
+.projects-pager-label {
+  font-size: 0.72rem;
+  color: var(--color-ink-dim);
+}
+.projects-pager-hint {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.68rem;
+  color: var(--color-ink-dim);
+}
+@media (prefers-reduced-motion: no-preference) {
+  .projects-pager-hint svg {
+    animation: scrollHintBob 1.6s ease-in-out infinite;
+  }
+}
+@keyframes scrollHintBob {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(2px); }
 }
 
 /* ── Projects rail (mobile grid view) ──
@@ -1729,9 +2148,9 @@ html[data-subtabs-ready] .about-pane[hidden] {
 }
 
 /* A rail is horizontal; the reveal animation slides cards up from below, which
-   fights the direction of travel and leaves off-screen cards stranded at
-   opacity 0 until they are swiped to. */
-.projects-rail > * > * {
+   fights the direction of travel and leaves off-screen cards at opacity 0
+   until they are swiped to. The card is the reveal node itself. */
+.projects-rail > [data-reveal] {
   opacity: 1 !important;
   transform: none !important;
 }
@@ -1795,12 +2214,6 @@ html[data-subtabs-ready] .about-pane[hidden] {
   50%      { transform: translateX(4px); }
 }
 
-/* On the shortest phones the label's own line is what tips the panel past the
-   viewport. The edge fade and the peeking card still carry the affordance
-   there, so the words go rather than the section overflow. */
-@media (max-height: 680px) {
-  .projects-rail-hint { display: none; }
-}
 
 /* ── Hero terminal card, compact (mobile) ──
    The card was hidden below lg, which removed the strongest "this is a
@@ -1870,126 +2283,122 @@ html[data-subtabs-ready] .about-pane[hidden] {
 }
 
 /* ── Profile sizing ──
-   Everything here was tuned when Profile was a cramped full-viewport panel. As
-   one sub-tab of a shared panel it has room to spare: the grid measured 204px
-   in a 420px pane, with the portrait at 170px inside a 405px column. These
-   scale with the viewport instead of sitting at the old fixed minimums. */
+   Profile was tuned to share one screen with two other views. As the first of
+   three sub-sections it is given the room to read at a comfortable size: a
+   larger portrait, body copy a step up from the rest of the page, and stats
+   that read as figures rather than footnotes. */
 
 .about-bio {
-  font-size: clamp(0.92rem, 0.75rem + 0.45vw, 1.08rem);
+  font-size: clamp(1rem, 0.86rem + 0.5vw, 1.25rem);
   color: var(--color-ink-dim);
-  line-height: 1.7;
+  line-height: 1.75;
   margin: 0;
 }
 
-/* The portrait drives its own rim and dashed ring off --portrait-size, so that is
-   the variable to set -- shrinking or growing the wrapper alone leaves the
-   decorations at their original size. */
-.about-pane [class*="portrait-size"] {
-  --portrait-size: clamp(170px, 9rem + 6vw, 260px) !important;
+/* The portrait drives its own rim and dashed ring off --portrait-size, so that
+   is the variable to set -- sizing the wrapper alone leaves the decorations at
+   their original size. By id: AboutImage sets a smaller default in a class. */
+#about-profile [class*="portrait-size"] {
+  --portrait-size: clamp(200px, 9rem + 12vw, 320px) !important;
 }
 
-/* Two stats, so two columns: the old grid-cols-4 left each card a quarter of
-   the row while half the row sat empty. */
+/* Two stats, so two columns. */
 .stats-grid {
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  max-width: 30rem;
+  max-width: 34rem;
 }
 
 .stat-card {
-  padding: clamp(0.6rem, 0.4rem + 0.5vw, 1rem) clamp(0.5rem, 0.3rem + 0.5vw, 0.9rem);
+  padding: clamp(0.85rem, 0.6rem + 0.6vw, 1.25rem) clamp(0.7rem, 0.5rem + 0.6vw, 1.1rem);
 }
 
 .stat-icon {
-  font-size: clamp(1.15rem, 0.9rem + 0.6vw, 1.6rem);
-  margin-bottom: 0.3rem;
+  font-size: clamp(1.4rem, 1.1rem + 0.7vw, 1.9rem);
+  margin-bottom: 0.35rem;
 }
 
 .stat-value {
-  font-size: clamp(1.25rem, 1rem + 0.8vw, 1.85rem);
+  font-size: clamp(1.6rem, 1.2rem + 1.1vw, 2.4rem);
   font-weight: 700;
   line-height: 1.1;
   font-family: var(--font-display);
 }
 
 .stat-label {
-  font-size: clamp(0.68rem, 0.6rem + 0.2vw, 0.8rem);
+  font-size: clamp(0.78rem, 0.7rem + 0.2vw, 0.9rem);
   color: var(--color-ink-dim);
-  margin-top: 3px;
-  line-height: 1.25;
+  margin-top: 4px;
+  line-height: 1.3;
 }
 
-/* Short viewports keep the old compact end of each range: the panel has no
-   spare height there and Profile has to fit alongside the heading and tabs. */
-@media (max-height: 760px) {
-  .about-pane [class*="portrait-size"] {
-    --portrait-size: clamp(150px, 8rem + 4vw, 195px) !important;
+/* ── Arsenal ──
+   The three skill categories side by side, each a window card with its
+   badges, then the four working principles in a row beneath. */
+.skills-categories {
+  display: grid;
+  gap: 0.9rem;
+  grid-template-columns: minmax(0, 1fr);
+}
+@media (min-width: 768px) {
+  .skills-categories {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
-  .about-bio { font-size: clamp(0.86rem, 0.75rem + 0.3vw, 0.98rem); }
-  .stat-value { font-size: clamp(1.1rem, 0.95rem + 0.5vw, 1.45rem); }
-  .stat-icon  { font-size: 1.1rem; margin-bottom: 0.2rem; }
-  .stat-card  { padding: 0.5rem 0.5rem; }
 }
 
-.about-subtab-bar {
-  margin-bottom: clamp(0.6rem, 1.6vh, 1.1rem);
+.skills-category-body {
+  padding: clamp(1rem, 1.4vw, 1.35rem);
 }
 
-/* Skills category tabs: filled spot-ink pills, distinct from the page tab
-   strip and the About segmented control. Inactive labels take ink-dim; the
-   shadcn default (foreground at 60%) measured 4.37:1 on the Manual track. The
-   selected tab is a solid plate with the measured on-brand label. Unlayered,
-   so these outrank the shadcn state utilities in both themes. */
-.skills-tab {
-  color: var(--color-ink-dim);
-}
-.skills-tab:hover {
+.skills-category-title {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  margin: 0 0 0.9rem;
+  font-family: var(--font-display);
+  font-size: clamp(1.2rem, 1rem + 0.5vw, 1.45rem);
+  font-weight: 700;
   color: var(--color-ink);
 }
-.skills-tab[data-state="active"] {
-  color: var(--color-on-brand);
-  background: var(--color-brand-700);
-  border-color: transparent;
-}
-.skills-tab:focus-visible {
-  outline: 2px solid var(--color-ring);
-  outline-offset: 2px;
+
+.skills-category-count {
+  margin-left: auto;
+  padding: 0.05rem 0.5rem;
+  border-radius: 999px;
+  border: 1px solid var(--color-card-border);
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 500;
+  color: var(--color-ink-dim);
 }
 
-/* The panel under the Skills tabs is a keyboard stop of its own (Radix gives
-   it tabindex 0 so the badges can be reached), and shadcn's TabsContent turns
-   its outline off. Unlayered, so this wins over that utility. */
-.skills-panel:focus-visible {
-  outline: 2px solid var(--color-ring);
-  outline-offset: 4px;
-  border-radius: 1rem;
-}
-
-/* Shown only in mobile scroll mode, where the sub-tab bar is gone. */
-.about-pane-label {
-  display: none;
-}
-
-/* Built like the page tab bar: a transparent track, with one .tab-pill
-   sliding behind the labels. The pill carries both the active fill and the
-   non-text contrast (SC 1.4.11) via its own brand border, so the triggers
-   themselves need no background, border or underline of their own -- the
-   earlier filled-track version had to invent an underline to replace the
-   border it dropped. Colours come from .nav-link, shared with the header. */
-.about-subtabs {
-  background: transparent;
-  border: none;
+.skills-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 0;
   padding: 0;
+  list-style: none;
 }
 
-.about-subtab {
-  border: none;
-  transition: color 0.2s ease;
+.skills-mindset {
+  display: grid;
+  gap: 0.75rem;
+  grid-template-columns: minmax(0, 1fr);
+}
+@media (min-width: 480px) {
+  .skills-mindset {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (min-width: 1024px) {
+  .skills-mindset {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
 }
 
 /* ── Cookie consent banner ──
    Bottom-anchored paper sheet, the same material as the nav. Sits above the
-   panels but below the nav, so it never covers navigation.
+   sections but below the nav, so it never covers navigation.
 
    Accept and Decline share a size and shape; only the fill differs. A banner
    that makes declining harder than accepting is not valid consent under GDPR,
@@ -1998,10 +2407,9 @@ html[data-subtabs-ready] .about-pane[hidden] {
   position: fixed;
   z-index: 55;
   left: 50%;
-  /* Clear of the footer, not just of the viewport edge. On desktop the footer
-     is pinned below the panel, so a banner measured from the bottom sat on top
-     of it. --footer-h is measured at runtime by the header island. */
-  bottom: calc(var(--footer-h, 61px) + clamp(0.75rem, 2.5vh, 1.5rem));
+  /* The footer is at the end of the document, not pinned, so there is only
+     the screen edge to clear. */
+  bottom: clamp(0.75rem, 2.5vh, 1.5rem);
   transform: translateX(-50%);
   width: min(560px, calc(100% - 1.5rem));
   display: flex;
@@ -2080,12 +2488,6 @@ html[data-subtabs-ready] .about-pane[hidden] {
 
 /* On a phone the banner spans the width and the buttons take a row of their
    own, so neither is cramped against the copy. */
-/* Scroll mode: the footer is at the end of the document rather than pinned
-   under the panel, so there is nothing at the bottom of the viewport to clear. */
-html[data-scroll-mode] .cookie-banner {
-  bottom: clamp(0.75rem, 2.5vh, 1.5rem);
-}
-
 @media (max-width: 480px) {
   .cookie-banner {
     padding: 0.8rem 0.9rem;
@@ -2125,173 +2527,109 @@ html[data-scroll-mode] .cookie-banner {
 }
 
 /* ── Flow link ──
-   The forward step out of a section. A paper sheet like the nav, lifting
-   toward the light on hover while the arrow eases right, so it reads as
-   "onward" rather than "submit". Sized past the 24x24 minimum for SC 2.5.8. */
+   The forward step out of a section, and the one call to action a section
+   ends on, so it is printed to be found: a spot-ink plate with the on-brand
+   label (never hardcoded white: on Blueprint's pale plate that is ~1.6:1), a
+   full print shadow, and the arrow in a paper chip of its own. On hover the
+   plate lifts toward the light on a deeper shadow and the arrow eases on.
+   Sized well past the 24x24 minimum for SC 2.5.8. */
 .flow-link {
   display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
-  padding: 0.6rem 1.15rem;
-  min-height: 2.5rem;
+  gap: 0.75rem;
+  min-height: 3rem;
+  padding: 0.55rem 0.6rem 0.55rem 1.4rem;
   border-radius: 999px;
-  font-size: 0.85rem;
-  font-weight: 500;
+  font-size: 0.98rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
   text-decoration: none;
   white-space: nowrap;
-  color: var(--color-brand-text);
-  background: var(--color-card-surface);
-  border: 1px solid var(--color-card-border);
-  box-shadow: var(--shadow-print-sm);
-  transition: color 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+  cursor: pointer;
+  color: var(--color-on-brand);
+  background: var(--color-brand-700);
+  border: 1px solid var(--color-brand-700);
+  box-shadow: var(--shadow-print);
+  transition: color 0.2s ease, background-color 0.2s ease, border-color 0.2s ease,
+              box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+/* A button with no arrow (the phone's "Show more") keeps even padding. */
+.flow-link:not(:has(svg)) {
+  padding-inline: 1.4rem;
 }
 
 .flow-link svg {
-  width: 15px;
-  height: 15px;
-  transition: transform 0.2s ease;
+  flex-shrink: 0;
+  width: 2rem;
+  height: 2rem;
+  padding: 0.45rem;
+  border-radius: 999px;
+  color: var(--color-brand-700);
+  background: var(--color-on-brand);
+  transition: transform 0.2s ease, color 0.2s ease;
 }
 
 .flow-link:hover,
 .flow-link:focus-visible {
-  /* Mixed toward the sheet, not toward transparent: the link is opaque now. */
-  background: var(--sheet-brand-10);
-  color: var(--color-brand-text);
+  color: var(--color-on-brand);
+  background: var(--color-brand-900);
+  border-color: var(--color-brand-900);
   transform: translate(-2px, -2px);
-  box-shadow: var(--shadow-print);
+  box-shadow: var(--shadow-print-lg);
 }
 
-.flow-link:hover svg {
+.flow-link:hover svg,
+.flow-link:focus-visible svg {
+  color: var(--color-brand-900);
   transform: translateX(3px);
 }
 
 .flow-link:focus-visible {
   outline: 2px solid var(--color-ring);
-  outline-offset: 2px;
+  outline-offset: 3px;
 }
 
-/* The flow link sits under a panel's content as its closing move, so it gets
-   air above it but must not add height a fitted panel cannot spare. */
+/* The flow link closes a section, so it gets air above it. */
 .flow-row {
   display: flex;
   justify-content: center;
   flex-shrink: 0;
-  margin-top: clamp(0.6rem, 1.8vh, 1.25rem);
+  margin-top: clamp(1rem, 3vh, 2rem);
+}
+
+#about .flow-row {
+  margin-top: clamp(3rem, 8vh, 5.5rem);
 }
 
 @media (prefers-reduced-motion: reduce) {
   .flow-link,
   .flow-link svg { transition: none; }
-  .flow-link:hover svg { transform: none; }
+  .flow-link:hover svg,
+  .flow-link:focus-visible svg { transform: none; }
 }
 
-/* Each pane owns the remaining height, so switching sub-tabs does not make the
-   panel jump: all three occupy the same box.
-
-   align-items: center, not the default stretch -- Arsenal and Journey both wrap
-   their content in a max-width box, which stretch pins to the left edge of a
-   much wider pane while Profile (a grid with mx-auto) centres. The two sat
-   visibly out of line with each other. */
-.about-pane {
-  flex: 1;
-  min-height: 0;
-  display: flex;
-  flex-direction: column;
-  /* Top-aligned inside the pane; the centring happens one level up on
-     .about-panes, which is what keeps the three views sharing a common top
-     edge instead of each floating in its own box. */
-  justify-content: flex-start;
-  align-items: center;
-  overflow-y: auto;
-  scrollbar-width: thin;
-}
-
-/* The panes centre in the space under the heading, but that space grows with
-   the viewport: at 1920x1080 pure centring left ~270px between the headline and
-   the content while the panel's own padding held the rest. Capping the pane's
-   height keeps the group tied to the heading on tall screens and lets it fall
-   back to plain centring on short ones, where there is no slack to give. */
-.about-panes {
-  justify-content: center;
-}
-
-/* The three views share one box so switching sub-tabs never shifts the heading
-   or the content's top edge.
-
-   Only a *cap*, never a floor: an earlier fixed height tied to vh clipped the
-   taller views on short and narrow screens, where there is no slack to give.
-   The pane takes the space it has and simply stops growing past the cap, which
-   is what keeps a 1080p viewport from stranding the content ~270px below the
-   headline. */
-.about-pane {
-  flex: 1;
-  max-height: 420px;
-}
-
-/* Below the desktop breakpoint the views stack taller (the Profile grid goes
-   one column), so the cap would clip rather than tidy. */
-@media (max-width: 1023px), (max-height: 780px) {
-  .about-pane { max-height: none; }
-}
-
-/* Direct children still need the full width to lay out inside. */
-.about-pane > * {
-  width: 100%;
-}
-
-/* Arsenal and Journey fill the shared box, so top-aligning them keeps a common
-   top edge across sub-tabs. Profile is shorter than the box by design -- it is
-   a portrait and two paragraphs -- and top-aligned it left a visible band of
-   nothing underneath. Centring only this pane spends that space on both sides
-   of the content instead of dumping it all below. */
-#about-profile {
-  justify-content: center;
-}
-
-/* The mindset icon tile, sized down with the card on narrow screens. */
+/* The mindset icon tile. */
 .mindset-icon {
-  width: 2rem;
-  height: 2rem;
-  font-size: 0.95rem;
-}
-@media (min-width: 640px) {
-  .mindset-icon {
-    width: 2.5rem;
-    height: 2.5rem;
-    font-size: 1.1rem;
-  }
+  width: 2.5rem;
+  height: 2.5rem;
+  font-size: 1.15rem;
 }
 
-/* Mindset card copy. Sized in CSS rather than inline so the narrow-screen
-   rules below can actually win -- an inline style outranks any stylesheet rule,
-   media query or not. */
-.mindset-title { font-size: 0.9rem; }
-.mindset-desc  { font-size: 0.8rem; }
+/* Mindset card copy. Sized in CSS rather than inline, so a media query could
+   ever reach it -- an inline style outranks every stylesheet rule. */
+.mindset-title { font-size: 1rem; }
+.mindset-desc  { font-size: 0.88rem; line-height: 1.5; }
 
-/* Arsenal badges. Sized in CSS, not inline, so the narrow rules below apply. */
+/* Arsenal badges. Sized in CSS, not inline, so the narrow rule below applies. */
 .skill-badge-lg {
   padding: 9px 16px;
-  font-size: 0.82rem;
+  font-size: 0.86rem;
 }
 @media (max-width: 400px) {
   .skill-badge-lg {
-    padding: 6px 11px;
-    font-size: 0.74rem;
-  }
-}
-
-/* Below ~400px the four mindset cards are the tallest thing in the Arsenal
-   view. Trimming the copy to two lines keeps the pane inside the panel without
-   dropping a card, which would hide content rather than fit it. */
-@media (max-width: 400px) {
-  .mindset-title { font-size: 0.82rem; }
-  .mindset-desc {
-    font-size: 0.72rem;
-    line-height: 1.35;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
+    padding: 7px 12px;
+    font-size: 0.8rem;
   }
 }
 

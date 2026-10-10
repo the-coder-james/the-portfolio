@@ -102,16 +102,18 @@ export function ContactForm() {
       ) : (
         <form
           onSubmit={handleSubmit}
-          className="rounded-2xl p-5 space-y-3.5"
+          className="contact-form rounded-2xl p-5 space-y-3.5"
           style={{ background: "var(--color-card-surface)", border: "1px solid var(--color-card-border)" }}
         >
-          <div className="flex items-center gap-2 mb-1">
+          <div className="contact-form-titlebar flex items-center gap-2 mb-1">
             <TrafficLights />
             <span className="font-mono ml-2" style={{ fontSize: "0.68rem", color: "var(--color-ink-faint)" }}>
               send_message.ts
             </span>
           </div>
-          <div className="grid sm:grid-cols-2 gap-3 sm:gap-5">
+          {/* Side by side at every width: stacked, the pair cost a phone
+              ~70px of a section that has to fit one screen. */}
+          <div className="contact-name-email grid grid-cols-2 gap-3 md:gap-5">
             <div className="space-y-1.5">
               <Label htmlFor="contact-name" className="font-mono text-[0.75rem] text-brand">name:</Label>
               <Input

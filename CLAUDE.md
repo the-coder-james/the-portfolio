@@ -38,79 +38,155 @@ gitignored; never write a report to the repo root or commit one.
 `https://the-coder-james.github.io/the-portfolio/` (base path `/the-portfolio/`).
 Static output — there is no server at runtime.
 
-### Page structure: tabs on desktop, one scroll on mobile
+### Page structure: one scrolling page
 
-`src/pages/index.astro` renders four sibling `<section>` panels inside `<main>`:
-`#home`, `#about`, `#projects`, `#contact`.
+`src/pages/index.astro` renders four sibling `<section>`s inside `<main>`:
+`#home`, `#about`, `#projects`, `#contact`. The page is one scrolling document,
+and **the page is the only vertical scroller**: every section is at least one
+screen tall (`--section-h`, `100svh`), centres its content in that, and grows
+with its content when it is taller. Nothing in a section is clipped or scrolled
+inside a box of its own (`tests/e2e/layout.spec.ts` checks every state at a
+dozen sizes). Contact's minimum is shorter by the footer (`--footer-h`), so the
+last screen is Contact plus the footer.
 
-**Above 640px** only one is visible at a time. `HeaderComponent` owns the tab
-state and toggles the native `hidden` attribute on each section by id.
+- **About** always runs past a screen: three numbered sub-sections, one after
+  another (see below).
+- **Projects on PC is a deck** (see below): one screen of scroll per slide, the
+  frame stuck to the screen while the page scrolls through it. On phones,
+  without JS, and before hydration it is an ordinary block.
 
-**At 640px and below** the page becomes one scrolling document: `HeaderComponent`
-sets `data-scroll-mode` on `<html>`, stops hiding panels (and actively clears
-`hidden`, or a panel left over from a resize would stay invisible), the nav
-pills scroll to their panel instead of switching, and an IntersectionObserver
-moves the active pill to whatever section is on screen. `AboutTabs` drops its
-sub-tab bar there and each pane labels itself instead.
+**SP (phone) is 767px and below** (`SP_QUERY` in `src/hooks/useMediaQuery.ts`).
+Its complement is Tailwind's `md:` (min-width 768px). Never use `sm:` for the
+phone/PC split: sm is 640px, which is still phone-width here.
 
-Two things that mode has to fight:
+`HeaderComponent` is a nav of plain `<a href="#section">` links. The browser
+does the scrolling (smooth via `html{scroll-behavior}`), the history entry and
+the focus start point; the hero CTAs and `FlowLink.astro` work the same way.
+The header adds:
 
-- `html { scroll-behavior: smooth }` turns every scroll correction into an
-  animation. Entering scroll mode roughly doubles the document while the browser
-  is still resolving the landing `#hash` against the old layout, so a plain
-  `/#home` load drifted ~1200px over about 900ms. The mount effect suspends
-  `scroll-behavior`, reasserts the position across several frames, then hands it
-  back. An explicit `/#home` is the slow case and needs the longest hold.
-- Tailwind's `sm:` is `min-width: 640px`, exactly the width scroll mode still
-  treats as mobile. A `sm:` layout variant on a wide row overflows there; use
-  `md:` for anything that must not fire while the page is phone-width.
+- a scroll-spy (an IntersectionObserver on a zero-height band at mid-screen)
+  that marks the current section with `aria-current`. It never writes the
+  hash;
+- `--nav-h` / `--footer-h`, measured at runtime;
+- canonicalising the legacy `#skills` / `#experience` to `#about` (replaceState),
+  and going to the section on every later section hash change. Back/forward
+  otherwise restore whatever position the browser saved, which on a phone was
+  part way through a smooth scroll.
 
-The flow is `home -> about -> projects -> contact`, carried by `FlowLink.astro`:
-a plain `<a href="#panel">`, which switches tabs on desktop (via `hashchange`)
-and scrolls on mobile without knowing which mode it is in.
+Layout rules that are easy to break:
 
-**About is itself three sub-tabs** — Profile, Arsenal, Journey — which is where
-the former `#skills` and `#experience` panels went. `AboutTabs` toggles
-`#about-profile` / `#about-arsenal` / `#about-journey` by `hidden`, exactly the
-way the header toggles panels, and for the same reason: each sub-panel contains
-islands of its own, so passing them in as slots would nest those islands. Old
-`#skills` and `#experience` links resolve to `#about` via `MERGED_TABS` in
-`HeaderComponent` and the hash is canonicalised, so nothing dead-ends.
+- Sections align to the very top of the screen and pad themselves clear of the
+  floating nav, so `html` has **no scroll-padding** (that lands every section a
+  nav-height low). Focusable controls carry `scroll-margin-top` instead, which
+  keeps Shift+Tab from parking one behind the nav (SC 2.4.11).
+- Sections are `overflow-x: clip` and nothing else: decoration past a side
+  edge is cut, nothing is cut top or bottom. Never `overflow: hidden` on a
+  section: it makes a scroll container, which breaks the sticky Projects frame
+  and every `view()` timeline inside.
+- On PC, `html` has `scroll-snap-type: y proximity` with stops at Home and
+  Contact only. About is deliberately no stop (a pull back to its top while
+  reading would fight the reader), nor is the deck, which steps itself. Phones
+  scroll freely.
 
-The merge also removed duplicated content: the skills marquee (`SkillsStrip`)
-re-listed every badge the category tabs already showed, the bio narrated the
-career arc the Journey pipeline draws stage by stage, two stats restated two of
-those stages, and the timeline tags repeated the arsenal's technologies. If you
-add content to one sub-tab, check the other two do not already say it.
+**About is three sub-sections** — Profile, Arsenal, Journey, numbered as
+"STEP 01-03" with an `h3`, a lede and a rule — laid out in full, one after
+another: the former `#skills` and `#experience` sections. There are no tabs
+anywhere in it. Arsenal prints all three skill categories as cards
+(`SkillsCategories`), and Journey prints every stage on a vertical pipeline
+(`TimelineList`) whose track fills as it scrolls past. If you add content to
+one sub-section, check the other two do not already say it: the merge removed
+a skills marquee, a bio that narrated the career arc, and stats and tags that
+restated the Journey and Arsenal.
 
-**Panels are deliberately NOT passed into a React tab component as slots.**
+**Sections are deliberately NOT passed into a React component as slots.**
 Astro's React adapter hands slot content to React as an opaque HTML string via
 `dangerouslySetInnerHTML`, with `StaticHtml.shouldComponentUpdate` pinned to
 `false`; a nested `<astro-island>` defers on its ancestor's `ssr` flag and waits
 for an `astro:hydrate` event dispatched from DOM nodes the ancestor's own mount
-then replaces. Keeping the panels as top-level siblings keeps island nesting
-depth at 1, which is the only depth this codebase has ever exercised. If you
-restructure the page, check `dist/index.html` still has no nested islands.
+then replaces. Keeping the sections and sub-sections as plain Astro markup keeps
+island nesting depth at 1, which is the only depth this codebase has ever
+exercised. If you restructure the page, check `dist/index.html` still has no
+nested islands.
 
 Consequences to keep in mind:
 
-- **Never use `client:visible` inside a panel.** A hidden panel never
-  intersects, so the island would never hydrate. Use `client:idle`.
-- `useRevealed` (`src/hooks/`) has a 1200ms fallback precisely so reveals still
-  fire in a hidden panel. A bare IntersectionObserver reveal has no such
-  fallback and would leave content invisible there.
-- Tabs are driven by the location hash, which is what makes back/forward work
-  and lets plain `<a href="#contact">` links switch tabs. Hashes that do not
-  name a tab (the skip link's `#main`) are ignored rather than reset.
-- Tab state starts at the default and is corrected from the hash in a *layout
-  effect*. Seeding it during the first render leaves Radix's own markup stuck on
-  the server-rendered default.
-- Without JS every panel stays visible, so the page degrades to a plain scroll.
-  The hiding CSS is gated on `html[data-tabs-ready]`, and a `<noscript>` style
-  in `layout.astro` removes the pre-render veil and loader and pins every
-  `[data-reveal]` node visible (reveals are server-rendered at opacity 0). Tag
-  any new reveal's animated node `data-reveal`, or it stays invisible there and
-  under reduced motion.
+- **Never use `client:visible`.** Islands must be hydrated before the reader
+  reaches them: the deck and the reveals measure and animate on arrival. Use
+  `client:idle` below the fold.
+- `useRevealed` (`src/hooks/`) fires once, when an element scrolls into view.
+  It has no timer fallback: one would play the below-the-fold reveals where
+  nobody sees them. The end state never depends on it; reduced motion and no-JS
+  pin `[data-reveal]` visible.
+- Without JS the nav anchors still work, Projects shows every card in a plain
+  grid, and the `<noscript>` style in `layout.astro` removes the pre-render veil
+  and loader and pins every `[data-reveal]` node visible (reveals are
+  server-rendered at opacity 0). Tag any new reveal's animated node
+  `data-reveal`, or it stays invisible there and under reduced motion.
+
+### Scroll choreography
+
+Each section carries a CSS view timeline (`--section`); the About sub-sections
+(`--sub`) and Journey stages (`--stage`) carry their own. Content scrubs
+against them — reversing the scroll reverses the motion. Home only leaves (the
+copy lags and recedes, the config card tilts away, the floaters drift at their
+own `--drift`); About's heading slides in from the margin, each sub-section's
+title follows and its body rises as it arrives, the Journey track fills, and
+the code sample drifts behind Profile; the Projects frame is raised like a
+sheet lifted off the desk; Contact's columns close in from either side. The
+hero's registration marks are pinned to the screen with the grid and fade as
+the hero leaves. All of it lives in `global.css` under "Section scroll
+choreography".
+
+- Entrances run over `entry` ranges and exits over `exit` ranges, so they hold
+  for a section of any height, and each keyframe set has one explicit end: the
+  other is the element's resting style. Anything measured at rest is never
+  mid-animation; tests rely on it.
+- Keyframes use plain `from` / `to`, never timeline-range selectors
+  (`entry 0% {...}`): esbuild's CSS minifier warns on those.
+- It is gated on `prefers-reduced-motion: no-preference` and
+  `@supports (animation-timeline: view())`. Without support the sections are
+  still and the item reveals still play.
+
+### Projects: the deck and the filter
+
+On PC, `ProjectsGrid` turns `#projects` into a deck: it sets `data-deck` and
+`--slides` on the section (one screen of height per slide), the
+`.projects-frame` sticks, and the scroll position names the slide. **One wheel
+or swipe gesture turns exactly one slide**: while the deck fills the screen,
+wheel and touch scrolling are intercepted (non-passive listeners) and turned
+into an instant scroll to the next slide's position. A step waits until the
+current slide has fully assembled *and* the gesture has ended (no wheel event
+for `GESTURE_GAP_MS`), so a trackpad's momentum tail never turns a second
+slide; a sudden jump in delta inside the tail counts as a fresh swipe. At
+either end a new outward gesture is left native and scrolls on into About or
+Contact; scrolling in from either side is clamped onto the nearest slide.
+Keyboard and scrollbar scrolling are never intercepted. The deck has no snap
+points: they would fight the steps. Each slide
+holds six cards — three across and two down in grid view, two across and three
+down in list view — and a stage too short for two rows of a card's text drops a
+row rather than cutting cards off. On a slide change the leaving cards scale
+to 0 within half a second and go `inert`; each arriving card waits a random
+0.50-1.00s (`ENTER_MIN` / `ENTER_MAX`), then scales from 0 to 100%. A change
+within 700ms of the previous one (`FAST_GAP_MS`) is the reader scrolling
+through (scrollbar, keys, a pager jump), not stopping, so it swaps at once
+instead. A card's full description
+(with its role and via line) is a Radix tooltip over the card: hover or focus
+on a pointer device, tap-and-hold on a touch screen (`held` in `ProjectCard`,
+450ms without drifting), where the card also prints "Tap and hold to see
+description". A held popup stays up after the finger lifts and closes on the
+next tap, a scroll or Escape. The card's "No public link" button keeps its
+pointer and focus events from the card's trigger, so its reason tooltip is
+never closed by the description's. A pager of
+dots goes to a slide, and a new filter returns the deck to its first slide. Phones keep a
+swipe rail (grid) or a list that grows a batch of 8 at a time.
+
+`FilterSelect.tsx` is a custom multi-select box: a button dressed as the old
+closed select, opening a Radix Popover (portal, placement, outside-click
+dismissal) with an ARIA listbox (`aria-multiselectable`, aria-activedescendant,
+arrow/Home/End/Space/Enter/type-ahead, Escape or Tab closes and returns focus to
+the box). Values within one box are alternatives (OR); boxes narrow each other
+(AND). Each option counts what choosing it would show against the search and the
+*other* boxes. Applied values show as removable chips.
 
 ### Theming: the Gunpla manual, Manual by default
 
@@ -213,16 +289,17 @@ reason (each island is its own React root).
   tried to make contact, which is the one thing worth knowing here.
 - Accept and Decline share a size and shape; only the fill differs. A banner
   that makes declining harder is not valid consent under GDPR.
-- The banner clears the footer via `--footer-h`, except in scroll mode where the
-  footer sits at the end of the document rather than pinned.
+- The banner sits at the bottom of the screen; the footer is at the end of the
+  document, not pinned, so there is nothing below it to clear.
 
 ### Data
 
 Content lives in `src/assets/*.json`:
 
-- `data.json` — nav (the tab list), `seo` (title, description, keywords, OG
-  image), user profile, hero, about copy (including `about.tabs`, the sub-tab
-  labels), skills copy, and `flow` (the forward step out of each section)
+- `data.json` — nav (the section list), `seo` (title, description, keywords, OG
+  image), user profile, hero, about copy (including `about.sections`, the
+  sub-section labels and ledes), skills copy, and `flow` (the forward step out
+  of each section)
 - `projectlist.json` — project entries; integer ids reference `taglist.json`,
   `roles.json`, `techs.json`, `projectprovider.json`
 - `experience.json`, `contact.json`
@@ -231,16 +308,14 @@ Components import these directly.
 
 ### Components
 
-- `src/components/*/[Name]Component.astro` — panel shells; most use
-  `common/astro/SectionShell.astro`, which supplies the tabpanel semantics.
-  `#home` (`mainvisual/`) builds its own section.
+- `src/components/*/[Name]Component.astro` — section shells; most use
+  `common/astro/SectionShell.astro`, which supplies the one-screen frame, the
+  `aria-labelledby` heading and the `.section-stage` / `.section-head` hooks
+  the scroll choreography drives. `#home` (`mainvisual/`) builds its own
+  section.
 - `src/components/*/*.tsx` — the interactive islands.
-- `src/components/ui/` — shadcn/ui. `tabs.tsx` drives three tablists: the page
-  tab bar, the About sub-tabs, and the Skills category tabs inside Arsenal. All
-  three are DOM siblings rather than nested, so their roving tabindexes cannot
-  trap each other. Keep them visually distinct — the page bar is a floating
-  paper tab strip, the About sub-tabs an inline segmented control, the Skills
-  tabs filled pills.
+- `src/components/ui/` — shadcn/ui primitives (badge, button, input, label,
+  textarea, tooltip). There are no tablists on the page any more.
 
 ### Path alias
 

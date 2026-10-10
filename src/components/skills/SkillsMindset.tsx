@@ -12,11 +12,10 @@ interface SkillsMindsetProps {
 }
 
 export function SkillsMindset({ cards }: SkillsMindsetProps) {
-  // 2x2 at every width. Stacking these one-up on phones made the four cards
-  // ~500px of a ~600px pane -- the single biggest reason the Arsenal view
-  // overflowed. The cards are short enough to pair.
+  // One row of four on a wide screen, pairs on a tablet, a stack on the
+  // narrowest phones -- where a pair left each card's file name truncated.
   return (
-    <RevealGroup className="skills-mindset grid grid-cols-2 gap-2 sm:gap-3" preset="slide">
+    <RevealGroup className="skills-mindset" preset="slide">
       {cards.map((card) => (
         <WindowCard
           key={card.title}

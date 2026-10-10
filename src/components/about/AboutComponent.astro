@@ -3,8 +3,7 @@ import SectionShell from "@/components/common/astro/SectionShell.astro"
 import { AboutImage } from "@/components/about/AboutImage"
 import { AboutStats } from "@/components/about/AboutStats"
 import { AboutCodeBlock } from "@/components/about/AboutCodeBlock"
-import { AboutTabs } from "@/components/about/AboutTabs"
-import { SkillsTabs } from "@/components/skills/SkillsTabs"
+import { SkillsCategories } from "@/components/skills/SkillsCategories"
 import { SkillsMindset } from "@/components/skills/SkillsMindset"
 import { TimelineList } from "@/components/experience/TimelineList"
 import FlowLink from "@/components/common/astro/FlowLink.astro"
@@ -18,105 +17,97 @@ const imagePath = user.image.path
 const hoverImagePath = user.image.hoverpath
 const techstack = user.techstack
 const extraSkills = user.extraSkills
+
+// The three sub-sections, in reading order. Numbered like the steps of an
+// instruction manual: the order is the story (who, with what, how).
+const subs = Object.fromEntries(about.sections.map((s, i) => [s.id, { ...s, step: String(i + 1).padStart(2, "0") }]))
 ---
 
+{/*
+  About, Skills and Experience are one section of three sub-sections, laid
+  out one after another. The section is the one place on the page allowed to
+  run past a screen: it holds the most, and every part of it is meant to be
+  read rather than glanced at.
+
+  The sub-sections are plain Astro markup holding islands of their own --
+  never slots passed into a React component, which would nest those islands
+  (see CLAUDE.md).
+*/}
 <SectionShell
   id="about"
   eyebrow={about.eyebrow}
   headline={about.headline}
   headlineAccent={about.headlineAccent}
+  class="about-section"
 >
+  <div class="about-subs">
 
-  <!-- The code block is the backdrop: it is a decorative sample, not content
-       anyone reads line by line, and at full strength it dominated the panel.
-       The portrait and copy sit in front of it. -->
-  <div slot="backdrop" class="about-code-backdrop" aria-hidden="true">
-    <AboutCodeBlock client:load since={user.since} professional={user.professional} />
-  </div>
+    <!-- ── 01 Profile: who he is ── -->
+    <section id="about-profile" class="about-sub" aria-labelledby="about-profile-title">
+      <!-- The code block is a backdrop: a decorative sample, not content anyone
+           reads line by line. The portrait and copy sit in front of it. -->
+      <div class="about-code-backdrop" aria-hidden="true">
+        <AboutCodeBlock client:idle since={user.since} professional={user.professional} />
+      </div>
 
-  {/*
-    About, Skills and Experience are one panel now, split into three sub-tabs.
+      <header class="about-sub-head">
+        <p class="about-sub-step" aria-hidden="true">STEP {subs.profile.step}</p>
+        <h3 id="about-profile-title" class="about-sub-title">
+          <span aria-hidden="true">{subs.profile.icon}</span>{subs.profile.label}
+        </h3>
+        <p class="about-sub-lede">{subs.profile.lede}</p>
+      </header>
 
-    The sub-panels are plain Astro siblings, NOT slots passed into AboutTabs:
-    each holds islands of its own, and the React adapter hands slot content to
-    React through StaticHtml (dangerouslySetInnerHTML, shouldComponentUpdate
-    false), which would nest those islands under a hydrating ancestor. AboutTabs
-    toggles these by id instead -- same design as the page tabs, same reason.
-  */}
-  <div class="about-subtab-bar shrink-0 flex justify-center">
-    <AboutTabs client:load tabs={about.tabs} />
-  </div>
-
-  <div class="about-panes flex-1 min-h-0 flex flex-col">
-
-    <!-- ── Profile: who he is ── -->
-    <div
-      id="about-profile"
-      class="about-pane"
-      role="tabpanel"
-      aria-labelledby="subtab-profile"
-      tabindex="-1"
-    >
-      <!-- Mobile drops the sub-tab bar, so each pane names itself instead;
-           without a label the three run together as one block. -->
-      <p class="about-pane-label" aria-hidden="true">
-        <span>👤</span>Profile
-      </p>
-      <div class="about-profile-grid grid lg:grid-cols-12 gap-5 xl:gap-8 items-center max-w-3xl lg:max-w-none mx-auto w-full">
-        <div class="lg:col-span-4 flex justify-center min-w-0 w-full">
-          <AboutImage client:load name={name} imagePath={imagePath} hoverImagePath={hoverImagePath} baseUrl={baseUrl} />
+      <div class="about-sub-body about-profile-grid">
+        <div class="about-profile-portrait">
+          <AboutImage client:idle name={name} imagePath={imagePath} hoverImagePath={hoverImagePath} baseUrl={baseUrl} />
         </div>
-
-        <div class="lg:col-span-8 flex flex-col gap-4 min-w-0 w-full">
+        <div class="about-profile-copy">
           {about.bio.map((p) => (
             <p class="about-bio">{p}</p>
           ))}
           <!-- The two counts the Journey pipeline cannot show. -->
-          <AboutStats client:load stats={about.stats} />
+          <AboutStats client:idle stats={about.stats} />
         </div>
       </div>
-    </div>
+    </section>
 
-    <!-- ── Arsenal: what he works with ── -->
-    <div
-      id="about-arsenal"
-      class="about-pane"
-      role="tabpanel"
-      aria-labelledby="subtab-arsenal"
-      tabindex="-1"
-    >
-      <!-- Mobile drops the sub-tab bar, so each pane names itself instead;
-           without a label the three run together as one block. -->
-      <p class="about-pane-label" aria-hidden="true">
-        <span>⚙️</span>Arsenal
-      </p>
-      <div class="flex flex-col gap-3.5 w-full">
-        <SkillsTabs client:load techstack={techstack} extraSkills={extraSkills} />
-        <SkillsMindset client:load cards={skills.mindset} />
+    <!-- ── 02 Arsenal: what he works with ── -->
+    <section id="about-arsenal" class="about-sub" aria-labelledby="about-arsenal-title">
+      <header class="about-sub-head">
+        <p class="about-sub-step" aria-hidden="true">STEP {subs.arsenal.step}</p>
+        <h3 id="about-arsenal-title" class="about-sub-title">
+          <span aria-hidden="true">{subs.arsenal.icon}</span>{subs.arsenal.label}
+        </h3>
+        <p class="about-sub-lede">{subs.arsenal.lede}</p>
+      </header>
+
+      <div class="about-sub-body">
+        <SkillsCategories client:idle techstack={techstack} extraSkills={extraSkills} />
+        <SkillsMindset client:idle cards={skills.mindset} />
       </div>
-    </div>
+    </section>
 
-    <!-- ── Journey: how he got here ── -->
-    <div
-      id="about-journey"
-      class="about-pane"
-      role="tabpanel"
-      aria-labelledby="subtab-journey"
-      tabindex="-1"
-    >
-      <!-- Mobile drops the sub-tab bar, so each pane names itself instead;
-           without a label the three run together as one block. -->
-      <p class="about-pane-label" aria-hidden="true">
-        <span>📈</span>Journey
-      </p>
-      <TimelineList client:load items={experienceJson} />
-    </div>
+    <!-- ── 03 Journey: how he got here ── -->
+    <section id="about-journey" class="about-sub" aria-labelledby="about-journey-title">
+      <header class="about-sub-head">
+        <p class="about-sub-step" aria-hidden="true">STEP {subs.journey.step}</p>
+        <h3 id="about-journey-title" class="about-sub-title">
+          <span aria-hidden="true">{subs.journey.icon}</span>{subs.journey.label}
+        </h3>
+        <p class="about-sub-lede">{subs.journey.lede}</p>
+      </header>
+
+      <div class="about-sub-body">
+        <TimelineList client:idle items={experienceJson} />
+      </div>
+    </section>
 
   </div>
 
-  <!-- Forward step in the flow: about -> projects. -->
+  <!-- Forward step in the flow: about -> projects. A plain anchor: the page
+       scrolls on to the next section. -->
   <div class="flow-row">
     <FlowLink label={flow.about.label} href={flow.about.href} />
   </div>
-
 </SectionShell>

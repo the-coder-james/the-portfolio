@@ -38,7 +38,7 @@ export function ContactCard({ contact }: ContactCardProps) {
       style={{ textDecoration: "none" }}
     >
       <div
-        className="w-8 h-8 rounded-lg flex items-center justify-center"
+        className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0"
         style={{ background: "var(--tint-white-04)", color: iconColor }}
       >
         {iconPath && (
@@ -47,11 +47,11 @@ export function ContactCard({ contact }: ContactCardProps) {
           </svg>
         )}
       </div>
-      <div>
-        <div style={{ fontSize: "0.82rem", color: "var(--color-ink-muted)", fontWeight: 500 }}>
+      <div className="min-w-0">
+        <div className="contact-card-name" style={{ fontSize: "0.82rem", color: "var(--color-ink-muted)", fontWeight: 500 }}>
           {contact.name}
         </div>
-        <div style={{ fontSize: "0.72rem", color: "var(--color-ink-dim)", fontFamily: "var(--font-mono)" }}>
+        <div className="contact-card-url" style={{ fontSize: "0.72rem", color: "var(--color-ink-dim)", fontFamily: "var(--font-mono)" }}>
           {displayUrl}
         </div>
       </div>

@@ -19,14 +19,21 @@ The site is styled like a mobile-suit instruction manual and has two themes:
 ## Features
 
 - **Layout:**
-  - On desktop, the sections are tabs. Each tab has its own URL hash, so back and forward work.
-  - At 640px wide and below, the page becomes one scrolling document.
+  - One scrolling page of four sections, each at least one screen tall and growing with its content. The drafting-paper background stays fixed while the content scrolls over it.
+  - About is three numbered sub-sections (Profile, Arsenal, Journey), all shown in full.
+  - Each section has its own scroll-linked animation, and its content reveals as it arrives.
+  - The phone layout applies at 767px wide and below.
+  - The nav links are plain anchors with a scroll-spy, so back, forward and shared `#section` links all work.
+- **Projects:**
+  - On PC, a deck of six-card slides that the page's scroll moves through. Cards scale out, and the next slide's scale in at random offsets.
+  - On phones, a swipe rail.
+  - Search, plus tag, role and provider filters that each take more than one value.
 - **Themes:** the theme is set before first paint and follows the OS preference until you pick one.
 - **Analytics:**
   - Google Tag Manager loads only after the visitor accepts the cookie banner.
   - Consent can be withdrawn at any time from **Cookie settings** in the footer.
 - **Accessibility:**
-  - Without JavaScript, the page still reads as one plain scrolling page.
+  - Without JavaScript, the page still reads, and the nav links still work.
   - Reduced-motion settings are respected.
   - Contrast ratios are measured and tested in both themes.
 

@@ -1,37 +1,133 @@
-// E2E-13 (desktop tabs), E2E-14 (phone scroll mode), E2E-15 (About sub-tabs).
+// E2E-13 (one scrolling page, every width), E2E-14 (landing on a hash and the
+// nav's scroll-spy), E2E-15 (About sub-tabs, at every width).
 import type { Page } from "@playwright/test";
 import { expect, test } from "./helpers/fixtures";
-import { isScrollMode, settle } from "./helpers/page";
+import { currentSection, sectionTop, settle } from "./helpers/page";
 
-const PANELS = ["home", "about", "projects", "contact"] as const;
+const SECTIONS = ["home", "about", "projects", "contact"] as const;
 
-/** Which panels are shown, and whether hidden ones are also aria-hidden. */
-const panelState = (page: Page) =>
-  page.evaluate((ids) => ids.map((id) => {
-    const el = document.getElementById(id)!;
-    return { id, hidden: el.hidden, ariaHidden: el.getAttribute("aria-hidden") };
-  }), [...PANELS]);
+const navLink = (page: Page, name: string) =>
+  page.locator("nav[aria-label='Primary']").getByRole("link", { name, exact: true });
 
-async function expectOnly(page: Page, id: (typeof PANELS)[number]) {
-  await expect.poll(() => panelState(page)).toEqual(
-    PANELS.map((p) => ({ id: p, hidden: p !== id, ariaHidden: String(p !== id) })),
-  );
-}
+test.describe("E2E-13 one scrolling page", () => {
+  test("every section is in the document and at least one screen tall; nothing clips its content", async ({ page }) => {
+    await page.goto("#home");
+    await settle(page);
+    const r = await page.evaluate((ids) => {
+      const footer = document.querySelector("body > footer")!.getBoundingClientRect().height;
+      return {
+        sections: ids.map((id) => {
+          const el = document.getElementById(id)!;
+          const cs = getComputedStyle(el);
+          return { id, hidden: el.hidden, height: Math.round(el.getBoundingClientRect().height), overflowY: cs.overflowY };
+        }),
+        screen: window.innerHeight,
+        footer: Math.round(footer),
+      };
+    }, [...SECTIONS]);
+    expect(r.sections.map((s) => s.hidden)).toEqual([false, false, false, false]);
+    for (const s of r.sections) {
+      // Contact gives the footer its share, so the last screen is Contact + footer.
+      const min = s.id === "contact" ? r.screen - r.footer : r.screen;
+      expect(s.height, `#${s.id} height`).toBeGreaterThanOrEqual(min - 1);
+      // Sections grow with their content; none cuts it off or scrolls it.
+      expect(s.overflowY, `#${s.id} overflow-y`).toBe("visible");
+    }
+    // About holds the most and runs past a screen.
+    expect(r.sections.find((s) => s.id === "about")!.height).toBeGreaterThan(r.screen);
+  });
 
-test.describe("E2E-13 desktop tabs are driven by the hash", () => {
-  test.skip(({ isMobile }) => isMobile, "tab mode is desktop-only");
-
-  for (const [landing, panel] of [["", "home"], ["#home", "home"], ["#about", "about"], ["#projects", "projects"], ["#contact", "contact"]] as const) {
-    test(`landing on "${landing || "(no hash)"}" shows only #${panel}`, async ({ page }) => {
-      await page.goto(landing);
+  test("the nav links scroll to their section and the nav follows the reader", async ({ page }) => {
+    await page.goto("#home");
+    await settle(page);
+    expect(await currentSection(page)).toBe("home");
+    for (const [name, id] of [["Projects", "projects"], ["About", "about"], ["Contact", "contact"]] as const) {
+      await navLink(page, name).click();
       await settle(page);
-      await expectOnly(page, panel);
-      await expect(page).toHaveURL(new RegExp(`#${panel}$`));
+      await expect(page).toHaveURL(new RegExp(`#${id}$`));
+      expect(Math.abs(await sectionTop(page, id)), `#${id} lands at the top`).toBeLessThanOrEqual(2);
+      await expect.poll(() => currentSection(page)).toBe(id);
+    }
+    // Scrolling by hand moves the marker too; nothing writes to the hash.
+    await page.evaluate(() => window.scrollTo({ top: document.getElementById("about")!.offsetTop, behavior: "instant" }));
+    await expect.poll(() => currentSection(page)).toBe("about");
+    await expect(page).toHaveURL(/#contact$/);
+    await page.locator("nav a.logo-home").click();
+    await settle(page);
+    expect(await page.evaluate(() => Math.round(window.scrollY))).toBe(0);
+    await expect.poll(() => currentSection(page)).toBe("home");
+  });
+
+  test("after following a nav link, the next Tab lands inside that section", async ({ page }) => {
+    await page.goto("#home");
+    await settle(page);
+    await navLink(page, "Projects").click();
+    await settle(page);
+    await page.keyboard.press("Tab");
+    expect(await page.evaluate(() => !!document.activeElement?.closest("#projects"))).toBe(true);
+  });
+
+  test("back and forward return to the sections the links went to", async ({ page }) => {
+    await page.goto("#home");
+    await settle(page);
+    await navLink(page, "Projects").click();
+    await settle(page);
+    await navLink(page, "Contact").click();
+    await settle(page);
+    await page.goBack();
+    await settle(page);
+    expect(Math.abs(await sectionTop(page, "projects"))).toBeLessThanOrEqual(2);
+    await page.goForward();
+    await settle(page);
+    expect(Math.abs(await sectionTop(page, "contact"))).toBeLessThanOrEqual(2);
+  });
+
+  test("the flow links walk home -> about -> projects -> contact", async ({ page }) => {
+    await page.goto("#home");
+    await settle(page);
+    for (const [from, next] of [["home", "about"], ["about", "projects"], ["projects", "contact"]] as const) {
+      await page.locator(`#${from} a[href="#${next}"]`).last().click();
+      await settle(page);
+      expect(Math.abs(await sectionTop(page, next)), `#${next}`).toBeLessThanOrEqual(2);
+    }
+  });
+
+  test("the skip link goes to the content without moving the reader off the top", async ({ page }) => {
+    await page.goto("#home");
+    await settle(page);
+    await page.keyboard.press("Tab");
+    await expect(page.locator(".skip-link")).toBeFocused();
+    await page.keyboard.press("Enter");
+    await expect(page).toHaveURL(/#main$/);
+    expect(await page.evaluate(() => Math.round(window.scrollY))).toBe(0);
+  });
+});
+
+test.describe("E2E-14 landing on a hash", () => {
+  for (const id of SECTIONS) {
+    test(`/#${id} lands with the section at the top and holds there`, async ({ page }) => {
+      await page.goto(`#${id}`);
+      await settle(page);
+      const first = await sectionTop(page, id);
+      // The old phone scroll mode drifted ~1200px over ~900ms after landing.
+      await page.waitForTimeout(1500);
+      expect(await sectionTop(page, id), "the landing position holds").toBe(first);
+      expect(Math.abs(first)).toBeLessThanOrEqual(1);
+      await expect.poll(() => currentSection(page)).toBe(id);
+      // The section pads itself clear of the floating nav: its first line of
+      // content is never behind the pill.
+      const gap = await page.evaluate((i) => {
+        const nav = document.querySelector("nav[aria-label='Primary']")!.getBoundingClientRect().bottom;
+        const first = [...document.getElementById(i)!.querySelectorAll("h1, h2, p")]
+          .find((n) => !n.closest("[aria-hidden='true'], [hidden]") && n.getBoundingClientRect().height)!;
+        return first.getBoundingClientRect().top - nav;
+      }, id);
+      expect(gap, "first content clears the nav").toBeGreaterThanOrEqual(0);
     });
   }
 
-  for (const [legacy, panel] of [["#skills", "about"], ["#experience", "about"], ["#bogus", "home"]] as const) {
-    test(`${legacy} resolves to #${panel} without adding a history entry`, async ({ page }) => {
+  for (const [legacy, id] of [["#skills", "about"], ["#experience", "about"]] as const) {
+    test(`${legacy} resolves to #${id} without adding a history entry`, async ({ page }) => {
       // History length as the page first sees it (Playwright's about:blank
       // counts as an entry), before the hash is canonicalised.
       await page.addInitScript(() => {
@@ -39,8 +135,8 @@ test.describe("E2E-13 desktop tabs are driven by the hash", () => {
       });
       await page.goto(legacy);
       await settle(page);
-      await expectOnly(page, panel);
-      await expect(page).toHaveURL(new RegExp(`#${panel}$`));
+      await expect(page).toHaveURL(new RegExp(`#${id}$`));
+      expect(Math.abs(await sectionTop(page, id))).toBeLessThanOrEqual(1);
       // replaceState, not pushState: canonicalising adds no entry.
       expect(await page.evaluate(() => history.length)).toBe(
         await page.evaluate(() => (window as unknown as { __qaHistory: number }).__qaHistory),
@@ -48,157 +144,53 @@ test.describe("E2E-13 desktop tabs are driven by the hash", () => {
     });
   }
 
-  test("tab clicks, the logo, back and forward all switch panels", async ({ page }) => {
-    await page.goto("#home");
+  test("an unknown hash is left alone at the top of the page", async ({ page }) => {
+    await page.goto("#bogus");
     await settle(page);
-    await page.getByRole("tab", { name: "Projects" }).click();
-    await expectOnly(page, "projects");
-    await expect(page).toHaveURL(/#projects$/);
-    // Focus moves into the panel so keyboard users are not left in the header.
-    await expect.poll(() => page.evaluate(() => document.activeElement?.id)).toBe("projects");
-    await page.getByRole("tab", { name: "Contact" }).click();
-    await expectOnly(page, "contact");
-    await page.goBack();
-    await expectOnly(page, "projects");
-    await page.goForward();
-    await expectOnly(page, "contact");
-    await page.getByRole("button", { name: "Home" }).click();
-    await expectOnly(page, "home");
+    expect(await page.evaluate(() => Math.round(window.scrollY))).toBe(0);
+    expect(await currentSection(page)).toBe("home");
   });
 
-  test("the flow links walk home -> about -> projects -> contact", async ({ page }) => {
-    await page.goto("#home");
-    await settle(page);
-    for (const next of ["about", "projects", "contact"] as const) {
-      await page.locator(`main > section:not([hidden]) a[href="#${next}"]`).last().click();
-      await expectOnly(page, next);
-    }
-  });
-
-  test("the skip link's #main never resets the panel", async ({ page }) => {
-    await page.goto("#about");
+  test("landing on a hash leaves the first Tab at the top of the document (WCAG 2.4.3)", async ({ page }) => {
+    await page.goto("#contact");
     await settle(page);
     await page.keyboard.press("Tab");
     await expect(page.locator(".skip-link")).toBeFocused();
-    await page.keyboard.press("Enter");
-    await expect(page).toHaveURL(/#main$/);
-    await expectOnly(page, "about");
   });
 });
 
-test.describe("E2E-14 phone scroll mode", () => {
-  test.skip(({ isMobile }) => !isMobile, "scroll mode is phone-only");
-
-  const panelTop = (page: Page, id: string) =>
-    page.evaluate((i) => Math.round(document.getElementById(i)!.getBoundingClientRect().top), id);
-  const navBottom = (page: Page) =>
-    page.evaluate(() => Math.round(document.querySelector("nav[aria-label='Primary']")!.getBoundingClientRect().bottom));
-  /**
-   * Where the browser itself puts the panel: scrollIntoView honours the one
-   * scroll offset (scroll-padding-top). Measured rather than computed, because
-   * mobile emulation offsets the visual viewport by a few pixels.
-   */
-  const scrollTarget = (page: Page, id: string) =>
-    page.evaluate(async (i) => {
-      const el = document.getElementById(i)!;
-      el.scrollIntoView({ behavior: "instant", block: "start" });
-      await new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
-      return Math.round(el.getBoundingClientRect().top);
-    }, id);
-
-  test("every panel is in the document and none is hidden", async ({ page }) => {
-    await page.goto("#home");
-    await settle(page);
-    expect(await isScrollMode(page)).toBe(true);
-    expect((await panelState(page)).map((p) => p.hidden)).toEqual([false, false, false, false]);
-  });
-
-  test("landing on #home holds the top of the page", async ({ page }) => {
-    await page.goto("#home");
-    await settle(page);
-    await page.waitForTimeout(1500); // the drift this guards against took ~900ms
-    expect(await page.evaluate(() => window.scrollY)).toBe(0);
-  });
-
-  test("the browser's scroll target sits just below the nav (one offset, not two)", async ({ page }) => {
-    await page.goto("#home");
-    await settle(page);
-    const nav = await navBottom(page);
-    for (const id of ["about", "projects", "contact"]) {
-      // scroll-padding-top = --nav-h + 0.5rem; a second offset (the old
-      // scroll-margin-top) landed panels a whole nav-height lower.
-      const gap = (await scrollTarget(page, id)) - nav;
-      expect(gap, `#${id}`).toBeGreaterThanOrEqual(0);
-      expect(gap, `#${id}`).toBeLessThanOrEqual(16);
-    }
-  });
-
-  for (const id of ["about", "projects", "contact"]) {
-    test(`landing on #${id} holds the panel clear of the nav`, async ({ page }) => {
-      await page.goto(`#${id}`);
-      await settle(page);
-      const first = await panelTop(page, id);
-      await page.waitForTimeout(1500); // the drift this guards against ran ~900ms
-      expect(await panelTop(page, id), "the landing position holds").toBe(first);
-      const nav = await navBottom(page);
-      const target = await scrollTarget(page, id);
-      const navHeight = await page.evaluate(() => parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--nav-h")));
-      // CR-28: the landing used to settle 6-55px low, a different amount each
-      // load, because scrollIntoView chased the visual viewport while the URL
-      // bar animated away. It now lands exactly on the browser's own target.
-      expect(first).toBeGreaterThanOrEqual(nav);
-      expect(Math.abs(first - target), "lands on the scroll target").toBeLessThanOrEqual(1);
-      expect(first).toBeLessThan(target + navHeight);
-    });
-  }
-
-  test("a nav pill scrolls to its panel and the active pill follows the reader", async ({ page }) => {
-    await page.goto("#home");
-    await settle(page);
-    await page.getByRole("tab", { name: "Projects" }).click();
-    await settle(page);
-    const landed = await panelTop(page, "projects");
-    expect(Math.abs(landed - (await scrollTarget(page, "projects")))).toBeLessThanOrEqual(2);
-    await page.evaluate(() => document.getElementById("contact")!.scrollIntoView({ block: "start" }));
-    await expect(page.getByRole("tab", { name: "Contact" })).toHaveAttribute("data-state", "active");
-  });
-
-  test("resizing out of and back into scroll mode never strands a panel", async ({ page }) => {
-    await page.goto("#projects");
-    await settle(page);
-    await page.setViewportSize({ width: 1024, height: 768 });
-    await expect.poll(() => isScrollMode(page)).toBe(false);
-    await expectOnly(page, "projects");
-    await page.setViewportSize({ width: 390, height: 844 });
-    await expect.poll(() => isScrollMode(page)).toBe(true);
-    await expect.poll(async () => (await panelState(page)).every((p) => !p.hidden)).toBe(true);
-  });
-});
-
-test.describe("E2E-15 About sub-tabs", () => {
-  const panes = (page: Page) =>
-    page.evaluate(() => ["profile", "arsenal", "journey"].map((s) => !document.getElementById(`about-${s}`)!.hidden));
-
-  test("desktop: one pane at a time, by click and by keyboard", async ({ page, isMobile }) => {
-    test.skip(isMobile, "the sub-tab bar is desktop-only");
+test.describe("E2E-15 About is three sub-sections, all on the page", () => {
+  test("Profile, Arsenal and Journey each show, in order, under their own heading", async ({ page }) => {
     await page.goto("#about");
     await settle(page);
-    expect(await panes(page)).toEqual([true, false, false]);
-    await page.click("#subtab-journey");
-    await expect.poll(() => panes(page)).toEqual([false, false, true]);
-    // Manual activation: arrows move focus, Enter selects.
-    await page.focus("#subtab-journey");
-    await page.keyboard.press("ArrowLeft");
-    await expect(page.locator("#subtab-arsenal")).toBeFocused();
-    await page.keyboard.press("Enter");
-    await expect.poll(() => panes(page)).toEqual([false, true, false]);
+    const r = await page.evaluate(() =>
+      ["profile", "arsenal", "journey"].map((s) => {
+        const el = document.getElementById(`about-${s}`)!;
+        const h = el.querySelector("h3")!;
+        return {
+          shown: !el.hidden && el.getBoundingClientRect().height > 0,
+          heading: h.textContent!.trim(),
+          labelled: el.getAttribute("aria-labelledby") === h.id,
+          top: el.getBoundingClientRect().top,
+        };
+      }),
+    );
+    expect(r.map((x) => x.shown)).toEqual([true, true, true]);
+    expect(r.map((x) => x.heading)).toEqual([expect.stringMatching(/Profile/), expect.stringMatching(/Arsenal/), expect.stringMatching(/Journey/)]);
+    expect(r.every((x) => x.labelled)).toBe(true);
+    expect(r[0].top).toBeLessThan(r[1].top);
+    expect(r[1].top).toBeLessThan(r[2].top);
+    // No tabs anywhere in About any more: every skill and every stage is printed.
+    expect(await page.locator("#about [role='tab'], #about [role='tablist']").count()).toBe(0);
   });
 
-  test("phone: every pane shows, each with its own label", async ({ page, isMobile }) => {
-    test.skip(!isMobile, "scroll mode only");
+  test("every skill category and every Journey stage is shown at once", async ({ page }) => {
     await page.goto("#about");
     await settle(page);
-    expect(await panes(page)).toEqual([true, true, true]);
-    await expect(page.locator(".about-pane-label:visible")).toHaveCount(3);
+    await expect(page.locator("#about-arsenal .skills-category")).toHaveCount(3);
+    const stages = page.locator("#about-journey .journey-stage");
+    await expect(stages).toHaveCount(6);
+    // The last stage is the running one.
+    await expect(stages.last()).toHaveAttribute("data-state", "running");
   });
 });

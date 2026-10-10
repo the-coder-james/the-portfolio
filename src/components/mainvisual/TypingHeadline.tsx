@@ -7,9 +7,12 @@ interface TypingHeadlineProps {
   sequences: string[];
   headlinePrefix: string;
   rolePrefix: string;
+  /** Names the hero section (aria-labelledby). TextEffect takes no id, so it
+   *  sits on the wrapper, whose text is the headline's. */
+  headingId?: string;
 }
 
-export function TypingHeadline({ name, sequences, headlinePrefix, rolePrefix }: TypingHeadlineProps) {
+export function TypingHeadline({ name, sequences, headlinePrefix, rolePrefix, headingId }: TypingHeadlineProps) {
   const reduced = useReducedMotion();
   const headline = `${headlinePrefix} ${name}`;
 
@@ -35,7 +38,7 @@ export function TypingHeadline({ name, sequences, headlinePrefix, rolePrefix }: 
 
   return (
     <>
-      <div className="mb-2">
+      <div className="mb-2" id={headingId}>
         {/*
           The heading previously animated by overwriting innerHTML with one
           <span> per character, which destroyed React's children and left the
@@ -57,7 +60,7 @@ export function TypingHeadline({ name, sequences, headlinePrefix, rolePrefix }: 
         )}
       </div>
 
-      <div className="flex items-center gap-2 mb-6" style={{ height: "2.5rem" }}>
+      <div className="hero-role flex items-center gap-2 mb-6" style={{ height: "2.5rem" }}>
         <span style={{ fontSize: "clamp(1.1rem, 2.5vw, 1.6rem)", color: "var(--color-ink-dim)" }}>
           {rolePrefix}{" "}
         </span>

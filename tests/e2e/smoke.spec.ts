@@ -19,11 +19,11 @@ test.describe("E2E-17 self-hosted type", () => {
         const el = document.querySelector(s);
         return el ? { family: getComputedStyle(el).fontFamily.split(",")[0].replace(/["']/g, "").trim(), transform: getComputedStyle(el).textTransform } : null;
       }, sel);
-    await go(page, { tab: "home" });
+    await go(page, { section: "home" });
     expect(await first("body")).toMatchObject({ family: "IBM Plex Sans Variable" });
     expect(await first("#home h1")).toEqual({ family: "Barlow Condensed", transform: "uppercase" });
     expect(await first(".font-mono")).toMatchObject({ family: "IBM Plex Mono" });
-    await go(page, { tab: "about", sub: "profile" });
+    await go(page, { section: "about", sub: "profile" });
     expect(await first("#about h2")).toEqual({ family: "Barlow Condensed", transform: "uppercase" });
     expect(
       await page.evaluate(() => ['700 16px "Barlow Condensed"', '400 16px "IBM Plex Sans Variable"', '400 16px "IBM Plex Mono"'].map((f) => document.fonts.check(f))),
@@ -40,15 +40,18 @@ test.describe("E2E-18 no console errors in any state", () => {
   for (const theme of ["light", "dark"] as const) {
     test.describe(theme === "light" ? "Manual" : "Blueprint", () => {
       test.use({ seed: { theme, consent: "denied" } });
-      test("full traversal", async ({ page, isMobile }) => {
+      test("full traversal", async ({ page }) => {
         const errors: string[] = [];
         page.on("pageerror", (e) => errors.push(`pageerror: ${e.message}`));
         page.on("console", (m) => {
           if (m.type() === "error") errors.push(`console: ${m.text()}`);
         });
         await open(page);
-        for (const state of isMobile ? [] : STATES) await go(page, state);
-        if (isMobile) await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight));
+        for (const state of STATES) await go(page, state);
+        // And through the whole scroll as a reader would take it, smoothly,
+        // so every reveal and scroll animation on the way runs.
+        await page.evaluate(() => window.scrollTo({ top: 0, behavior: "instant" }));
+        await page.evaluate(() => window.scrollTo({ top: document.documentElement.scrollHeight, behavior: "smooth" }));
         await settle(page);
         expect(errors).toEqual([]);
       });
@@ -56,19 +59,19 @@ test.describe("E2E-18 no console errors in any state", () => {
   }
 });
 
-test.describe("E2E-19 every island hydrates, hidden panels included", () => {
-  test("no island is left server-rendered", async ({ page, isMobile }) => {
+test.describe("E2E-19 every island hydrates, unvisited sections included", () => {
+  test("no island is left server-rendered", async ({ page }) => {
     await open(page);
     const r = await page.evaluate(() => ({
       islands: document.querySelectorAll("astro-island").length,
       pending: [...document.querySelectorAll("astro-island[ssr]")].map((i) => i.getAttribute("component-url")),
-      inHiddenPanels: document.querySelectorAll("main > section[hidden] astro-island").length,
+      belowTheFold: document.querySelectorAll("#about astro-island, #projects astro-island, #contact astro-island").length,
     }));
     expect(r.islands).toBeGreaterThan(10);
     expect(r.pending).toEqual([]);
-    // On desktop three panels are hidden; their islands (client:idle, never
-    // client:visible) must have hydrated anyway.
-    if (!isMobile) expect(r.inHiddenPanels).toBeGreaterThan(0);
+    // Everything after the hero is below the fold on load; those islands
+    // (client:idle or client:load, never client:visible) hydrate anyway.
+    expect(r.belowTheFold).toBeGreaterThan(5);
   });
 });
 
@@ -80,6 +83,38 @@ test.describe("E2E-20 without JavaScript the page still reads", () => {
   // hides the layers and pins [data-reveal] visible.
   test("CR-05: no layer covers the page and all text is visible", async ({ page }) => {
     await page.goto("#home");
+    // Each section measured at rest, the way a reader arrives at it: the
+    // scroll choreography is CSS and runs without script, so a section still
+    // below the fold is legitimately mid-entry.
+    const dimIn = (id: string) =>
+      page.evaluate((i) => {
+        const eff = (n: Element | null) => {
+          let o = 1;
+          for (; n && n !== document.documentElement; n = n.parentElement) o *= Number(getComputedStyle(n).opacity);
+          return o;
+        };
+        let n = 0;
+        const w = document.createTreeWalker(document.getElementById(i)!, NodeFilter.SHOW_TEXT);
+        for (let t = w.nextNode(); t; t = w.nextNode()) {
+          const el = t.parentElement;
+          if (!t.textContent?.trim() || !el || el.closest("[aria-hidden='true']")) continue;
+          if (el.getBoundingClientRect().width && eff(el) < 0.99) n++;
+        }
+        return n;
+      }, id);
+    // Each About sub-section at its own rest: About runs past a screen, and
+    // each sub-section rises in as it arrives.
+    for (const id of ["home", "about-profile", "about-arsenal", "about-journey", "projects", "contact"]) {
+      await page.evaluate((i) => {
+        const el = document.getElementById(i)!;
+        const margin = parseFloat(getComputedStyle(el).scrollMarginTop) || 0;
+        window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY - margin, behavior: "instant" });
+      }, id);
+      // Polled, not slept: no frame callback runs without script, and the
+      // scroll timelines catch up on the next rendering update.
+      await expect.poll(() => dimIn(id), { message: `dim text in #${id}` }).toBe(0);
+    }
+    await page.evaluate(() => window.scrollTo({ top: 0, behavior: "instant" }));
     const r = await page.evaluate(() => {
       const shown = (el: Element | null) => !!el && getComputedStyle(el).display !== "none" && getComputedStyle(el).visibility !== "hidden";
       const eff = (n: Element | null) => {
@@ -87,16 +122,16 @@ test.describe("E2E-20 without JavaScript the page still reads", () => {
         for (; n && n !== document.documentElement; n = n.parentElement) o *= Number(getComputedStyle(n).opacity);
         return o;
       };
-      let dim = 0;
-      const w = document.createTreeWalker(document.querySelector("main")!, NodeFilter.SHOW_TEXT);
-      for (let t = w.nextNode(); t; t = w.nextNode()) {
-        const el = t.parentElement;
-        if (!t.textContent?.trim() || !el || el.closest("[aria-hidden='true']")) continue;
-        if (el.getBoundingClientRect().width && eff(el) < 0.99) dim++;
-      }
-      return { veil: shown(document.getElementById("preboot-veil")), loader: shown(document.querySelector("[aria-label='Loading site']")), dim };
+      const nav = document.querySelector("nav[aria-label='Primary']");
+      return {
+        veil: shown(document.getElementById("preboot-veil")),
+        loader: shown(document.querySelector("[aria-label='Loading site']")),
+        // The nav's links are plain anchors, so they work without script and
+        // must not stay at their entrance start value (opacity 0).
+        nav: !!nav && eff(nav) >= 0.99,
+      };
     });
-    expect(r).toEqual({ veil: false, loader: false, dim: 0 });
+    expect(r).toEqual({ veil: false, loader: false, nav: true });
   });
 });
 

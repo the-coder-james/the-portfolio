@@ -1,8 +1,7 @@
 'use client';
-import { useEffect, useId } from 'react';
+import { useEffect } from 'react';
 import { motion, useSpring, useTransform, motionValue } from 'motion/react';
 import type { MotionValue } from 'motion/react';
-import useMeasure from 'react-use-measure';
 
 const TRANSITION = {
   type: 'spring' as const,
@@ -30,39 +29,28 @@ function Digit({ value, place }: { value: number; place: number }) {
   );
 }
 
+/**
+ * One digit in the rolling strip, offset by whole digit-heights from the one
+ * on show.
+ *
+ * The offset is a percentage of the digit's own box, not a measured pixel
+ * height. It used to be measured once with getBoundingClientRect, which
+ * includes every ancestor transform: the stat cards scale in as they reveal,
+ * so the height read short, the neighbouring digits sat less than one
+ * digit-height away, and their edges showed above and below the number.
+ */
 function Number({ mv, number }: { mv: MotionValue<number>; number: number }) {
-  const uniqueId = useId();
-  const [ref, bounds] = useMeasure();
-
   const y = useTransform(mv, (latest) => {
-    if (!bounds.height) return 0;
     const placeValue = latest % 10;
-    const offset = (10 + number - placeValue) % 10;
-    let memo = offset * bounds.height;
-
-    if (offset > 5) {
-      memo -= 10 * bounds.height;
-    }
-
-    return memo;
+    let offset = (10 + number - placeValue) % 10;
+    if (offset > 5) offset -= 10;
+    return `${offset * 100}%`;
   });
-
-  // don't render the animated number until we know the height
-  if (!bounds.height) {
-    return (
-      <span ref={ref} className='invisible absolute'>
-        {number}
-      </span>
-    );
-  }
 
   return (
     <motion.span
       style={{ y }}
-      layoutId={`${uniqueId}-${number}`}
       className='absolute inset-0 flex items-center justify-center'
-      transition={TRANSITION}
-      ref={ref}
     >
       {number}
     </motion.span>

@@ -15,7 +15,9 @@ interface ContactLink {
  */
 export function ContactCardList({ contacts }: { contacts: ContactLink[] }) {
   return (
-    <RevealGroup className="space-y-2" preset="slide">
+    // A stack of three on PC; one row of three on a phone, where the stack
+    // cost the section ~130px it does not have (see .contact-cards).
+    <RevealGroup className="contact-cards" preset="slide">
       {contacts.map((contact) => (
         <ContactCard key={contact.name} contact={contact} />
       ))}

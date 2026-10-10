@@ -1,9 +1,9 @@
-import { useEffect, useState, type CSSProperties } from "react";
+import { useEffect, useRef, useState, type CSSProperties, type FocusEvent, type PointerEvent as ReactPointerEvent, type SyntheticEvent } from "react";
 import { motion } from "motion/react";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { OptimizedImage } from "@/components/common/tsx/OptimizedImage";
 import { useRevealed } from "@/hooks/useRevealed";
-import { ExternalLink, ArrowUpRight, Info } from "lucide-react";
+import { ExternalLink, ArrowUpRight, Hand, Info } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { TrafficLights } from "@/components/common/tsx/TerminalShell";
@@ -37,6 +37,11 @@ interface ProjectCardProps {
   baseUrl: string;
   /** Grid shows a tall card; list a compact row. */
   view?: CardView;
+  /**
+   * Play the card's own scroll reveal. Off in the PC slide deck, where the
+   * deck scales each card in and out itself and two entrances would fight.
+   */
+  reveal?: boolean;
 }
 
 const ACCENTS = [
@@ -65,12 +70,16 @@ const tint = (accent: string, pct: number) =>
 const sheetTint = (accent: string, pct: number) =>
   `color-mix(in srgb, ${accent} ${pct}%, var(--color-card-surface))`;
 
-export function ProjectCard({ project, index, taglist, roles, providers, baseUrl, view = "grid" }: ProjectCardProps) {
+/** How long a finger rests on a card before its description opens. */
+const HOLD_MS = 450;
+/** How far it may drift in that time -- further is a scroll or a swipe. */
+const HOLD_SLOP = 10;
+
+export function ProjectCard({ project, index, taglist, roles, providers, baseUrl, view = "grid", reveal = true }: ProjectCardProps) {
   const isList = view === "list";
   const { ref, revealed } = useRevealed<HTMLDivElement>("-60px");
   const reduced = useReducedMotion();
   const [hovered, setHovered] = useState(false);
-  const [pressed, setPressed] = useState(false);
   const [canHover, setCanHover] = useState(true);
 
   useEffect(() => {
@@ -81,42 +90,142 @@ export function ProjectCard({ project, index, taglist, roles, providers, baseUrl
     return () => mq.removeEventListener("change", sync);
   }, []);
 
-  // Pointer devices reveal on hover/focus; touch devices while pressed.
-  const showDetail = canHover ? hovered : pressed;
+  // ── The description popup ──
+  // The full description, with the role and via line, in a tooltip over the
+  // card. It used to float inside the screenshot, clamped to whatever lines
+  // the screenshot had room for -- often one, or none. A pointer opens it by
+  // hovering (Radix, after a short delay) and the keyboard by focusing the
+  // card; a finger by resting on the card (`held`), since touch has no hover.
+  const [tipOpen, setTipOpen] = useState(false);
+  const [held, setHeld] = useState(false);
+  // While the pointer or focus is on the "No public link" button its own
+  // tooltip is the one showing. The button is inside the card, so its pointer
+  // and focus events also reach the card's trigger, which would open the
+  // description on top -- and Radix keeps one tooltip open at a time, so the
+  // description won by closing the reason. The card's trigger ignores events
+  // from inside the button (marking them default-prevented, which Radix
+  // honours), and the description stays shut while the button is engaged.
+  // Not stopPropagation: that also hid the moves from Radix's document-level
+  // tracking, which is what closes a tooltip whose trigger was left.
+  const [onInnerTip, setOnInnerTip] = useState(false);
+  const fromInnerTip = (e: SyntheticEvent) =>
+    !!(e.target as Element).closest?.("button[data-slot='tooltip-trigger']");
+  const cardTriggerProps = {
+    onPointerMove: (e: ReactPointerEvent) => {
+      if (fromInnerTip(e)) e.preventDefault();
+    },
+    onFocus: (e: FocusEvent) => {
+      if (fromInnerTip(e)) e.preventDefault();
+    },
+  };
+  const tipRef = useRef<HTMLDivElement>(null);
+  const holdTimer = useRef<number | undefined>(undefined);
+  const holdFrom = useRef<{ x: number; y: number } | null>(null);
+  // A hold must not end in the click (or context menu) its release can fire.
+  const swallowClick = useRef(false);
+
+  const cancelHold = () => {
+    window.clearTimeout(holdTimer.current);
+    holdFrom.current = null;
+  };
+  const onPointerDown = (e: ReactPointerEvent) => {
+    swallowClick.current = false;
+    if (e.pointerType === "mouse" || (e.target as Element).closest("a, button")) return;
+    holdFrom.current = { x: e.clientX, y: e.clientY };
+    window.clearTimeout(holdTimer.current);
+    holdTimer.current = window.setTimeout(() => {
+      holdFrom.current = null;
+      swallowClick.current = true;
+      setHeld(true);
+    }, HOLD_MS);
+  };
+  const onPointerMove = (e: ReactPointerEvent) => {
+    const from = holdFrom.current;
+    if (from && Math.hypot(e.clientX - from.x, e.clientY - from.y) > HOLD_SLOP) cancelHold();
+  };
+  useEffect(() => () => window.clearTimeout(holdTimer.current), []);
+
+  // A held popup stays up once the finger lifts, so it can be read, and closes
+  // on the next tap anywhere outside it, on a scroll, or on Escape. Radix's
+  // own close requests (a touch pointer "leaving" as it lifts) only end the
+  // hover-opened state, never this one.
+  useEffect(() => {
+    if (!held) return;
+    const close = (e: Event) => {
+      if (e.type === "pointerdown" && tipRef.current?.contains(e.target as Node)) return;
+      setHeld(false);
+    };
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setHeld(false);
+    };
+    document.addEventListener("pointerdown", close, true);
+    window.addEventListener("scroll", close, true);
+    document.addEventListener("keydown", onKey);
+    return () => {
+      document.removeEventListener("pointerdown", close, true);
+      window.removeEventListener("scroll", close, true);
+      document.removeEventListener("keydown", onKey);
+    };
+  }, [held]);
+
+  const tipShown = held || (tipOpen && !onInnerTip);
+  const innerTipProps = {
+    onPointerEnter: () => setOnInnerTip(true),
+    onPointerLeave: () => setOnInnerTip(false),
+    onFocus: () => setOnInnerTip(true),
+    onBlur: () => setOnInnerTip(false),
+  };
+
+  // Pointer devices lift the card on hover/focus; touch devices while held.
+  const showDetail = canHover ? hovered : held;
   const accent = ACCENTS[index % ACCENTS.length];
   const roleName = roles[String(project.role)]?.name;
   const providerName = providers[String(project.provider)]?.name;
 
 
   return (
-    /*
-      The card reveals its screenshot on hover. It used to be a plain <div>
-      with mouse handlers only, so keyboard users never saw that image — the
-      focus handlers below give them the same reveal.
-    */
+    <Tooltip open={tipShown} onOpenChange={setTipOpen} delayDuration={350}>
+    <TooltipTrigger asChild {...cardTriggerProps}>
+    {/*
+      The card lifts on hover. It used to be a plain <div> with mouse handlers
+      only, so keyboard users never saw that -- the focus handlers give them
+      the same, and focus opens the description too.
+    */}
     <motion.div
       ref={ref}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
       onFocus={() => setHovered(true)}
       onBlur={() => setHovered(false)}
-      onPointerDown={(e) => { if (e.pointerType !== "mouse") setPressed(true); }}
-      onPointerUp={() => setPressed(false)}
-      onPointerCancel={() => setPressed(false)}
+      onPointerDown={onPointerDown}
+      onPointerMove={onPointerMove}
+      onPointerUp={cancelHold}
+      onPointerCancel={cancelHold}
+      onContextMenu={(e) => {
+        if (held || swallowClick.current) e.preventDefault();
+      }}
+      onClick={(e) => {
+        // preventDefault also keeps Radix from treating the release as a
+        // click that closes the tooltip.
+        if (swallowClick.current) {
+          swallowClick.current = false;
+          e.preventDefault();
+        }
+      }}
       tabIndex={0}
       /* `initial` never branches on reduced motion (see SectionHeading):
          reduced motion keeps the targets and drops the duration, and
          `data-reveal` lets the CSS guarantee the card ends up visible. */
-      data-reveal=""
-      initial={{ opacity: 0, y: 50, scale: 0.95 }}
-      animate={revealed ? { opacity: 1, y: 0, scale: 1 } : undefined}
+      data-reveal={reveal ? "" : undefined}
+      initial={reveal ? { opacity: 0, y: 50, scale: 0.95 } : false}
+      animate={reveal && revealed ? { opacity: 1, y: 0, scale: 1 } : undefined}
       /* The stagger is capped rather than unbounded: at index * 0.07 the 40th
          card started animating 2.8s after the grid revealed, so scrolling
          straight to the end of the list showed a row of half-faded cards and
          one still fully invisible. Nine steps is enough to read as a cascade
          in the rows actually on screen; past that the delay is flat. */
       transition={reduced ? { duration: 0 } : { delay: Math.min(index, 9) * 0.07, type: "spring", visualDuration: 0.7, bounce: 0.2 }}
-      className={`rounded-xl overflow-hidden flex ${isList ? "flex-row items-stretch" : "flex-col"}`}
+      className={`project-card rounded-xl overflow-hidden flex ${isList ? "flex-row items-stretch" : "flex-col"}`}
       style={{
         background: "var(--color-card-surface)",
         // The edge strengthens on hover, as on every other sheet. It used to
@@ -148,8 +257,8 @@ export function ProjectCard({ project, index, taglist, roles, providers, baseUrl
         </span>
         <span className="w-[38px] shrink-0" aria-hidden="true" />
       </div>
-      {/* The screenshot is the card's face. Detail floats over it on hover
-          (pointer) or press (touch) -- see `revealed` below. */}
+      {/* The screenshot is the card's face; its description opens over the
+          card as a popup (below). */}
       <div
         className={`relative overflow-hidden shrink-0 ${isList ? "w-[104px] sm:w-[140px]" : "project-media"}`}
         style={{
@@ -169,57 +278,6 @@ export function ProjectCard({ project, index, taglist, roles, providers, baseUrl
             transition: "transform 0.4s cubic-bezier(0.22, 1, 0.36, 1)",
           }}
         />
-
-        {/* Floating detail. Hidden from assistive tech: everything in it is
-            already in the card body below, which is always present. */}
-        <div
-          aria-hidden="true"
-          className={`absolute inset-0 flex-col justify-end p-3 overflow-hidden ${isList ? "hidden" : "flex"}`}
-          style={{
-            zIndex: 3,
-            opacity: showDetail ? 1 : 0,
-            transition: "opacity 0.28s ease",
-            pointerEvents: "none",
-            background: `linear-gradient(180deg, var(--scrim-soft) 0%, var(--scrim-strong) 62%)`,
-          }}
-        >
-          <div
-            className="rounded-lg p-3 max-h-full overflow-hidden"
-            style={{
-              background: "var(--color-card-surface)",
-              border: `1px solid ${tint(accent, 35)}`,
-              boxShadow: "var(--shadow-print-sm)",
-              transform: showDetail || reduced ? "translateY(0)" : "translateY(10px)",
-              transition: "transform 0.32s cubic-bezier(0.22, 1, 0.36, 1)",
-            }}
-          >
-            <p
-              style={{
-                fontSize: "0.76rem",
-                lineHeight: 1.55,
-                color: "var(--color-ink)",
-                display: "-webkit-box",
-                WebkitBoxOrient: "vertical",
-                WebkitLineClamp: 5,
-                overflow: "hidden",
-              }}
-            >
-              {project.description}
-            </p>
-            <div className="flex flex-wrap gap-1 mt-2">
-              {roleName && (
-                <span className="font-mono" style={{ fontSize: "0.58rem", color: "var(--color-ink-dim)" }}>
-                  role: <span style={{ color: "var(--color-brand-text)" }}>{roleName}</span>
-                </span>
-              )}
-              {providerName && (
-                <span className="font-mono" style={{ fontSize: "0.58rem", color: "var(--color-ink-dim)", marginLeft: "8px" }}>
-                  via: <span style={{ color: "var(--color-syn-violet)" }}>{providerName}</span>
-                </span>
-              )}
-            </div>
-          </div>
-        </div>
 
         <div
           className={`absolute top-3 right-3 ${isList ? "hidden" : "flex"} flex-wrap gap-1 justify-end max-w-[62%]`}
@@ -242,6 +300,10 @@ export function ProjectCard({ project, index, taglist, roles, providers, baseUrl
         <h3 style={{ fontSize: "0.92rem", fontWeight: 700, color: "var(--color-ink)" }}>
           {project.title}
         </h3>
+
+        {/* The grid card prints no description of its own; this is it for
+            screen readers, who cannot hover or hold. */}
+        {!isList && <p className="sr-only">{project.description}</p>}
 
         {isList && (
           <p
@@ -280,10 +342,16 @@ export function ProjectCard({ project, index, taglist, roles, providers, baseUrl
           )}
         </div>
 
-        <div className={`flex items-center ${isList ? "" : "mt-auto"}`}>
+        <div className={`flex items-center gap-2 ${isList ? "" : "mt-auto"}`}>
+          {/* Touch screens only: there is no hover there to discover the
+              description by. */}
+          <span className="project-hold-hint" aria-hidden="true">
+            <Hand size={12} />
+            Tap and hold to see description
+          </span>
           {typeof project.siteurl !== "string" || !project.siteurl ? (
             <Tooltip delayDuration={200}>
-              <TooltipTrigger asChild>
+              <TooltipTrigger asChild {...innerTipProps}>
                 {/* A button, so keyboard and touch users can reach the reason:
                     Radix opens the tooltip on focus. It does nothing on its
                     own and does not pretend to be a link -- a dashed ink stamp
@@ -291,7 +359,7 @@ export function ProjectCard({ project, index, taglist, roles, providers, baseUrl
                     sheet. */}
                 <button
                   type="button"
-                  className="ml-auto inline-flex items-center gap-2 px-3 py-2 rounded-[10px] cursor-help"
+                  className="ml-auto shrink-0 whitespace-nowrap inline-flex items-center gap-2 px-3 py-2 rounded-[10px] cursor-help"
                   style={{
                     fontSize: "0.8rem",
                     background: "transparent",
@@ -330,7 +398,7 @@ export function ProjectCard({ project, index, taglist, roles, providers, baseUrl
               // The secondary button primitive; while the card is hovered its
               // label picks up the card's accent (every accent clears 4.5:1 on
               // the sheet).
-              className="btn-sheet ml-auto group px-3 py-2 text-[0.8rem]"
+              className="btn-sheet ml-auto shrink-0 whitespace-nowrap group px-3 py-2 text-[0.8rem]"
               style={{ color: hovered ? accent : undefined }}
             >
               <ExternalLink size={14} />
@@ -347,5 +415,38 @@ export function ProjectCard({ project, index, taglist, roles, providers, baseUrl
         </div>
       </div>
     </motion.div>
+    </TooltipTrigger>
+    <TooltipContent
+      ref={tipRef}
+      side="top"
+      align="center"
+      sideOffset={8}
+      collisionPadding={12}
+      className="project-tip"
+      style={{
+        // The arrow reads --tooltip-bg (ui/tooltip.tsx), so it is the same
+        // sheet as the body.
+        "--tooltip-bg": "var(--color-card-surface)",
+        background: "var(--tooltip-bg)",
+        border: `1px solid ${tint(accent, 45)}`,
+        boxShadow: "var(--shadow-print)",
+      } as CSSProperties}
+    >
+      <p className="project-tip-title">{project.title}</p>
+      <p className="project-tip-desc">{project.description}</p>
+      <p className="project-tip-meta font-mono">
+        {roleName && (
+          <span>
+            role: <span style={{ color: "var(--color-brand-text)" }}>{roleName}</span>
+          </span>
+        )}
+        {providerName && (
+          <span>
+            via: <span style={{ color: "var(--color-syn-violet)" }}>{providerName}</span>
+          </span>
+        )}
+      </p>
+    </TooltipContent>
+    </Tooltip>
   );
 }

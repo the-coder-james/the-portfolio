@@ -2,10 +2,9 @@
 /**
  * The forward step in the site's flow: home -> about -> projects -> contact.
  *
- * A plain <a href="#panel">, deliberately. On desktop the header listens for
- * hashchange and switches tabs, so this needs to know nothing about the tab
- * state; on mobile every panel is in flow and the same href scrolls to it.
- * One element, both behaviours, no JS of its own.
+ * A plain <a href="#section">, deliberately: the page scrolls on to the next
+ * section, and the history entry, the focus start point and the nav's
+ * scroll-spy all follow from that. No JS of its own.
  */
 interface Props {
   label: string;

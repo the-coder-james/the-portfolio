@@ -2,15 +2,16 @@
 import { SectionHeading } from "@/components/common/tsx/SectionHeading"
 
 /**
- * The shared frame for every tab panel.
+ * The shared frame for every section of the one scrolling page.
  *
- * A panel is exactly one viewport tall, never more: the heading sits at a
- * fixed height and the slot below it takes the remaining space as a flex
- * child that is allowed to shrink (`min-h-0`). Panels whose content cannot
- * fit scroll *inside* that region rather than growing the document, so the
- * tab bar and footer stay put and only one thing on the page ever scrolls.
+ * A section is at least one screen tall, its content centred in it, and it
+ * grows with its content when that is taller: nothing in a section is clipped
+ * or scrolled inside a box of its own.
  *
- * Panels are transparent over the fixed .site-backdrop -- see the note on
+ * `.section-stage` and `.section-head` are what the scroll choreography in
+ * global.css drives; the section itself carries the view timeline.
+ *
+ * Sections are transparent over the fixed .site-backdrop -- see the note on
  * .page-section in global.css.
  */
 interface Props {
@@ -22,8 +23,6 @@ interface Props {
   maxWidth?: string;
   class?: string;
   headingClass?: string;
-  /** Let the content region scroll when it overflows the viewport. */
-  scrollable?: boolean;
 }
 
 const {
@@ -35,36 +34,38 @@ const {
   maxWidth = "max-w-7xl",
   class: className = "",
   headingClass = "",
-  scrollable = true,
 } = Astro.props;
 
 const hasHeading = Boolean(eyebrow || headline);
+// A section without a heading of its own (Projects) renders one in its slot
+// with this id, so every section is named by its visible heading.
+const headingId = `${id}-title`;
 ---
 
 <section
   id={id}
-  class:list={["page-section tabpanel panel-viewport", className]}
-  role="tabpanel"
-  aria-labelledby={`tab-${id}`}
+  class:list={["page-section panel-viewport", className]}
+  aria-labelledby={headingId}
   tabindex="-1"
 >
   <slot name="backdrop" />
 
-  <div class:list={[maxWidth, "panel-inner", "mx-auto w-full relative flex flex-col min-h-0"]}>
+  <div class:list={[maxWidth, "panel-inner section-stage", "mx-auto w-full relative flex flex-col"]}>
     {hasHeading && (
-      <div class:list={["shrink-0", headingClass]}>
+      <div class:list={["section-head shrink-0", headingClass]}>
         <SectionHeading
           client:idle
           eyebrow={eyebrow}
           headline={headline}
           headlineAccent={headlineAccent}
           sub={sub}
+          headingId={headingId}
           className="mb-0"
         />
       </div>
     )}
 
-    <div class:list={["flex-1 min-h-0 flex flex-col", scrollable ? "panel-scroll" : ""]}>
+    <div class="section-body flex flex-col">
       <slot />
     </div>
 

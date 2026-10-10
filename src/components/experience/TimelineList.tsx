@@ -1,8 +1,8 @@
-import { useEffect, useRef, useState } from "react";
-import { AnimatePresence, motion } from "motion/react";
-import { Check, GitCommitVertical, Loader } from "lucide-react";
+import { Check, Loader } from "lucide-react";
+import { motion } from "motion/react";
 import { Badge } from "@/components/ui/badge";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
+import { useRevealed } from "@/hooks/useRevealed";
 
 interface TimelineItem {
   year: string;
@@ -15,226 +15,110 @@ interface TimelineItem {
 }
 
 /**
- * The career timeline drawn as a CI/CD pipeline: each year is a stage on a
- * connected run, every stage before the present reads as "passed", and the
- * present one is still running.
+ * The career drawn as a CI/CD run, top to bottom: each year a stage on one
+ * connected track, every stage before the present "passed", the present one
+ * still running.
  *
- * A plain vertical list of years never said what the entries *were*; a pipeline
- * carries the same chronology but makes the shape of the career legible at a
- * glance -- each stage completed, the last still in progress. It also suits the
- * `git log --oneline` framing the panel already uses.
- *
- * Selection is explicit -- click or Enter/Space only. Wiring it to focus or
- * hover as well meant tabbing through the stages, or merely dragging the mouse
- * across them, silently replaced whatever the reader was looking at with no way
- * back (WCAG 3.2.1, On Focus).
+ * It used to be a horizontal rail with one stage's detail shown at a time --
+ * a selector, which kept it inside one screen but hid five of the six entries
+ * behind clicks. About is free to run on now, so every stage is printed in
+ * full, in order, and the track fills as the reader scrolls down it (CSS,
+ * global.css "Journey track").
  */
 export function TimelineList({ items }: { items: TimelineItem[] }) {
-  // Default to the present: it is the stage a visitor is most likely to want,
-  // and the one still running.
-  const initial = Math.max(0, items.length - 1);
-  const [active, setActive] = useState(initial);
+  return (
+    <ol className="journey" aria-label="Career pipeline">
+      {items.map((item, i) => (
+        <Stage key={`${item.year}-${item.title}`} item={item} index={i} last={i === items.length - 1} />
+      ))}
+    </ol>
+  );
+}
+
+function Stage({ item, index, last }: { item: TimelineItem; index: number; last: boolean }) {
+  const { ref, revealed } = useRevealed<HTMLLIElement>("-80px");
   const reduced = useReducedMotion();
-  const railRef = useRef<HTMLOListElement>(null);
-
-  // The pipeline scrolls sideways on narrow screens and the default selection
-  // is the last stage, so it would otherwise start off the right edge.
-  //
-  // Scroll the rail directly rather than calling el.scrollIntoView(): that walks
-  // every scrollable ancestor, so on a desktop where the rail itself does not
-  // overflow it found the panel section instead -- which overflows by ~66px --
-  // and dragged the whole About column sideways as the reader clicked between
-  // stages. Writing rail.scrollLeft can only ever move the rail.
-  useEffect(() => {
-    const rail = railRef.current;
-    const el = rail?.querySelector<HTMLElement>(`[data-index="${active}"]`);
-    if (!rail || !el) return;
-    // A frame later: on first mount the rail has not been laid out yet.
-    const raf = requestAnimationFrame(() => {
-      const max = rail.scrollWidth - rail.clientWidth;
-      if (max <= 0) return; // nothing to scroll; leave every ancestor alone
-      const target = el.offsetLeft - (rail.clientWidth - el.offsetWidth) / 2;
-      rail.scrollTo({
-        left: Math.max(0, Math.min(target, max)),
-        behavior: reduced ? "auto" : "smooth",
-      });
-    });
-    return () => cancelAnimationFrame(raf);
-  }, [active, reduced]);
-
-  const item = items[active];
-  const isPresent = item.type === "present";
+  const running = item.type === "present";
 
   return (
-    <div className="min-h-0 flex flex-col gap-5 xl:gap-6 w-full max-w-4xl mx-auto">
-      {/* ── Pipeline ── */}
-      <ol
-        className="pipeline relative flex list-none p-0 m-0 gap-0 shrink-0 overflow-x-auto"
-        aria-label="Career pipeline"
-        ref={railRef}
-      >
-        {items.map((entry, i) => {
-          const selected = i === active;
-          const running = entry.type === "present";
-          const passed = !running;
-          return (
-            <li
-              key={`${entry.year}-${entry.title}`}
-              data-index={i}
-              className="pipeline-stage relative flex-1 min-w-[104px] snap-start"
-              data-done={i <= active ? "true" : undefined}
-            >
-              <button
-                type="button"
-                onClick={() => setActive(i)}
-                aria-current={selected ? "true" : undefined}
-                className="pipeline-stage-btn group relative w-full flex flex-col items-center gap-2 px-1 py-2 rounded-lg"
-              >
-                {/* The run's connecting track, drawn behind the node. */}
-                <span
-                  className="pipeline-track absolute top-[22px] left-0 right-0 h-0.5 pointer-events-none"
-                  data-first={i === 0 ? "true" : undefined}
-                  data-last={i === items.length - 1 ? "true" : undefined}
-                  aria-hidden="true"
-                />
-                <span
-                  className="pipeline-node relative z-10 grid place-items-center w-7 h-7 rounded-full shrink-0"
-                  data-state={running ? "running" : "passed"}
-                  data-selected={selected ? "true" : undefined}
-                  aria-hidden="true"
-                >
-                  {running ? (
-                    <Loader size={13} className={reduced ? "" : "spin-slow"} />
-                  ) : passed ? (
-                    <Check size={13} strokeWidth={3} />
-                  ) : (
-                    <GitCommitVertical size={13} />
-                  )}
-                </span>
-                <span className="flex flex-col items-center gap-0.5 min-w-0 w-full">
-                  <span
-                    className="font-mono"
-                    style={{
-                      fontSize: selected ? "0.88rem" : "0.8rem",
-                      fontWeight: 700,
-                      color: selected ? "var(--color-brand-text)" : "var(--color-ink-dim)",
-                      transition: "font-size 0.2s ease, color 0.2s ease",
-                    }}
-                  >
-                    {entry.year}
-                  </span>
-                  <span
-                    className="block truncate w-full text-center px-1"
-                    style={{
-                      fontSize: "0.7rem",
-                      fontWeight: selected ? 600 : 400,
-                      color: selected ? "var(--color-ink)" : "var(--color-ink-faint)",
-                    }}
-                  >
-                    {entry.title}
-                  </span>
-                </span>
-              </button>
-            </li>
-          );
-        })}
-      </ol>
+    <motion.li
+      ref={ref}
+      className="journey-stage"
+      data-state={running ? "running" : "passed"}
+      data-last={last ? "true" : undefined}
+      // `initial` never branches on reduced motion (see SectionHeading):
+      // reduced motion keeps the targets and drops the duration, and
+      // `data-reveal` lets the CSS guarantee the end state.
+      data-reveal=""
+      initial={{ opacity: 0, x: index % 2 ? 24 : -24 }}
+      animate={revealed ? { opacity: 1, x: 0 } : undefined}
+      transition={reduced ? { duration: 0 } : { type: "spring", visualDuration: 0.55, bounce: 0.15 }}
+    >
+      {/* The year and the node sit on the track; the card hangs off it. */}
+      <div className="journey-marker" aria-hidden="true">
+        <span className="journey-year font-mono">{item.year}</span>
+        <span className="journey-node" data-state={running ? "running" : "passed"}>
+          {running ? (
+            <Loader size={15} className={reduced ? "" : "spin-slow"} />
+          ) : (
+            <Check size={15} strokeWidth={3} />
+          )}
+        </span>
+      </div>
 
-      {/* ── Stage detail ── */}
-      <div className="relative min-h-0 min-w-0">
-        <AnimatePresence mode="wait">
-          <motion.article
-            key={item.year + item.title}
-            className="timeline-detail-card w-full rounded-2xl p-4 xl:p-5 flex flex-col"
-            style={{
-              background: "var(--color-card-surface)",
-              border: `1px solid ${isPresent ? "var(--color-brand)" : "var(--color-card-border)"}`,
-            }}
-            // Constant `initial` + zero duration under reduced motion (see
-            // SectionHeading); `data-reveal` pins the end state in CSS.
-            data-reveal=""
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={reduced ? { opacity: 1 } : { opacity: 0, y: -6 }}
-            transition={reduced ? { duration: 0 } : { duration: 0.22, ease: [0.22, 0.61, 0.36, 1] }}
+      <article className="journey-card" data-state={running ? "running" : "passed"}>
+        <div className="flex items-center gap-2 flex-wrap mb-3">
+          <Badge
+            variant="outline"
+            className="font-mono rounded"
+            style={{ fontSize: "0.66rem", color: "var(--color-brand-text)", background: "var(--tint-brand-12)", border: "1px solid var(--tint-brand-20)" }}
           >
-            <div className="flex items-center gap-2 flex-wrap mb-2.5 shrink-0">
+            {item.hash}
+          </Badge>
+          {/* The year again: for assistive tech at PC widths, where the one
+              on the track is decoration, and printed on a phone, whose track
+              has no room for it (global.css, .journey-card-year). */}
+          <span className="journey-card-year font-mono">{item.year}</span>
+          <Badge
+            className="gap-1 rounded-full font-mono"
+            style={
+              running
+                ? { fontSize: "0.64rem", color: "var(--color-success)", background: "var(--tint-success-10)", border: "1px solid var(--tint-success-20)" }
+                : { fontSize: "0.64rem", color: "var(--color-ink-dim)", background: "var(--tint-white-05)", border: "1px solid var(--tint-white-08)" }
+            }
+          >
+            {running ? (
+              <>
+                <span className="w-1 h-1 rounded-full bg-success cursor-blink" aria-hidden="true" />
+                running
+              </>
+            ) : (
+              <>
+                <span aria-hidden="true">✓</span>
+                passed
+              </>
+            )}
+          </Badge>
+        </div>
+
+        <h4 className="journey-title">{item.title}</h4>
+        <p className="journey-company">{item.company}</p>
+        <p className="journey-desc">{item.description}</p>
+
+        <ul className="flex flex-wrap gap-1.5" aria-label="Tags">
+          {item.tags.map((tag) => (
+            <li key={tag}>
               <Badge
                 variant="outline"
                 className="font-mono rounded"
-                style={{ fontSize: "0.6rem", color: "var(--color-brand-text)", background: "var(--tint-brand-12)", border: "1px solid var(--tint-brand-20)" }}
+                style={{ fontSize: "0.68rem", color: "var(--color-brand-text)", background: "var(--tint-brand-07)", border: "1px solid var(--tint-brand-12)" }}
               >
-                {item.hash}
+                {tag}
               </Badge>
-              <span style={{ fontSize: "0.8rem", color: "var(--color-brand-text)", fontFamily: "var(--font-mono)", fontWeight: 700 }}>
-                {item.year}
-              </span>
-              <Badge
-                className="gap-1 rounded-full font-mono"
-                style={
-                  isPresent
-                    ? { fontSize: "0.58rem", color: "var(--color-success)", background: "var(--tint-success-10)", border: "1px solid var(--tint-success-20)" }
-                    : { fontSize: "0.58rem", color: "var(--color-ink-dim)", background: "var(--tint-white-05)", border: "1px solid var(--tint-white-08)" }
-                }
-              >
-                {isPresent ? (
-                  <>
-                    <span className="w-1 h-1 rounded-full bg-success cursor-blink" />
-                    running
-                  </>
-                ) : (
-                  <>
-                    <span aria-hidden="true">✓</span>
-                    passed
-                  </>
-                )}
-              </Badge>
-            </div>
-
-            <h3
-              style={{ fontSize: "1.2rem", fontWeight: 700, color: "var(--color-ink)", lineHeight: 1.2, marginBottom: "2px" }}
-            >
-              {item.title}
-            </h3>
-            <p
-              style={{ fontSize: "0.82rem", color: "var(--color-brand-text)", marginBottom: "10px" }}
-            >
-              {item.company}
-            </p>
-
-            <p
-              className="min-h-0"
-              style={{ fontSize: "0.88rem", color: "var(--color-ink-dim)", lineHeight: 1.65, marginBottom: "12px", maxWidth: "62ch" }}
-            >
-              {item.description}
-            </p>
-
-            <motion.div
-              className="flex flex-wrap gap-1.5 shrink-0"
-              initial="hidden"
-              animate="shown"
-              variants={{ shown: { transition: { staggerChildren: reduced ? 0 : 0.04 } } }}
-            >
-              {item.tags.map((tag) => (
-                <motion.span
-                  key={tag}
-                  data-reveal=""
-                  variants={{ hidden: { opacity: 0, y: 6 }, shown: { opacity: 1, y: 0 } }}
-                  transition={reduced ? { duration: 0 } : { duration: 0.2 }}
-                >
-                  <Badge
-                    variant="outline"
-                    className="font-mono rounded"
-                    style={{ fontSize: "0.62rem", color: "var(--color-brand-text)", background: "var(--tint-brand-07)", border: "1px solid var(--tint-brand-12)" }}
-                  >
-                    {tag}
-                  </Badge>
-                </motion.span>
-              ))}
-            </motion.div>
-          </motion.article>
-        </AnimatePresence>
-      </div>
-    </div>
+            </li>
+          ))}
+        </ul>
+      </article>
+    </motion.li>
   );
 }
